@@ -1,4 +1,7 @@
-import './assets/main.css'
+/**
+ * 应用入口文件
+ */
+import './style.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

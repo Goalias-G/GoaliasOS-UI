@@ -19,6 +19,9 @@ coverage
 !.vscode/extensions.json
 .idea
 .history
+.kiro
+
+
 *.suo
 *.ntvs*
 *.njsproj
