@@ -17,5 +17,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ShimmerButton: typeof import('./src/components/ui/shimmer-button/ShimmerButton.vue')['default']
+    TailwindTest: typeof import('./src/components/clay/TailwindTest.vue')['default']
   }
 }

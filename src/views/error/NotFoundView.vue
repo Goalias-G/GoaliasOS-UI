@@ -24,7 +24,7 @@ const router = useRouter()
 
             <div class="flex justify-center gap-4">
                 <button @click="router.push('/')"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-medium rounded-lg shadow-lg shadow-indigo-500/25">
+                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 font-medium rounded-lg shadow-lg shadow-indigo-500/25">
                     <AppIcon icon="mdi:home" :size="20" />
                     返回首页
                 </button>

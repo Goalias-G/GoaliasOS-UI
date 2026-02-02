@@ -8,6 +8,9 @@
 
 export * from './user'
 export * from './api'
+export * from './theme'
+export * from './components'
+export * from './page'
 
 /** 通用的键值对类型 */
 export type AnyObject = Record<string, any>

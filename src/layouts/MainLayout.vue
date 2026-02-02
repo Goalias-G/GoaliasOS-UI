@@ -4,7 +4,7 @@
  */
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores'
 import { mainRoutes, type AppRouteMeta } from '@/router/routes'
 import AppIcon from '@/components/common/AppIcon.vue'
 
@@ -53,11 +53,11 @@ function handleLogout() {
                 <!-- Logo -->
                 <router-link to="/" class="flex items-center gap-2">
                     <div
-                        class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                        class="w-8 h-8 bg-linear-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
                         <AppIcon icon="mdi:rocket-launch" :size="20" color="white" />
                     </div>
                     <span
-                        class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        class="text-xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                         GoaliasOS App
                     </span>
                 </router-link>

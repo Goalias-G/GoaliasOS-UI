@@ -111,7 +111,7 @@ async function handleLogin() {
                     </div>
 
                     <button type="submit" :disabled="!isFormValid || isLoading"
-                        class="w-full h-11 bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-300 text-white font-medium rounded-lg shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
+                        class="w-full h-11 bg-indigo-500 hover:bg-indigo-600 font-medium rounded-lg shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
                         <AppIcon v-if="isLoading" icon="mdi:loading" :size="20" class="animate-spin" />
                         <span>{{ isLoading ? '登录中...' : '登录' }}</span>
                     </button>

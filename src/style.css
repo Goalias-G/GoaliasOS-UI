@@ -1,75 +1,222 @@
 /**
- * 全局样式
+ * Claymorphism 设计系统 - 全局样式
  *
  * 说明：
- * - 定义设计规范中的 CSS 变量
- * - 配置全局基础样式
+ * - 定义 Claymorphism 设计规范中的 CSS 变量
+ * - 导入 Google Fonts（Nunito 和 DM Sans）
+ * - 配置全局基础样式和动画
  * - 使用 Tailwind CSS 作为主要样式框架
  */
+
+/* ==================== 字体导入 ==================== */
+/* 导入 Nunito（标题）和 DM Sans（正文） */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 @import 'tailwindcss';
 
-/* ==================== CSS 变量定义 ==================== */
+/* ==================== Claymorphism CSS 变量定义 ==================== */
 :root {
-  /* 主色调 - 使用 Indigo 作为品牌色 */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: #e0e7ff;
-  --primary-dark: #4338ca;
+  /* ========== 糖果店配色方案 ========== */
+  /* 主色调 - 紫色系 */
+  --clay-primary: #7c3aed;
+  --clay-primary-light: #a78bfa;
+  --clay-primary-dark: #5b21b6;
 
-  /* 功能色 */
-  --success: #22c55e;
-  --success-light: #dcfce7;
-  --warning: #f59e0b;
-  --warning-light: #fef3c7;
-  --error: #ef4444;
-  --error-light: #fee2e2;
-  --info: #3b82f6;
-  --info-light: #dbeafe;
+  /* 背景色 - 淡紫色系 */
+  --clay-bg-base: #f4f1fa;
+  --clay-bg-elevated: #ffffff;
+  --clay-bg-overlay: rgba(255, 255, 255, 0.4);
 
-  /* 中性色 */
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --text-inverse: #ffffff;
+  /* 辅助色 - 糖果色系 */
+  --clay-accent-pink: #fe848f;
+  --clay-accent-cyan: #00f8f1;
+  --clay-accent-yellow: #ffbd1e;
 
-  /* 背景色 */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
-  --bg-dark: #111827;
+  /* 语义色 */
+  --clay-success: #10b981;
+  --clay-warning: #f59e0b;
+  --clay-error: #ef4444;
+  --clay-info: #3b82f6;
 
-  /* 边框色 */
-  --border-light: #e5e7eb;
-  --border-default: #d1d5db;
-  --border-dark: #9ca3af;
+  /* 文本色 */
+  --clay-text-primary: #2d3557;
+  --clay-text-secondary: #6b7280;
+  --clay-text-muted: #9ca3af;
+  --clay-text-inverse: #ffffff;
 
-  /* 阴影 */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* ========== 阴影堆栈 ========== */
+  /* clayCard - 卡片阴影（浮起效果） */
+  --shadow-clay-card:
+    0 8px 16px rgba(124, 58, 237, 0.15), 0 4px 8px rgba(124, 58, 237, 0.1),
+    inset 0 -4px 8px rgba(124, 58, 237, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.6);
 
-  /* 圆角 */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-full: 9999px;
+  /* clayButton - 按钮阴影（中等浮起） */
+  --shadow-clay-button:
+    0 6px 12px rgba(124, 58, 237, 0.2), 0 3px 6px rgba(124, 58, 237, 0.15),
+    inset 0 -3px 6px rgba(124, 58, 237, 0.1), inset 0 1px 3px rgba(255, 255, 255, 0.7);
 
-  /* 间距 */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  /* clayPressed - 按压状态阴影（下沉效果） */
+  --shadow-clay-pressed:
+    0 2px 4px rgba(124, 58, 237, 0.15), inset 0 2px 8px rgba(124, 58, 237, 0.2),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.5);
 
-  /* 过渡 */
-  --transition-fast: 150ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow: 300ms ease;
+  /* clayHover - 悬停状态阴影（增强浮起） */
+  --shadow-clay-hover:
+    0 12px 24px rgba(124, 58, 237, 0.2), 0 6px 12px rgba(124, 58, 237, 0.15),
+    inset 0 -6px 12px rgba(124, 58, 237, 0.08), inset 0 3px 6px rgba(255, 255, 255, 0.6);
 
-  /* 导航栏高度 */
-  --navbar-height: 4rem;
+  /* ========== 超圆角 ========== */
+  --radius-clay-sm: 20px;
+  --radius-clay-md: 28px;
+  --radius-clay-lg: 36px;
+  --radius-clay-xl: 48px;
+  --radius-clay-full: 9999px;
+
+  /* ========== 动画时长 ========== */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+
+  /* ========== 缓动函数 ========== */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ========== 兼容旧变量（保持向后兼容） ========== */
+  --primary: var(--clay-primary);
+  --primary-hover: var(--clay-primary-dark);
+  --primary-light: var(--clay-primary-light);
+  --primary-dark: var(--clay-primary-dark);
+  --success: var(--clay-success);
+  --warning: var(--clay-warning);
+  --error: var(--clay-error);
+  --info: var(--clay-info);
+  --text-primary: var(--clay-text-primary);
+  --text-secondary: var(--clay-text-secondary);
+  --text-muted: var(--clay-text-muted);
+  --text-inverse: var(--clay-text-inverse);
+  --bg-primary: var(--clay-bg-elevated);
+  --bg-secondary: var(--clay-bg-base);
+}
+
+/* ==================== Tailwind 自定义工具类 ==================== */
+@layer utilities {
+  /* 颜色工具类 */
+  .bg-clay-primary {
+    background-color: var(--clay-primary);
+  }
+  .bg-clay-primary-light {
+    background-color: var(--clay-primary-light);
+  }
+  .bg-clay-primary-dark {
+    background-color: var(--clay-primary-dark);
+  }
+  .bg-clay-bg-base {
+    background-color: var(--clay-bg-base);
+  }
+  .bg-clay-bg-elevated {
+    background-color: var(--clay-bg-elevated);
+  }
+  .bg-clay-accent-pink {
+    background-color: var(--clay-accent-pink);
+  }
+  .bg-clay-accent-cyan {
+    background-color: var(--clay-accent-cyan);
+  }
+  .bg-clay-accent-yellow {
+    background-color: var(--clay-accent-yellow);
+  }
+
+  .text-clay-primary {
+    color: var(--clay-primary);
+  }
+  .text-clay-text-primary {
+    color: var(--clay-text-primary);
+  }
+  .text-clay-text-secondary {
+    color: var(--clay-text-secondary);
+  }
+  .text-clay-text-muted {
+    color: var(--clay-text-muted);
+  }
+  .text-clay-text-inverse {
+    color: var(--clay-text-inverse);
+  }
+
+  /* 阴影工具类 */
+  .shadow-clay-card {
+    box-shadow: var(--shadow-clay-card);
+  }
+  .shadow-clay-button {
+    box-shadow: var(--shadow-clay-button);
+  }
+  .shadow-clay-pressed {
+    box-shadow: var(--shadow-clay-pressed);
+  }
+  .shadow-clay-hover {
+    box-shadow: var(--shadow-clay-hover);
+  }
+
+  /* 圆角工具类 */
+  .rounded-clay-sm {
+    border-radius: var(--radius-clay-sm);
+  }
+  .rounded-clay-md {
+    border-radius: var(--radius-clay-md);
+  }
+  .rounded-clay-lg {
+    border-radius: var(--radius-clay-lg);
+  }
+  .rounded-clay-xl {
+    border-radius: var(--radius-clay-xl);
+  }
+  .rounded-clay-full {
+    border-radius: var(--radius-clay-full);
+  }
+
+  /* 字体工具类 */
+  .font-heading {
+    font-family: 'Nunito', sans-serif;
+  }
+  .font-body {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* 动画工具类 */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+  .animate-hover-lift {
+    animation: hover-lift 0.25s var(--ease-out) forwards;
+  }
+  .animate-press {
+    animation: press 0.15s ease-in forwards;
+  }
+
+  /* 过渡时长工具类 */
+  .duration-fast {
+    transition-duration: var(--duration-fast);
+  }
+  .duration-normal {
+    transition-duration: var(--duration-normal);
+  }
+  .duration-slow {
+    transition-duration: var(--duration-slow);
+  }
+
+  /* 缓动函数工具类 */
+  .ease-clay-out {
+    transition-timing-function: var(--ease-out);
+  }
+  .ease-clay-in-out {
+    transition-timing-function: var(--ease-in-out);
+  }
+  .ease-clay-bounce {
+    transition-timing-function: var(--ease-bounce);
+  }
 }
 
 /* ==================== 基础重置 ==================== */
@@ -94,18 +241,19 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  /* 使用 DM Sans 作为正文字体 */
   font-family:
-    'Inter',
+    'DM Sans',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
     Roboto,
     'Helvetica Neue',
     sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--clay-text-primary);
+  background-color: var(--clay-bg-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -116,46 +264,110 @@ body {
   min-height: 100vh;
 }
 
+/* ==================== 标题字体样式 ==================== */
+/* 使用 Nunito 作为标题字体 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    'Nunito',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-weight: 700;
+  color: var(--clay-text-primary);
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 /* ==================== 链接样式 ==================== */
 a {
-  color: var(--primary);
+  color: var(--clay-primary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
 a:hover {
-  color: var(--primary-hover);
+  color: var(--clay-primary-dark);
 }
 
-/* ==================== 滚动条样式 ==================== */
+/* ==================== 滚动条样式（Claymorphism 风格） ==================== */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: var(--clay-bg-base);
+  border-radius: var(--radius-clay-sm);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: var(--radius-full);
+  background: var(--clay-primary-light);
+  border-radius: var(--radius-clay-sm);
+  border: 2px solid var(--clay-bg-base);
+  transition: background var(--duration-fast) var(--ease-out);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-dark);
+  background: var(--clay-primary);
+}
+
+/* Firefox 滚动条样式 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--clay-primary-light) var(--clay-bg-base);
 }
 
 /* ==================== 选中文本样式 ==================== */
 ::selection {
-  background-color: var(--primary-light);
-  color: var(--primary-dark);
+  background-color: var(--clay-primary-light);
+  color: var(--clay-primary-dark);
 }
 
-/* ==================== 焦点样式 ==================== */
+::-moz-selection {
+  background-color: var(--clay-primary-light);
+  color: var(--clay-primary-dark);
+}
+
+/* ==================== 焦点样式（Claymorphism 风格） ==================== */
 :focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--clay-primary);
   outline-offset: 2px;
+  border-radius: var(--radius-clay-sm);
 }
 
 /* ==================== 按钮基础样式 ==================== */
@@ -164,6 +376,12 @@ button {
   border: none;
   background: none;
   font-family: inherit;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* ==================== 输入框基础样式 ==================== */
@@ -172,4 +390,230 @@ textarea,
 select {
   font-family: inherit;
   font-size: inherit;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+/* ==================== Claymorphism 动画定义 ==================== */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hover-lift {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes press {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(2px);
+  }
+}
+
+/* ==================== 响应式动画偏好 ==================== */
+/* 尊重用户的动画偏好设置 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-float,
+  .animate-breathe,
+  .animate-hover-lift,
+  .animate-press {
+    animation: none !important;
+  }
+}
+
+/* ==================== Claymorphism 交互工具类 ==================== */
+/* 这些类可以直接在组件中使用，提供即用的 Claymorphism 效果 */
+
+/* 基础卡片样式 */
+.clay-card {
+  background-color: var(--clay-bg-elevated);
+  box-shadow: var(--shadow-clay-card);
+  border-radius: var(--radius-clay-md);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+/* 可悬停卡片 */
+.clay-card-hoverable {
+  background-color: var(--clay-bg-elevated);
+  box-shadow: var(--shadow-clay-card);
+  border-radius: var(--radius-clay-md);
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+.clay-card-hoverable:hover {
+  box-shadow: var(--shadow-clay-hover);
+  transform: translateY(-4px);
+}
+
+/* 可点击卡片（悬停 + 按压） */
+.clay-card-clickable {
+  background-color: var(--clay-bg-elevated);
+  box-shadow: var(--shadow-clay-card);
+  border-radius: var(--radius-clay-md);
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+.clay-card-clickable:hover {
+  box-shadow: var(--shadow-clay-hover);
+  transform: translateY(-4px);
+}
+
+.clay-card-clickable:active {
+  box-shadow: var(--shadow-clay-pressed);
+  transform: translateY(2px);
+}
+
+/* 按钮样式 */
+.clay-btn {
+  background-color: var(--clay-primary);
+  color: var(--clay-text-inverse);
+  box-shadow: var(--shadow-clay-button);
+  border-radius: var(--radius-clay-md);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+  border: none;
+}
+
+.clay-btn:hover {
+  box-shadow: var(--shadow-clay-hover);
+  transform: translateY(-2px);
+}
+
+.clay-btn:active {
+  box-shadow: var(--shadow-clay-pressed);
+  transform: translateY(1px);
+}
+
+.clay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* 次要按钮 */
+.clay-btn-secondary {
+  background-color: var(--clay-bg-elevated);
+  color: var(--clay-primary);
+  box-shadow: var(--shadow-clay-button);
+  border-radius: var(--radius-clay-md);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+  border: none;
+}
+
+.clay-btn-secondary:hover {
+  box-shadow: var(--shadow-clay-hover);
+  transform: translateY(-2px);
+}
+
+.clay-btn-secondary:active {
+  box-shadow: var(--shadow-clay-pressed);
+  transform: translateY(1px);
+}
+
+/* 输入框样式 */
+.clay-input {
+  background-color: var(--clay-bg-elevated);
+  box-shadow: var(--shadow-clay-card);
+  border-radius: var(--radius-clay-md);
+  border: 2px solid transparent;
+  padding: 0.75rem 1rem;
+  transition: all var(--duration-normal) var(--ease-out);
+  color: var(--clay-text-primary);
+}
+
+.clay-input:focus {
+  outline: none;
+  border-color: var(--clay-primary);
+  box-shadow: var(--shadow-clay-hover);
+}
+
+.clay-input::placeholder {
+  color: var(--clay-text-muted);
+}
+
+/* 徽章样式 */
+.clay-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-clay-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-clay-button);
+}
+
+.clay-badge-primary {
+  background-color: var(--clay-primary);
+  color: var(--clay-text-inverse);
+}
+
+.clay-badge-secondary {
+  background-color: var(--clay-primary-light);
+  color: var(--clay-primary-dark);
+}
+
+/* 玻璃态卡片 */
+.clay-glass {
+  background-color: var(--clay-bg-overlay);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-clay-card);
+  border-radius: var(--radius-clay-md);
+}
+
+/* 浮动容器（用于背景装饰） */
+.clay-float-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 响应式动画偏好 - 工具类 */
+@media (prefers-reduced-motion: reduce) {
+  .clay-card-hoverable:hover,
+  .clay-card-clickable:hover,
+  .clay-card-clickable:active,
+  .clay-btn:hover,
+  .clay-btn:active,
+  .clay-btn-secondary:hover,
+  .clay-btn-secondary:active {
+    transform: none !important;
+  }
 }

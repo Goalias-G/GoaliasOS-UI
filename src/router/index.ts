@@ -58,9 +58,8 @@ router.beforeEach((to, from, next) => {
 
   // 认证检查
   const token = localStorage.getItem('token')
-  const requiresAuth = meta?.requiresAuth !== false
 
-  if (requiresAuth && !token) {
+  if (!to.path.includes('/login') && !token) {
     console.log('未登录，尝试访问需要登录的页面')
     // 需要登录但未登录，跳转登录页
     next({ path: '/auth/login', query: { redirect: to.fullPath } })

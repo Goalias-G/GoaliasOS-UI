@@ -12,7 +12,7 @@ GoaliasOS-UI 是一个基于 Vue 3 构建的现代化 Web 应用前端项目，�
 - **样式方案**: Tailwind CSS
 - **HTTP 客户端**: Axios
 - **UI 图标**: iconify-icon
-- **组件库**: Inspire UI
+- **组件库**: shadcn-ui
 - **工具库**: VueUse
 - **代码格式化**: Prettier
 
@@ -35,7 +35,6 @@ src/
 ## 开发工具推荐
 
 - **IDE**: [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
-
 
 ## 脚本命令
 

@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
 /**
@@ -21,7 +20,6 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
     tailwindcss(),
     // 自动导入 API
     AutoImport({
@@ -50,15 +48,15 @@ export default defineConfig({
   },
   // 开发服务器配置
   server: {
-    port: 6660,
+    port: 7001,
     host: true, // 允许局域网访问
     open: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:6666',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://localhost:7000',
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ''),
+    //   },
+    // },
   },
 })
