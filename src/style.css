@@ -219,28 +219,9 @@
   }
 }
 
-/* ==================== 基础重置 ==================== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* ==================== 全局样式 ==================== */
-html {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
   /* 使用 DM Sans 作为正文字体 */
   font-family:
     'DM Sans',
@@ -553,7 +534,10 @@ select {
   box-shadow: var(--shadow-clay-card);
   border-radius: var(--radius-clay-md);
   border: 2px solid transparent;
-  padding: 0.75rem 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  /* padding-left: 1rem;
+  padding-right: 1rem; */
   transition: all var(--duration-normal) var(--ease-out);
   color: var(--clay-text-primary);
 }

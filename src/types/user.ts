@@ -4,29 +4,43 @@
 
 /** 用户信息 */
 export interface User {
-    id: string
-    username: string
-    email?: string
-    avatar?: string
-    phone?: string
-    createdAt?: string
-    updatedAt?: string
-    // TODO: 添加更多用户字段
-    // roles?: string[]
-    // permissions?: string[]
+    userId: number
+    username?: string
+    nickName: string
+    avatar: string
+    userPlan: string
+    loginIp: string
+    loginLocation?: string
+    loginDate: string
+    loginId: string
 }
 
 /** 登录请求参数 */
 export interface LoginRequest {
     username: string
     password: string
-    remember?: boolean // 记住登录状态
-    captcha?: string // 验证码（TODO）
 }
 
-/** 登录响应 */
-export interface LoginResponse {
+/** 登录响应数据 */
+export interface LoginResponseData {
     token: string
-    user: User
-    expiresIn?: number // Token 过期时间（秒）
+    userInfo: User
+}
+
+/** 健康指标数据 */
+export interface HealthMetrics {
+    sleepHours: number // 睡眠时长（小时）
+    waterIntake: number // 饮水量（毫升）
+    steps: number // 步数
+    calories: number // 卡路里消耗
+    exerciseMinutes: number // 运动时长（分钟）
+}
+
+/** 日程事项 */
+export interface ScheduleItem {
+    id: string
+    title: string
+    time: string
+    type: 'health' | 'life' | 'exercise' | 'study'
+    completed: boolean
 }

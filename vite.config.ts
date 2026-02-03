@@ -51,12 +51,12 @@ export default defineConfig({
     port: 7001,
     host: true, // 允许局域网访问
     open: true,
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://localhost:7000',
-    //     changeOrigin: true,
-    //     rewrite: (path) => path.replace(/^\/api/, ''),
-    //   },
-    // },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:7000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
 })

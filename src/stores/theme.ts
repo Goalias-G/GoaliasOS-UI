@@ -8,57 +8,62 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
 
 export type Theme = 'light' | 'dark'
 
 const THEME_STORAGE_KEY = 'clay-theme'
 
 export const useThemeStore = defineStore('theme', () => {
-    // ==================== 状态 ====================
+  // ==================== 状态 ====================
 
-    /** 当前主题 */
-    const theme = ref<Theme>((localStorage.getItem(THEME_STORAGE_KEY) as Theme) || 'light')
+  /** 当前主题 */
+  const theme = ref<Theme>((localStorage.getItem(THEME_STORAGE_KEY) as Theme) || 'light')
 
-    // ==================== 方法 ====================
+  // ==================== 方法 ====================
 
-    /**
-     * 应用主题到 document
-     */
-    function applyTheme(newTheme: Theme) {
-        document.documentElement.classList.remove('light', 'dark')
-        document.documentElement.classList.add(newTheme)
-    }
+  /**
+   * 应用主题到 document
+   */
+  function applyTheme(newTheme: Theme) {
+    document.documentElement.classList.remove('light', 'dark')
+    document.documentElement.classList.add(newTheme)
+  }
 
-    /**
-     * 切换主题（light <-> dark）
-     */
-    function toggleTheme() {
-        theme.value = theme.value === 'light' ? 'dark' : 'light'
-    }
+  /**
+   * 切换主题（light <-> dark）
+   */
+  function toggleTheme() {
+    theme.value = theme.value === 'light' ? 'dark' : 'light'
+  }
 
-    /**
-     * 设置指定主题
-     */
-    function setTheme(newTheme: Theme) {
-        theme.value = newTheme
-    }
+  /**
+   * 设置指定主题
+   */
+  function setTheme(newTheme: Theme) {
+    theme.value = newTheme
+  }
 
-    // 监听主题变化，持久化到 localStorage 并应用到 DOM
-    watch(
-        theme,
-        (newTheme) => {
-            localStorage.setItem(THEME_STORAGE_KEY, newTheme)
-            applyTheme(newTheme)
-        },
-        { immediate: true },
-    )
+  function getThemeColor() {
+    const primaryColor = theme.value === 'light' ? '--clay-primary-light' : '--clay-primary-dark'
+    return useCssVar(primaryColor).value
+  }
 
-    return {
-        // 状态
-        theme,
-        // 方法
-        toggleTheme,
-        setTheme,
-    }
+  // 监听主题变化，持久化到 localStorage 并应用到 DOM
+  watch(
+    theme,
+    (newTheme) => {
+      localStorage.setItem(THEME_STORAGE_KEY, newTheme)
+      applyTheme(newTheme)
+    },
+    { immediate: true },
+  )
+
+  return {
+    // 状态
+    theme,
+    // 方法
+    toggleTheme,
+    setTheme,
+    getThemeColor,
+  }
 })

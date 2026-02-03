@@ -5,24 +5,17 @@
  * - 管理用户认证状态（Token、登录状态）
  * - 管理用户信息
  * - 提供登录、登出、获取用户信息等方法
- *
- * TODO 扩展：
- * - [ ] 实现真实的登录 API 调用
- * - [ ] 实现获取用户信息 API 调用
- * - [ ] Token 刷新机制
- * - [ ] 记住登录状态
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { setStorage, getStorage, removeStorage } from '@/utils/storage'
-import type { User, LoginRequest, LoginResponse } from '@/types'
+import { authApi } from '@/api/modules/auth'
+import type { User, LoginRequest, LoginResponseData, ApiResponse } from '@/types'
 
 export const useUserStore = defineStore('user', () => {
   // ==================== 状态 ====================
 
   /** 用户 Token */
-  const token = ref<string | null>(getStorage('token') || null)
+  const token = ref<string>('')
 
   /** 用户信息 */
   const userInfo = ref<User | null>(null)
@@ -32,11 +25,14 @@ export const useUserStore = defineStore('user', () => {
   /** 是否已登录 */
   const isLoggedIn = computed(() => !!token.value)
 
-  /** 用户名 */
-  const username = computed(() => userInfo.value?.username || '未登录')
+  /** 用户昵称 */
+  const nickName = computed(() => userInfo.value?.nickName || '游客')
 
   /** 用户头像 */
   const avatar = computed(() => userInfo.value?.avatar || '')
+
+  /** 用户计划 */
+  const userPlan = computed(() => userInfo.value?.userPlan || 'Free')
 
   // ==================== 方法 ====================
 
@@ -46,8 +42,6 @@ export const useUserStore = defineStore('user', () => {
    */
   function setToken(newToken: string) {
     token.value = newToken
-    setStorage('token', newToken)
-    // 同时设置到 localStorage（供 Axios 拦截器使用）
     localStorage.setItem('token', newToken)
   }
 
@@ -55,65 +49,72 @@ export const useUserStore = defineStore('user', () => {
    * 清除 Token
    */
   function clearToken() {
-    token.value = null
-    removeStorage('token')
+    token.value = ''
     localStorage.removeItem('token')
   }
 
   /**
    * 登录
    * @param credentials 登录凭证
-   *
-   * TODO: 实现真实的登录 API 调用
    */
-  async function login(credentials: LoginRequest): Promise<void> {
-    // TODO: 调用登录 API
-    // const response = await userApi.login(credentials)
-
-    // 模拟登录成功
-    const mockResponse: LoginResponse = {
-      token: 'mock_token_' + Date.now(),
-      user: {
-        id: '1',
-        username: credentials.username,
-        email: `${credentials.username}@example.com`,
-        avatar: '',
-      },
+  async function login(credentials: LoginRequest): Promise<ApiResponse<LoginResponseData>> {
+    try {
+      const response = await authApi.login(credentials)
+      setToken(response.data.token)
+      userInfo.value = response.data.userInfo
+      return response
+    } catch (error) {
+      console.error('登录失败:', error)
+      clearToken()
+      userInfo.value = null
+      throw error
     }
-
-    setToken(mockResponse.token)
-    userInfo.value = mockResponse.user
   }
 
   /**
    * 登出
    */
-  function logout() {
-    clearToken()
-    userInfo.value = null
-    // TODO: 调用登出 API（可选，用于服务端清除 Session）
+  async function logout() {
+    try {
+      await authApi.logout()
+    } catch (error) {
+      console.error('登出失败:', error)
+    } finally {
+      clearToken()
+      userInfo.value = null
+    }
   }
 
   /**
    * 获取用户信息
-   *
-   * TODO: 实现真实的获取用户信息 API 调用
    */
   async function fetchUserInfo(): Promise<void> {
     if (!token.value) return
 
-    // TODO: 调用获取用户信息 API
-    // const user = await userApi.getUserInfo()
-    // userInfo.value = user
-
-    // 模拟获取用户信息
-    userInfo.value = {
-      id: '1',
-      username: 'admin',
-      email: 'admin@example.com',
-      avatar: '',
+    try {
+      const user = await authApi.getUserInfo()
+      userInfo.value = user
+    } catch (error) {
+      console.error('获取用户信息失败:', error)
+      clearToken()
+      userInfo.value = null
     }
   }
+
+  /**
+   * 初始化（从 localStorage 恢复 Token）
+   */
+  function init() {
+    const savedToken = localStorage.getItem('token')
+    if (savedToken) {
+      token.value = savedToken
+      // 自动获取用户信息
+      fetchUserInfo()
+    }
+  }
+
+  // 初始化
+  init()
 
   return {
     // 状态
@@ -121,8 +122,9 @@ export const useUserStore = defineStore('user', () => {
     userInfo,
     // 计算属性
     isLoggedIn,
-    username,
+    nickName,
     avatar,
+    userPlan,
     // 方法
     setToken,
     clearToken,

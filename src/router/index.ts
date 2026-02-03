@@ -58,19 +58,29 @@ router.beforeEach((to, from, next) => {
 
   // 认证检查
   const token = localStorage.getItem('token')
+  const isAuthPage = to.path.startsWith('/auth') || to.path === '/login'
+  const isErrorPage = to.path.startsWith('/404') || to.name === 'NotFound'
 
-  if (!to.path.includes('/login') && !token) {
-    console.log('未登录，尝试访问需要登录的页面')
-    // 需要登录但未登录，跳转登录页
-    next({ path: '/auth/login', query: { redirect: to.fullPath } })
-  } else if (to.path === '/auth/login' && token) {
-    // 已登录访问登录页，跳转首页
-    console.log('已登录，尝试访问登录页')
-    next({ name: 'Home' })
-  } else {
-    console.log('已登录，继续访问页面')
+  // 如果是错误页面，直接放行
+  if (isErrorPage) {
     next()
+    return
   }
+
+  // 如果未登录且不是认证页面，跳转到登录页
+  if (!token && !isAuthPage) {
+    next({ path: '/auth/login', query: { redirect: to.fullPath } })
+    return
+  }
+
+  // 如果已登录且访问认证页面，跳转到首页
+  if (token && isAuthPage) {
+    next({ path: '/' })
+    return
+  }
+
+  // 其他情况正常放行
+  next()
 })
 
 export default router

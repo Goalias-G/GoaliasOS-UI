@@ -11,12 +11,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AnimatedCircularProgressBar: typeof import('./src/components/ui/animated-circular-progressbar/AnimatedCircularProgressBar.vue')['default']
     AppIcon: typeof import('./src/components/common/AppIcon.vue')['default']
     BlackHoleBackground: typeof import('./src/components/ui/bg-black-hole/BlackHoleBackground.vue')['default']
     FallingStarsBg: typeof import('./src/components/ui/bg-falling-stars/FallingStarsBg.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScrollIsland: typeof import('./src/components/ui/scroll-island/ScrollIsland.vue')['default']
     ShimmerButton: typeof import('./src/components/ui/shimmer-button/ShimmerButton.vue')['default']
-    TailwindTest: typeof import('./src/components/clay/TailwindTest.vue')['default']
   }
 }

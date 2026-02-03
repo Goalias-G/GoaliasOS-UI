@@ -2,9 +2,8 @@
 /**
  * 主布局组件 - 占满整个视口
  */
-import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores'
+import { useUserStore } from '@/stores/user'
 import { mainRoutes, type AppRouteMeta } from '@/router/routes'
 import AppIcon from '@/components/common/AppIcon.vue'
 
@@ -38,8 +37,8 @@ function closeUserMenu() {
     isUserMenuOpen.value = false
 }
 
-function handleLogout() {
-    userStore.logout()
+async function handleLogout() {
+    await userStore.logout()
     router.push('/auth/login')
     closeUserMenu()
 }
@@ -58,7 +57,7 @@ function handleLogout() {
                     </div>
                     <span
                         class="text-xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        GoaliasOS App
+                        GoaliasOS
                     </span>
                 </router-link>
 
@@ -82,9 +81,9 @@ function handleLogout() {
                         class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                         <div
                             class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-sm font-medium">
-                            {{ userStore.username.charAt(0).toUpperCase() }}
+                            {{ userStore.nickName.charAt(0).toUpperCase() }}
                         </div>
-                        <span class="text-sm font-medium text-gray-700">{{ userStore.username }}</span>
+                        <span class="text-sm font-medium text-gray-700">{{ userStore.nickName }}</span>
                         <AppIcon icon="mdi:chevron-down" :size="16" class="text-gray-500 transition-transform"
                             :class="{ 'rotate-180': isUserMenuOpen }" />
                     </button>
@@ -93,8 +92,8 @@ function handleLogout() {
                         class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50"
                         @mouseleave="closeUserMenu">
                         <div class="px-4 py-2 border-b border-gray-100">
-                            <p class="text-sm font-medium text-gray-900">{{ userStore.username }}</p>
-                            <p class="text-xs text-gray-500 truncate">{{ userStore.userInfo?.email || '未设置邮箱' }}</p>
+                            <p class="text-sm font-medium text-gray-900">{{ userStore.nickName }}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ userStore.userInfo?.loginIp || '未知 IP' }}</p>
                         </div>
                         <button @click="handleLogout"
                             class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
