@@ -64,14 +64,6 @@ instance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`
     }
 
-    // 开发环境打印请求日志
-    if (import.meta.env.DEV) {
-      console.log(
-        `[API Request] ${config.method?.toUpperCase()} ${config.url}`,
-        config.data || config.params,
-      )
-    }
-
     return config
   },
   (error) => {
@@ -84,11 +76,6 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response
-
-    // 开发环境打印响应日志
-    if (import.meta.env.DEV) {
-      console.log(`[API Response] ${response.config.url}`, data)
-    }
 
     // 业务状态码判断（200 表示成功）
     if (data.code === API_CODE.SUCCESS) {

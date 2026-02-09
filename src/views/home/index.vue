@@ -190,8 +190,15 @@ const todaySummary = computed(() => {
       <div class="clay-card-hoverable p-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-clay-md shadow-clay-card overflow-hidden bg-clay-bg-elevated">
-              <img v-if="userStore.avatar" :src="userStore.avatar" alt="avatar" class="w-full h-full object-cover" />
+            <div
+              class="w-16 h-16 rounded-clay-md shadow-clay-card overflow-hidden bg-clay-bg-elevated"
+            >
+              <img
+                v-if="userStore.avatar"
+                :src="userStore.avatar"
+                alt="avatar"
+                class="w-full h-full object-cover"
+              />
               <div v-else class="w-full h-full flex items-center justify-center">
                 <AppIcon icon="mdi:account" :size="32" class="text-clay-text-muted" />
               </div>
@@ -204,12 +211,14 @@ const todaySummary = computed(() => {
                 </h1>
               </div>
               <p class="text-clay-text-secondary">
-                {{ new Date().toLocaleDateString('zh-CN', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  weekday: 'long'
-                }) }}
+                {{
+                  new Date().toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long',
+                  })
+                }}
               </p>
             </div>
           </div>
@@ -228,7 +237,12 @@ const todaySummary = computed(() => {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div v-for="metric in metricsCards" :key="metric.label" class="clay-card-hoverable p-5">
             <div class="flex items-center justify-between mb-4">
-              <div :class="[metric.bgColor, 'w-12 h-12 rounded-clay-sm flex items-center justify-center']">
+              <div
+                :class="[
+                  metric.bgColor,
+                  'w-12 h-12 rounded-clay-sm flex items-center justify-center',
+                ]"
+              >
                 <AppIcon :icon="metric.icon" :size="24" :class="metric.color" />
               </div>
             </div>
@@ -242,8 +256,11 @@ const todaySummary = computed(() => {
                 <span>{{ Math.round(metric.progress) }}%</span>
               </div>
               <div class="h-2 bg-clay-bg-base rounded-full overflow-hidden">
-                <div :class="metric.bgColor" :style="{ width: `${Math.min(metric.progress, 100)}%` }"
-                  class="h-full rounded-full transition-all duration-500"></div>
+                <div
+                  :class="metric.bgColor"
+                  :style="{ width: `${Math.min(metric.progress, 100)}%` }"
+                  class="h-full rounded-full transition-all duration-500"
+                ></div>
               </div>
             </div>
           </div>
@@ -255,33 +272,45 @@ const todaySummary = computed(() => {
         <div class="lg:col-span-2">
           <h2 class="text-lg font-heading font-bold text-clay-text-primary mb-4">今日日程</h2>
           <div class="clay-card p-6 space-y-3">
-            <div v-for="item in todaySchedule" :key="item.id"
+            <div
+              v-for="item in todaySchedule"
+              :key="item.id"
               class="flex items-center gap-4 p-3 rounded-clay-sm hover:bg-clay-bg-base transition-colors cursor-pointer"
-              @click="toggleSchedule(item)">
+              @click="toggleSchedule(item)"
+            >
               <div
-                :class="[scheduleTypeConfig[item.type].bgColor, 'w-10 h-10 rounded-clay-sm flex items-center justify-center flex-shrink-0']">
-                <AppIcon :icon="scheduleTypeConfig[item.type].icon" :size="20"
-                  :class="scheduleTypeConfig[item.type].color" />
+                :class="[
+                  scheduleTypeConfig[item.type].bgColor,
+                  'w-10 h-10 rounded-clay-sm flex items-center justify-center flex-shrink-0',
+                ]"
+              >
+                <AppIcon
+                  :icon="scheduleTypeConfig[item.type].icon"
+                  :size="20"
+                  :class="scheduleTypeConfig[item.type].color"
+                />
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <h3 :class="[
-                    'font-medium',
-                    item.completed
-                      ? 'text-clay-text-muted line-through'
-                      : 'text-clay-text-primary',
-                  ]">
+                  <h3
+                    :class="[
+                      'font-medium',
+                      item.completed
+                        ? 'text-clay-text-muted line-through'
+                        : 'text-clay-text-primary',
+                    ]"
+                  >
                     {{ item.title }}
                   </h3>
                 </div>
                 <p class="text-sm text-clay-text-muted">{{ item.time }}</p>
               </div>
-              <div :class="[
-                'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all',
-                item.completed
-                  ? 'bg-clay-primary border-clay-primary'
-                  : 'border-clay-text-muted',
-              ]">
+              <div
+                :class="[
+                  'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all',
+                  item.completed ? 'bg-clay-primary border-clay-primary' : 'border-clay-text-muted',
+                ]"
+              >
                 <AppIcon v-if="item.completed" icon="mdi:check" :size="16" class="text-white" />
               </div>
             </div>
@@ -295,11 +324,26 @@ const todaySummary = computed(() => {
             <div class="clay-card p-6 text-center">
               <div class="relative w-32 h-32 mx-auto mb-4">
                 <svg class="w-full h-full transform -rotate-90">
-                  <circle cx="64" cy="64" r="56" stroke="currentColor" stroke-width="8" fill="none"
-                    class="text-clay-bg-base" />
-                  <circle cx="64" cy="64" r="56" stroke="currentColor" stroke-width="8" fill="none"
-                    class="text-clay-primary transition-all duration-1000" :stroke-dasharray="`${2 * Math.PI * 56}`"
-                    :stroke-dashoffset="`${2 * Math.PI * 56 * (1 - todaySummary.completionRate / 100)}`" />
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="56"
+                    stroke="currentColor"
+                    stroke-width="8"
+                    fill="none"
+                    class="text-clay-bg-base"
+                  />
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="56"
+                    stroke="currentColor"
+                    stroke-width="8"
+                    fill="none"
+                    class="text-clay-primary transition-all duration-1000"
+                    :stroke-dasharray="`${2 * Math.PI * 56}`"
+                    :stroke-dashoffset="`${2 * Math.PI * 56 * (1 - todaySummary.completionRate / 100)}`"
+                  />
                 </svg>
                 <div class="absolute inset-0 flex items-center justify-center">
                   <div>
@@ -321,14 +365,24 @@ const todaySummary = computed(() => {
           <div>
             <h2 class="text-lg font-heading font-bold text-clay-text-primary mb-4">快捷功能</h2>
             <div class="space-y-3">
-              <RouterLink v-for="action in quickActions" :key="action.title" :to="action.to"
-                class="clay-card-clickable p-4 flex items-center gap-3 group">
+              <RouterLink
+                v-for="action in quickActions"
+                :key="action.title"
+                :to="action.to"
+                class="clay-card-clickable p-4 flex items-center gap-3 group"
+              >
                 <div
-                  :class="[action.color, 'w-12 h-12 rounded-clay-sm flex items-center justify-center shadow-clay-button']">
+                  :class="[
+                    action.color,
+                    'w-12 h-12 rounded-clay-sm flex items-center justify-center shadow-clay-button',
+                  ]"
+                >
                   <AppIcon :icon="action.icon" :size="24" class="text-white" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-medium text-clay-text-primary group-hover:text-clay-primary transition-colors">
+                  <h3
+                    class="font-medium text-clay-text-primary group-hover:text-clay-primary transition-colors"
+                  >
                     {{ action.title }}
                   </h3>
                   <p class="text-xs text-clay-text-muted">{{ action.description }}</p>

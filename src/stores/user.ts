@@ -10,6 +10,7 @@
 import { defineStore } from 'pinia'
 import { authApi } from '@/api/modules/auth'
 import type { User, LoginRequest, LoginResponseData, ApiResponse } from '@/types'
+import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
   // ==================== 状态 ====================
@@ -27,6 +28,9 @@ export const useUserStore = defineStore('user', () => {
 
   /** 用户昵称 */
   const nickName = computed(() => userInfo.value?.nickName || '游客')
+
+  /** 用户余额 */
+  const userBalance = computed(() => userInfo.value?.userBalance || 0)
 
   /** 用户头像 */
   const avatar = computed(() => userInfo.value?.avatar || '')
@@ -92,12 +96,13 @@ export const useUserStore = defineStore('user', () => {
     if (!token.value) return
 
     try {
-      const user = await authApi.getUserInfo()
-      userInfo.value = user
+      const res = await authApi.getUserInfo()
+      userInfo.value = res.data
     } catch (error) {
       console.error('获取用户信息失败:', error)
       clearToken()
       userInfo.value = null
+      router.push('/auth/login')
     }
   }
 

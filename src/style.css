@@ -17,19 +17,23 @@
 /* ==================== Claymorphism CSS 变量定义 ==================== */
 :root {
   /* ========== 糖果店配色方案 ========== */
-  /* 主色调 - 紫色系 */
-  --clay-primary: #7c3aed;
-  --clay-primary-light: #a78bfa;
-  --clay-primary-dark: #5b21b6;
+  /* 主色调 - 蓝色系 */
+  --clay-primary: #4296ed;
+  --clay-primary-light: #6aabf1;
+  --clay-primary-dark: #167ce9;
 
-  /* 背景色 - 淡紫色系 */
-  --clay-bg-base: #f4f1fa;
+  /* --clay-primary: #7c3aed;
+  --clay-primary-light: #a78bfa;
+  --clay-primary-dark: #5b21b6; */
+
+  /* 背景色 - 淡蓝色系 */
+  --clay-bg-base: #f1f9fa;
   --clay-bg-elevated: #ffffff;
   --clay-bg-overlay: rgba(255, 255, 255, 0.4);
 
   /* 辅助色 - 糖果色系 */
   --clay-accent-pink: #fe848f;
-  --clay-accent-cyan: #00f8f1;
+  --clay-accent-green: #00f8ae;
   --clay-accent-yellow: #ffbd1e;
 
   /* 语义色 */
@@ -47,23 +51,23 @@
   /* ========== 阴影堆栈 ========== */
   /* clayCard - 卡片阴影（浮起效果） */
   --shadow-clay-card:
-    0 8px 16px rgba(124, 58, 237, 0.15), 0 4px 8px rgba(124, 58, 237, 0.1),
-    inset 0 -4px 8px rgba(124, 58, 237, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+    0 8px 16px rgba(238, 188, 58, 0.15), 0 4px 8px rgba(238, 188, 58, 0.1),
+    inset 0 -4px 8px rgba(238, 188, 58, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.6);
 
   /* clayButton - 按钮阴影（中等浮起） */
   --shadow-clay-button:
-    0 6px 12px rgba(124, 58, 237, 0.2), 0 3px 6px rgba(124, 58, 237, 0.15),
-    inset 0 -3px 6px rgba(124, 58, 237, 0.1), inset 0 1px 3px rgba(255, 255, 255, 0.7);
+    0 6px 12px rgba(238, 188, 58, 0.2), 0 3px 6px rgba(238, 188, 58, 0.15),
+    inset 0 -3px 6px rgba(238, 188, 58, 0.1), inset 0 1px 3px rgba(255, 255, 255, 0.7);
 
   /* clayPressed - 按压状态阴影（下沉效果） */
   --shadow-clay-pressed:
-    0 2px 4px rgba(124, 58, 237, 0.15), inset 0 2px 8px rgba(124, 58, 237, 0.2),
+    0 2px 4px rgba(238, 188, 58, 0.15), inset 0 2px 8px rgba(238, 188, 58, 0.2),
     inset 0 -1px 2px rgba(255, 255, 255, 0.5);
 
   /* clayHover - 悬停状态阴影（增强浮起） */
   --shadow-clay-hover:
-    0 12px 24px rgba(124, 58, 237, 0.2), 0 6px 12px rgba(124, 58, 237, 0.15),
-    inset 0 -6px 12px rgba(124, 58, 237, 0.08), inset 0 3px 6px rgba(255, 255, 255, 0.6);
+    0 12px 24px rgba(238, 188, 58, 0.2), 0 6px 12px rgba(238, 188, 58, 0.15),
+    inset 0 -6px 12px rgba(238, 188, 58, 0.08), inset 0 3px 6px rgba(255, 255, 255, 0.6);
 
   /* ========== 超圆角 ========== */
   --radius-clay-sm: 20px;
@@ -120,8 +124,8 @@
   .bg-clay-accent-pink {
     background-color: var(--clay-accent-pink);
   }
-  .bg-clay-accent-cyan {
-    background-color: var(--clay-accent-cyan);
+  .bg-clay-accent-green {
+    background-color: var(--clay-accent-green);
   }
   .bg-clay-accent-yellow {
     background-color: var(--clay-accent-yellow);

@@ -53,24 +53,24 @@
 </template>
 
 <script lang="ts" setup>
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 
 type ShimmerButtonProps = {
-  shimmerColor?: string;
-  shimmerSize?: string;
-  borderRadius?: string;
-  shimmerDuration?: string;
-  background?: string;
-  class?: string;
-};
+  shimmerColor?: string
+  shimmerSize?: string
+  borderRadius?: string
+  shimmerDuration?: string
+  background?: string
+  class?: string
+}
 
 withDefaults(defineProps<ShimmerButtonProps>(), {
-  shimmerColor: "#ffffff",
-  shimmerSize: "0.05em",
-  shimmerDuration: "3s",
-  borderRadius: "100px",
-  background: "rgba(0, 0, 0, 1)",
-});
+  shimmerColor: '#ffffff',
+  shimmerSize: '0.05em',
+  shimmerDuration: '3s',
+  borderRadius: '100px',
+  background: 'rgba(0, 0, 0, 1)',
+})
 </script>
 
 <style scoped>

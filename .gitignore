@@ -17,11 +17,14 @@ coverage
 docs
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+# .vscode/*
+# !.vscode/extensions.json
 .idea
 .history
 .kiro
+.opencode
+
+AGENTS.md
 
 
 *.suo

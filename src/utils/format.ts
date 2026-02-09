@@ -15,26 +15,26 @@
  * @example formatDate(new Date(), 'YYYY-MM-DD') // '2026-01-09'
  */
 export function formatDate(
-    date: Date | number | string,
-    format: string = 'YYYY-MM-DD HH:mm:ss',
+  date: Date | number | string,
+  format: string = 'YYYY-MM-DD HH:mm:ss',
 ): string {
-    const d = new Date(date)
-    if (isNaN(d.getTime())) return ''
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return ''
 
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    const hours = String(d.getHours()).padStart(2, '0')
-    const minutes = String(d.getMinutes()).padStart(2, '0')
-    const seconds = String(d.getSeconds()).padStart(2, '0')
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  const seconds = String(d.getSeconds()).padStart(2, '0')
 
-    return format
-        .replace('YYYY', String(year))
-        .replace('MM', month)
-        .replace('DD', day)
-        .replace('HH', hours)
-        .replace('mm', minutes)
-        .replace('ss', seconds)
+  return format
+    .replace('YYYY', String(year))
+    .replace('MM', month)
+    .replace('DD', day)
+    .replace('HH', hours)
+    .replace('mm', minutes)
+    .replace('ss', seconds)
 }
 
 /**
@@ -44,11 +44,11 @@ export function formatDate(
  * @example formatNumber(1234567.89) // '1,234,567.89'
  */
 export function formatNumber(num: number, decimals: number = 2): string {
-    if (isNaN(num)) return '0'
-    return num.toLocaleString('zh-CN', {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-    })
+  if (isNaN(num)) return '0'
+  return num.toLocaleString('zh-CN', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })
 }
 
 /**
@@ -58,7 +58,7 @@ export function formatNumber(num: number, decimals: number = 2): string {
  * @example formatCurrency(1234.5) // '¥1,234.50'
  */
 export function formatCurrency(amount: number, currency: string = '¥'): string {
-    return `${currency}${formatNumber(amount, 2)}`
+  return `${currency}${formatNumber(amount, 2)}`
 }
 
 /**
@@ -68,7 +68,7 @@ export function formatCurrency(amount: number, currency: string = '¥'): string 
  * @example formatPercent(0.1234) // '12.34%'
  */
 export function formatPercent(value: number, decimals: number = 2): string {
-    return `${(value * 100).toFixed(decimals)}%`
+  return `${(value * 100).toFixed(decimals)}%`
 }
 
 /**
@@ -77,10 +77,10 @@ export function formatPercent(value: number, decimals: number = 2): string {
  * @example formatFileSize(1024) // '1 KB'
  */
 export function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 B'
-    const units = ['B', 'KB', 'MB', 'GB', 'TB']
-    const i = Math.floor(Math.log(bytes) / Math.log(1024))
-    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
+  if (bytes === 0) return '0 B'
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
 }
 
 /**
@@ -89,8 +89,8 @@ export function formatFileSize(bytes: number): string {
  * @example maskPhone('13812345678') // '138****5678'
  */
 export function maskPhone(phone: string): string {
-    if (!phone || phone.length !== 11) return phone
-    return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+  if (!phone || phone.length !== 11) return phone
+  return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
 }
 
 /**
@@ -99,10 +99,10 @@ export function maskPhone(phone: string): string {
  * @example maskEmail('test@example.com') // 't***@example.com'
  */
 export function maskEmail(email: string): string {
-    if (!email || !email.includes('@')) return email
-    const parts = email.split('@')
-    const name = parts[0] || ''
-    const domain = parts[1] || ''
-    const maskedName = name.length > 2 ? name[0] + '***' + name.slice(-1) : name[0] + '***'
-    return `${maskedName}@${domain}`
+  if (!email || !email.includes('@')) return email
+  const parts = email.split('@')
+  const name = parts[0] || ''
+  const domain = parts[1] || ''
+  const maskedName = name.length > 2 ? name[0] + '***' + name.slice(-1) : name[0] + '***'
+  return `${maskedName}@${domain}`
 }

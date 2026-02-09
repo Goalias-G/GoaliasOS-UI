@@ -17,21 +17,16 @@ export type { AppRouteMeta } from './types'
 // 导入各模块路由
 import { authRoutes } from '@/views/auth/routes'
 import { errorRoutes } from '@/views/error/routes'
+
 import { homeRoutes } from '@/views/home/routes'
 import { demoRoutes } from '@/views/demo/routes'
 import { styleTestRoutes } from '@/views/styleTest/routes'
-
 
 /**
  * 主布局下的路由
  * 自动聚合各功能模块的路由
  */
-export const mainRoutes: RouteRecordRaw[] = [
-  ...homeRoutes,
-  ...demoRoutes,
-  ...styleTestRoutes,
-  // 在这里添加新的模块路由
-]
+export const mainRoutes: RouteRecordRaw[] = [...homeRoutes, ...demoRoutes, ...styleTestRoutes]
 
 /**
  * 认证相关路由（独立布局）
