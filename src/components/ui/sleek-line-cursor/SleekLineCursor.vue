@@ -99,16 +99,16 @@ class Line {
 
   update(): void {
     let e = this.spring
-    let t = this.nodes[0]
+    let t = this.nodes[0]!
 
     t.vx += (pos.x - t.x) * e
     t.vy += (pos.y - t.y) * e
 
     for (let i = 0, a = this.nodes.length; i < a; i++) {
-      t = this.nodes[i]
+      t = this.nodes[i]!
 
       if (i > 0) {
-        const n = this.nodes[i - 1]
+        const n = this.nodes[i - 1]!
         t.vx += (n.x - t.x) * e
         t.vy += (n.y - t.y) * e
         t.vx += n.vx * E.dampening
@@ -125,22 +125,22 @@ class Line {
 
   draw(ctx: CanvasRenderingContext2D): void {
     let e: NodeType, t: NodeType
-    let n = this.nodes[0].x
-    let i = this.nodes[0].y
+    let n = this.nodes[0]!.x
+    let i = this.nodes[0]!.y
 
     ctx.beginPath()
     ctx.moveTo(n, i)
 
     for (let a = 1, o = this.nodes.length - 2; a < o; a++) {
-      e = this.nodes[a]
-      t = this.nodes[a + 1]
+      e = this.nodes[a]!
+      t = this.nodes[a + 1]!
       n = 0.5 * (e.x + t.x)
       i = 0.5 * (e.y + t.y)
       ctx.quadraticCurveTo(e.x, e.y, n, i)
     }
 
-    e = this.nodes[this.nodes.length - 2]
-    t = this.nodes[this.nodes.length - 1]
+    e = this.nodes[this.nodes.length - 2]!
+    t = this.nodes[this.nodes.length - 1]!
     ctx.quadraticCurveTo(e.x, e.y, t.x, t.y)
     ctx.stroke()
     ctx.closePath()
@@ -170,8 +170,8 @@ function createLines(): void {
 
 function updatePosition(e: MouseEvent | TouchEvent): void {
   if ('touches' in e) {
-    pos.x = e.touches[0].pageX
-    pos.y = e.touches[0].pageY
+    pos.x = e.touches[0]!.pageX
+    pos.y = e.touches[0]!.pageY
   } else {
     pos.x = e.clientX
     pos.y = e.clientY
@@ -181,8 +181,8 @@ function updatePosition(e: MouseEvent | TouchEvent): void {
 
 function handleTouchMove(e: TouchEvent): void {
   if (e.touches.length === 1) {
-    pos.x = e.touches[0].pageX
-    pos.y = e.touches[0].pageY
+    pos.x = e.touches[0]!.pageX
+    pos.y = e.touches[0]!.pageY
   }
 }
 
@@ -195,7 +195,7 @@ function render(): void {
     ctx.lineWidth = 1
 
     for (let t = 0; t < E.trails; t++) {
-      const e = lines[t]
+      const e = lines[t]!
       e.update()
       e.draw(ctx)
     }

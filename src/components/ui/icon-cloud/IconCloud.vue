@@ -173,9 +173,9 @@ function handleMouseUp() {
 }
 
 onMounted(() => {
-  const canvas = canvasRef.value
+  const canvas = canvasRef.value!
   if (!canvas) return
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext('2d')!
   if (!ctx) return
 
   function animate() {

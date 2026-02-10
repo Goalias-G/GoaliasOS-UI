@@ -87,20 +87,7 @@
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
   /* ========== 兼容旧变量（保持向后兼容） ========== */
-  --primary: var(--clay-primary);
-  --primary-hover: var(--clay-primary-dark);
-  --primary-light: var(--clay-primary-light);
-  --primary-dark: var(--clay-primary-dark);
-  --success: var(--clay-success);
-  --warning: var(--clay-warning);
-  --error: var(--clay-error);
-  --info: var(--clay-info);
-  --text-primary: var(--clay-text-primary);
-  --text-secondary: var(--clay-text-secondary);
-  --text-muted: var(--clay-text-muted);
-  --text-inverse: var(--clay-text-inverse);
-  --bg-primary: var(--clay-bg-elevated);
-  --bg-secondary: var(--clay-bg-base);
+  --el-color-primary: red;
 }
 
 /* ==================== Tailwind 自定义工具类 ==================== */

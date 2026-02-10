@@ -2,18 +2,20 @@
 import NumberFlow from '@number-flow/vue'
 import { useColorMode } from '@vueuse/core'
 import { motion, MotionConfig } from 'motion-v'
-import { computed, onMounted, onUnmounted, ref, useSlots } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useSlots, watch } from 'vue'
 
 interface Props {
   class?: string
   title?: string
   height?: number
+  scrollContainer?: HTMLElement | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   class: '',
   title: 'Progress',
   height: 44,
+  scrollContainer: null,
 })
 
 const open = ref(false)
@@ -25,19 +27,59 @@ const isDark = computed(() => useColorMode().value == 'dark')
 const isSlotAvailable = computed(() => !!slots.default)
 const borderRadius = computed(() => `${props.height / 2}px`)
 
-onMounted(() => {
-  if (window === undefined) return
+let currentContainer: HTMLElement | Window | null = null
 
-  window.addEventListener('scroll', updatePageScroll)
-  updatePageScroll()
+onMounted(() => {
+  if (typeof window === 'undefined') return
+
+  // 如果传入了容器，等待它可用
+  if (props.scrollContainer) {
+    setupScrollListener(props.scrollContainer)
+  } else {
+    setupScrollListener(window)
+  }
 })
 
+// 监听 scrollContainer 变化（处理延迟绑定的情况）
+watch(
+  () => props.scrollContainer,
+  (newContainer, oldContainer) => {
+    if (oldContainer) {
+      oldContainer.removeEventListener('scroll', updatePageScroll)
+    }
+    if (newContainer) {
+      setupScrollListener(newContainer)
+    }
+  },
+  { immediate: false },
+)
+
+function setupScrollListener(container: HTMLElement | Window) {
+  currentContainer = container
+  container.addEventListener('scroll', updatePageScroll)
+  updatePageScroll()
+}
+
 function updatePageScroll() {
-  scrollPercentage.value = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+  const container = currentContainer
+  if (!container) {
+    scrollPercentage.value = 0
+    return
+  }
+
+  if (container instanceof HTMLElement) {
+    const scrollTop = container.scrollTop
+    const scrollHeight = container.scrollHeight - container.clientHeight
+    scrollPercentage.value = scrollHeight > 0 ? scrollTop / scrollHeight : 0
+  } else {
+    scrollPercentage.value = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+  }
 }
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', updatePageScroll)
+  if (currentContainer) {
+    currentContainer.removeEventListener('scroll', updatePageScroll)
+  }
 })
 </script>
 
@@ -50,7 +92,7 @@ onUnmounted(() => {
     }"
   >
     <div
-      class="bg-primary/90 border-radius fixed top-12 left-1/2 z-[999] -translate-x-1/2 backdrop-blur-lg"
+      class="border-radius fixed top-15 left-1/2 z-999 -translate-x-1/2 backdrop-blur-lg"
       :class="[$props.class]"
       @click="() => (open = !open)"
     >
@@ -65,7 +107,7 @@ onUnmounted(() => {
           height: open && isSlotAvailable ? 'auto' : props.height,
           width: open && isSlotAvailable ? 320 : 260,
         }"
-        class="bg-natural-900 text-secondary relative cursor-pointer overflow-hidden"
+        class="clay-text-secondary relative overflow-hidden"
       >
         <header class="gray- flex h-11 cursor-pointer items-center gap-2 px-4">
           <AnimatedCircularProgressBar

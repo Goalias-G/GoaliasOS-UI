@@ -11,11 +11,10 @@ export type Theme = 'light' | 'dark'
  * 颜色配置
  */
 export interface ThemeConfig {
-  /** 主紫色 */
   primary: string
-  /** 浅紫色 */
+
   primaryLight: string
-  /** 深紫色 */
+
   primaryDark: string
   /** 基础背景 */
   bgBase: string

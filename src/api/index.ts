@@ -46,6 +46,7 @@ const ERROR_MESSAGES: Record<number, string> = {
 // ==================== Axios 实例 ====================
 
 const instance: AxiosInstance = axios.create({
+  baseURL: '/api',
   timeout: Number(import.meta.env.VITE_REQUEST_TIMEOUT) || 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -86,6 +87,11 @@ instance.interceptors.response.use(
     const error: ApiError = {
       code: data.code,
       message: data.message || '请求失败',
+    }
+    // 401 未授权：清除 Token，跳转登录页
+    if (error.code === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/auth/login'
     }
     return Promise.reject(error)
   },

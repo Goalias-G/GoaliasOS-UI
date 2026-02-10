@@ -11,6 +11,15 @@ const route = useRoute()
 const userStore = useUserStore()
 
 const isUserMenuOpen = ref<boolean>(false)
+const mainRef = ref<HTMLElement | null>(null)
+
+// ==================== Cursor 配置 ====================
+type CursorType = 'default' | 'sleek-line' | 'fluid'
+const currentCursor = ref<CursorType>('default')
+
+function setCursor(type: CursorType) {
+  currentCursor.value = type
+}
 
 // ==================== MorphingTabs 导航 ====================
 const activeTab = computed(() => {
@@ -61,6 +70,82 @@ async function handleLogout() {
 
 <template>
   <div class="w-screen h-screen flex flex-col overflow-hidden bg-clay-bg-base">
+    <ScrollIsland title="OS" :scroll-container="mainRef">
+      <div class="flex flex-col gap-3 p-1">
+        <!-- Cursor 设置区域 -->
+        <div class="flex flex-col gap-2">
+          <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">鼠标样式</div>
+          <div class="flex flex-col gap-1.5">
+            <button
+              @click="setCursor('default')"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+              :class="
+                currentCursor === 'default'
+                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                  : 'hover:bg-white/5 text-gray-300'
+              "
+            >
+              <AppIcon icon="mdi:cursor-default" :size="16" />
+              <span>默认</span>
+              <AppIcon
+                v-if="currentCursor === 'default'"
+                icon="mdi:check"
+                :size="14"
+                class="ml-auto text-purple-400"
+              />
+            </button>
+
+            <button
+              @click="setCursor('sleek-line')"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+              :class="
+                currentCursor === 'sleek-line'
+                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                  : 'hover:bg-white/5 text-gray-300'
+              "
+            >
+              <AppIcon icon="mdi:vector-line" :size="16" />
+              <span>柔性线</span>
+              <AppIcon
+                v-if="currentCursor === 'sleek-line'"
+                icon="mdi:check"
+                :size="14"
+                class="ml-auto text-purple-400"
+              />
+            </button>
+
+            <button
+              @click="setCursor('fluid')"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+              :class="
+                currentCursor === 'fluid'
+                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                  : 'hover:bg-white/5 text-gray-300'
+              "
+            >
+              <AppIcon icon="mdi:water" :size="16" />
+              <span>流性纹</span>
+              <AppIcon
+                v-if="currentCursor === 'fluid'"
+                icon="mdi:check"
+                :size="14"
+                class="ml-auto text-purple-400"
+              />
+            </button>
+          </div>
+        </div>
+
+        <!-- 其他设置预留区域 -->
+        <div class="flex flex-col gap-2">
+          <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">更多设置</div>
+          <div class="text-xs text-gray-500 italic">敬请期待</div>
+        </div>
+      </div>
+    </ScrollIsland>
+
+    <!-- Cursor 效果组件 -->
+    <SleekLineCursor v-if="currentCursor === 'sleek-line'" />
+    <FluidCursor v-if="currentCursor === 'fluid'" />
     <!-- 顶部导航栏 -->
     <header class="w-full h-16 shrink-0 bg-clay-bg-base border-clay-bg-elevated/50">
       <div class="h-full mx-auto px-6 flex items-center justify-between">
@@ -69,7 +154,7 @@ async function handleLogout() {
           <div
             class="w-10 h-10 bg-linear-to-br from-yellow-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md"
           >
-            <AppIcon icon="mdi:synagogue" :size="30" color="white" />
+            <AppIcon icon="mdi:heart-pulse" :size="30" color="white" />
           </div>
           <span
             class="text-xl font-bold bg-linear-to-r from-purple-500 to-yellow-600 bg-clip-text text-transparent"
@@ -132,7 +217,7 @@ async function handleLogout() {
     </header>
 
     <!-- 主内容区域 -->
-    <main class="flex-1 overflow-auto">
+    <main ref="mainRef" class="flex-1 overflow-auto">
       <div class="mx-auto h-full">
         <router-view />
       </div>

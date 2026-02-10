@@ -13,7 +13,7 @@ import MainLayout from '@/layouts/MainLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     // 主布局路由（需要导航栏）
     {

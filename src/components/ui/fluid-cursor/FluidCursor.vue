@@ -826,9 +826,9 @@ onMounted(() => {
     const dyeRes = getResolution(config.DYE_RESOLUTION!)
 
     const texType = ext.halfFloatTexType
-    const rgba = ext.formatRGBA
-    const rg = ext.formatRG
-    const r = ext.formatR
+    const rgba = ext.formatRGBA as any
+    const rg = ext.formatRG as any
+    const r = ext.formatR as any
     const filtering = ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST
     gl.disable(gl.BLEND)
 
@@ -1275,7 +1275,7 @@ onMounted(() => {
 
   // -------------------- Event Listeners --------------------
   window.addEventListener('mousedown', (e) => {
-    const pointer = pointers[0]
+    const pointer = pointers[0]!
     const posX = scaleByPixelRatio(e.clientX)
     const posY = scaleByPixelRatio(e.clientY)
     updatePointerDownData(pointer, -1, posX, posY)
@@ -1284,7 +1284,7 @@ onMounted(() => {
 
   // Start rendering on first mouse move
   function handleFirstMouseMove(e: MouseEvent) {
-    const pointer = pointers[0]
+    const pointer = pointers[0]!
     const posX = scaleByPixelRatio(e.clientX)
     const posY = scaleByPixelRatio(e.clientY)
     const color = generateColor()
@@ -1295,7 +1295,7 @@ onMounted(() => {
   document.body.addEventListener('mousemove', handleFirstMouseMove)
 
   window.addEventListener('mousemove', (e) => {
-    const pointer = pointers[0]
+    const pointer = pointers[0]!
     const posX = scaleByPixelRatio(e.clientX)
     const posY = scaleByPixelRatio(e.clientY)
     const color = pointer.color
@@ -1304,8 +1304,8 @@ onMounted(() => {
 
   // Start rendering on first touch
   function handleFirstTouchStart(e: TouchEvent) {
-    const touches = e.targetTouches
-    const pointer = pointers[0]
+    const touches = e.targetTouches as any
+    const pointer = pointers[0]!
     for (let i = 0; i < touches.length; i++) {
       const posX = scaleByPixelRatio(touches[i].clientX)
       const posY = scaleByPixelRatio(touches[i].clientY)
@@ -1319,8 +1319,8 @@ onMounted(() => {
   window.addEventListener(
     'touchstart',
     (e) => {
-      const touches = e.targetTouches
-      const pointer = pointers[0]
+      const touches = e.targetTouches as any
+      const pointer = pointers[0]!
       for (let i = 0; i < touches.length; i++) {
         const posX = scaleByPixelRatio(touches[i].clientX)
         const posY = scaleByPixelRatio(touches[i].clientY)
@@ -1333,8 +1333,8 @@ onMounted(() => {
   window.addEventListener(
     'touchmove',
     (e) => {
-      const touches = e.targetTouches
-      const pointer = pointers[0]
+      const touches = e.targetTouches as any
+      const pointer = pointers[0]!
       for (let i = 0; i < touches.length; i++) {
         const posX = scaleByPixelRatio(touches[i].clientX)
         const posY = scaleByPixelRatio(touches[i].clientY)
@@ -1346,7 +1346,7 @@ onMounted(() => {
 
   window.addEventListener('touchend', (e) => {
     const touches = e.changedTouches
-    const pointer = pointers[0]
+    const pointer = pointers[0]!
     for (let i = 0; i < touches.length; i++) {
       updatePointerUpData(pointer)
     }

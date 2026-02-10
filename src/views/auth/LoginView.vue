@@ -80,7 +80,12 @@ function handleKeydown(e: KeyboardEvent) {
           >
             <AppIcon icon="mdi:heart-pulse" :size="50" class="text-clay-primary" />
           </div>
-          <h1 class="text-3xl font-heading font-bold text-clay-text-primary mb-2">Goalias OS</h1>
+          <SparklesText
+            text="Goalias OS"
+            :colors="{ first: 'pink', second: 'orange' }"
+            :sparkles-count="10"
+            class="text-3xl font-heading font-bold text-clay-text-primary mb-2"
+          />
           <p class="text-clay-text-secondary">--专注于个人成长与记录的贴身"操作系统"~</p>
         </div>
 
@@ -176,7 +181,7 @@ function handleKeydown(e: KeyboardEvent) {
         <!-- 底部信息 -->
         <div class="mt-8 text-center">
           <p class="text-sm text-clay-text-muted">
-            © {{ new Date().getFullYear() }} Goalias OS. 健康生活，从今天开始
+            © {{ new Date().getFullYear() }} Goalias OS. 本站所有内容均为原创，转载请注明出处!
           </p>
         </div>
       </div>

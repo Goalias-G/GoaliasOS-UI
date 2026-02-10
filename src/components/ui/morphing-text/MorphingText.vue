@@ -32,8 +32,8 @@ function setStyles(fraction: number) {
   text1Ref.value.style.filter = `blur(${Math.min(8 / invertedFraction - 8, 100)}px)`
   text1Ref.value.style.opacity = `${invertedFraction ** 0.4 * 100}%`
 
-  text1Ref.value.textContent = props.texts[textIndex.value % props.texts.length]
-  text2Ref.value.textContent = props.texts[(textIndex.value + 1) % props.texts.length]
+  text1Ref.value.textContent = props.texts[textIndex.value % props.texts.length]!
+  text2Ref.value.textContent = props.texts[(textIndex.value + 1) % props.texts.length]!
 }
 
 function doMorph() {

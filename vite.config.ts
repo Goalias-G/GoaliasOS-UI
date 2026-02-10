@@ -5,6 +5,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 /**
  * Vite 配置文件
@@ -23,6 +24,7 @@ export default defineConfig({
     tailwindcss(),
     // 自动导入 API
     AutoImport({
+      resolvers: [ElementPlusResolver()],
       imports: [
         'vue', // ref, reactive, computed, watch 等
         'vue-router', // useRouter, useRoute 等
@@ -35,6 +37,7 @@ export default defineConfig({
     }),
     // 自动注册组件
     Components({
+      resolvers: [ElementPlusResolver()],
       dirs: ['src/components'], // 组件目录
       dts: 'components.d.ts', // 生成类型声明文件
       deep: true, // 递归扫描子目录
