@@ -11,7 +11,7 @@ export const homeRoutes: RouteRecordRaw[] = [
     component: () => import('./index.vue'),
     meta: {
       title: '首页',
-      icon: 'mdi:home',
+      icon: 'hugeicons:home-11',
       module: 'home',
     } as AppRouteMeta,
   },

@@ -39,7 +39,14 @@ function handleTabChange(title: string) {
 
 const navItems = computed(() => {
   return mainRoutes
-    .filter((r) => !(r.meta as AppRouteMeta)?.hidden)
+    .filter((r) => {
+      const meta = r.meta as AppRouteMeta
+      // 过滤隐藏的路由
+      if (meta?.hidden) return false
+      // 过滤需要管理员权限但用户不是管理员的路由
+      if (meta?.requiresAdmin && !userStore.isAdmin) return false
+      return true
+    })
     .map((r) => ({
       name: r.name as string,
       path: r.path === '' ? '/' : `/${r.path}`,
@@ -66,6 +73,8 @@ async function handleLogout() {
   router.push('/auth/login')
   closeUserMenu()
 }
+
+onMounted(userStore.init)
 </script>
 
 <template>
@@ -154,7 +163,7 @@ async function handleLogout() {
           <div
             class="w-10 h-10 bg-linear-to-br from-yellow-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md"
           >
-            <AppIcon icon="mdi:heart-pulse" :size="30" color="white" />
+            <AppIcon icon="hugeicons:agreement-01" :size="30" color="white" />
           </div>
           <span
             class="text-xl font-bold bg-linear-to-r from-purple-500 to-yellow-600 bg-clip-text text-transparent"

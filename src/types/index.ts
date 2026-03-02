@@ -6,11 +6,15 @@
  * - 统一导出所有类型
  */
 
-export * from './user'
-export * from './api'
+export * from './api/user'
+export * from './api/api'
+export * from './api/page'
+export * from './api/chat'
+export * from './api/chat-common'
+export * from './api/knowledge'
 export * from './theme'
 export * from './components'
-export * from './page'
+export * from './ai'
 
 /** 通用的键值对类型 */
 export type AnyObject = Record<string, any>

@@ -18,24 +18,25 @@ export const API_CODE = {
   SERVER_ERROR: 500, // 服务器错误
 } as const
 
-/** 分页请求参数 */
-export interface PaginationParams {
-  page: number // 当前页码
-  pageSize: number // 每页条数
-}
-
-/** 分页响应数据 */
-export interface PaginatedData<T> {
-  list: T[] // 数据列表
-  total: number // 总条数
-  page: number // 当前页码
-  pageSize: number // 每页条数
-  totalPages: number // 总页数
-}
-
 /** API 错误 */
 export interface ApiError {
   code: number
   message: string
   details?: any
+}
+
+/**
+ * 分页查询参数
+ */
+export interface PageQuery {
+  pageNum: number
+  pageSize: number
+}
+
+/**
+ * 分页结果
+ */
+export interface PageResult<T> {
+  list: T[]
+  total: number
 }

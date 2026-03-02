@@ -14,6 +14,8 @@ export interface AppRouteMeta {
   keepAlive?: boolean
   /** 允许访问的角色 */
   roles?: string[]
+  /** 是否需要管理员权限 */
+  requiresAdmin?: boolean
   /** 模块名称（用于分组） */
   module?: string
   /** 索引签名，兼容 Vue Router 类型 */

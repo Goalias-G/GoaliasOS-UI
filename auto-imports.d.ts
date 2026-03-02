@@ -7,11 +7,17 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue').EffectScope
+  const SSEError: typeof import('./src/utils/sse').SSEError
+  const abortExample: typeof import('./src/utils/sse.example').abortExample
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
+  const basicExample: typeof import('./src/utils/sse.example').basicExample
+  const basicUsageExample: typeof import('./src/stores/session.example').basicUsageExample
   const checkPasswordStrength: typeof import('./src/utils/validate').checkPasswordStrength
   const clearStorage: typeof import('./src/utils/storage').clearStorage
+  const clearToasts: typeof import('./src/utils/toast').clearToasts
+  const completeWorkflowExample: typeof import('./src/stores/session.example').completeWorkflowExample
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
   const computedEager: typeof import('@vueuse/core').computedEager
@@ -19,15 +25,18 @@ declare global {
   const computedWithControl: typeof import('@vueuse/core').computedWithControl
   const controlledComputed: typeof import('@vueuse/core').controlledComputed
   const controlledRef: typeof import('@vueuse/core').controlledRef
-  const copyToClipboard: typeof import('./src/utils/index').copyToClipboard
+  const copyToClipboard: typeof import('./src/utils/markdown').copyToClipboard
   const createApp: typeof import('vue').createApp
   const createEventHook: typeof import('@vueuse/core').createEventHook
   const createGlobalState: typeof import('@vueuse/core').createGlobalState
   const createInjectionState: typeof import('@vueuse/core').createInjectionState
+  const createMarkdownRenderer: typeof import('./src/utils/markdown').createMarkdownRenderer
   const createPinia: typeof import('pinia').createPinia
   const createReactiveFn: typeof import('@vueuse/core').createReactiveFn
   const createRef: typeof import('@vueuse/core').createRef
   const createReusableTemplate: typeof import('@vueuse/core').createReusableTemplate
+  const createSSEConnection: typeof import('./src/utils/sse').createSSEConnection
+  const createSessionExample: typeof import('./src/stores/session.example').createSessionExample
   const createSharedComposable: typeof import('@vueuse/core').createSharedComposable
   const createTemplatePromise: typeof import('@vueuse/core').createTemplatePromise
   const createUnrefFn: typeof import('@vueuse/core').createUnrefFn
@@ -39,9 +48,49 @@ declare global {
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
+  const deleteSessionExample: typeof import('./src/stores/session.example').deleteSessionExample
   const eagerComputed: typeof import('@vueuse/core').eagerComputed
   const effectScope: typeof import('vue').effectScope
+  const errorHandlingExample: typeof import('./src/stores/session.example').errorHandlingExample
+  const escapeHtml: typeof import('./src/utils/markdown').escapeHtml
+  const example10_VueComponent: typeof import('./src/utils/markdown.example').example10_VueComponent
+  const example11_CustomRenderer: typeof import('./src/utils/markdown.example').example11_CustomRenderer
+  const example12_StreamingMarkdown: typeof import('./src/utils/markdown.example').example12_StreamingMarkdown
+  const example13_CachedRendering: typeof import('./src/utils/markdown.example').example13_CachedRendering
+  const example14_BatchRendering: typeof import('./src/utils/markdown.example').example14_BatchRendering
+  const example15_ErrorHandling: typeof import('./src/utils/markdown.example').example15_ErrorHandling
+  const example1_BasicRendering: typeof import('./src/utils/markdown.example').example1_BasicRendering
+  const example2_CodeBlock: typeof import('./src/utils/markdown.example').example2_CodeBlock
+  const example3_InlineRendering: typeof import('./src/utils/markdown.example').example3_InlineRendering
+  const example4_CustomOptions: typeof import('./src/utils/markdown.example').example4_CustomOptions
+  const example5_XSSProtection: typeof import('./src/utils/markdown.example').example5_XSSProtection
+  const example6_ExtractText: typeof import('./src/utils/markdown.example').example6_ExtractText
+  const example7_TruncateMarkdown: typeof import('./src/utils/markdown.example').example7_TruncateMarkdown
+  const example8_DetectMarkdown: typeof import('./src/utils/markdown.example').example8_DetectMarkdown
+  const example9_CopyToClipboard: typeof import('./src/utils/markdown.example').example9_CopyToClipboard
+  const exampleClearMessageCache: typeof import('./src/stores/session.message.example').exampleClearMessageCache
+  const exampleCompleteMessageFlow: typeof import('./src/stores/session.message.example').exampleCompleteMessageFlow
+  const exampleCompleteSetup: typeof import('./src/stores/session.model.example').exampleCompleteSetup
+  const exampleDeleteMessage: typeof import('./src/stores/session.message.example').exampleDeleteMessage
+  const exampleGetMessageInfo: typeof import('./src/stores/session.message.example').exampleGetMessageInfo
+  const exampleInComponent: typeof import('./src/stores/session.sse.example').exampleInComponent
+  const exampleLoadAndSelectModel: typeof import('./src/stores/session.model.example').exampleLoadAndSelectModel
+  const exampleLoadKnowledgeList: typeof import('./src/stores/session.model.example').exampleLoadKnowledgeList
+  const exampleLoadMessages: typeof import('./src/stores/session.message.example').exampleLoadMessages
+  const exampleLoadMessagesWithPagination: typeof import('./src/stores/session.message.example').exampleLoadMessagesWithPagination
+  const exampleLoadMoreMessages: typeof import('./src/stores/session.message.example').exampleLoadMoreMessages
+  const exampleMessageCache: typeof import('./src/stores/session.message.example').exampleMessageCache
+  const exampleMessageSorting: typeof import('./src/stores/session.message.example').exampleMessageSorting
+  const exampleSearchKnowledge: typeof import('./src/stores/session.model.example').exampleSearchKnowledge
+  const exampleSelectKnowledge: typeof import('./src/stores/session.model.example').exampleSelectKnowledge
+  const exampleSendMessage: typeof import('./src/stores/session.sse.example').exampleSendMessage
+  const exampleStopGeneration: typeof import('./src/stores/session.sse.example').exampleStopGeneration
+  const exampleSwitchModel: typeof import('./src/stores/session.model.example').exampleSwitchModel
+  const exampleSwitchSessionWithMessages: typeof import('./src/stores/session.message.example').exampleSwitchSessionWithMessages
+  const exampleWatchStreamingMessage: typeof import('./src/stores/session.sse.example').exampleWatchStreamingMessage
+  const exampleWithErrorHandling: typeof import('./src/stores/session.sse.example').exampleWithErrorHandling
   const extendRef: typeof import('@vueuse/core').extendRef
+  const extractPlainText: typeof import('./src/utils/markdown').extractPlainText
   const formatCurrency: typeof import('./src/utils/format').formatCurrency
   const formatDate: typeof import('./src/utils/format').formatDate
   const formatFileSize: typeof import('./src/utils/format').formatFileSize
@@ -52,9 +101,13 @@ declare global {
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
+  const getDefaultRenderer: typeof import('./src/utils/markdown').getDefaultRenderer
+  const getSessionInfoExample: typeof import('./src/stores/session.example').getSessionInfoExample
   const getStorage: typeof import('./src/utils/storage').getStorage
   const h: typeof import('vue').h
+  const hasMarkdownSyntax: typeof import('./src/utils/markdown').hasMarkdownSyntax
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
+  const initCodeCopy: typeof import('./src/utils/markdown').initCodeCopy
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
   const isDefined: typeof import('@vueuse/core').isDefined
@@ -68,6 +121,7 @@ declare global {
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
   const isUrl: typeof import('./src/utils/validate').isUrl
+  const loadSessionsExample: typeof import('./src/stores/session.example').loadSessionsExample
   const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
   const mapGetters: typeof import('pinia').mapGetters
@@ -117,8 +171,15 @@ declare global {
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
   const removeStorage: typeof import('./src/utils/storage').removeStorage
+  const removeToast: typeof import('./src/utils/toast').removeToast
+  const renameSessionExample: typeof import('./src/stores/session.example').renameSessionExample
+  const renderMarkdown: typeof import('./src/utils/markdown').renderMarkdown
+  const renderMarkdownInline: typeof import('./src/utils/markdown').renderMarkdownInline
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveRef: typeof import('@vueuse/core').resolveRef
+  const retryExample: typeof import('./src/utils/sse.example').retryExample
+  const runAllExamples: typeof import('./src/utils/markdown.example').runAllExamples
+  const sanitizeHtml: typeof import('./src/utils/markdown').sanitizeHtml
   const session: typeof import('./src/utils/storage').session
   const setActivePinia: typeof import('pinia').setActivePinia
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
@@ -126,20 +187,30 @@ declare global {
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
+  const showError: typeof import('./src/utils/toast').showError
+  const showInfo: typeof import('./src/utils/toast').showInfo
+  const showSuccess: typeof import('./src/utils/toast').showSuccess
+  const showToast: typeof import('./src/utils/toast').showToast
+  const showWarning: typeof import('./src/utils/toast').showWarning
   const sleep: typeof import('./src/utils/index').sleep
   const storeToRefs: typeof import('pinia').storeToRefs
+  const stripHtml: typeof import('./src/utils/markdown').stripHtml
+  const switchSessionExample: typeof import('./src/stores/session.example').switchSessionExample
   const syncRef: typeof import('@vueuse/core').syncRef
   const syncRefs: typeof import('@vueuse/core').syncRefs
   const templateRef: typeof import('@vueuse/core').templateRef
   const throttle: typeof import('./src/utils/index').throttle
   const throttledRef: typeof import('@vueuse/core').throttledRef
   const throttledWatch: typeof import('@vueuse/core').throttledWatch
+  const timeoutExample: typeof import('./src/utils/sse.example').timeoutExample
   const toRaw: typeof import('vue').toRaw
   const toReactive: typeof import('@vueuse/core').toReactive
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
+  const toasts: typeof import('./src/utils/toast').toasts
   const triggerRef: typeof import('vue').triggerRef
+  const truncateMarkdown: typeof import('./src/utils/markdown').truncateMarkdown
   const tryOnBeforeMount: typeof import('@vueuse/core').tryOnBeforeMount
   const tryOnBeforeUnmount: typeof import('@vueuse/core').tryOnBeforeUnmount
   const tryOnMounted: typeof import('@vueuse/core').tryOnMounted
@@ -235,6 +306,7 @@ declare global {
   const useMediaQuery: typeof import('@vueuse/core').useMediaQuery
   const useMemoize: typeof import('@vueuse/core').useMemoize
   const useMemory: typeof import('@vueuse/core').useMemory
+  const useMessageManagement: typeof import('./src/stores/session.message.example').useMessageManagement
   const useModel: typeof import('vue').useModel
   const useMounted: typeof import('@vueuse/core').useMounted
   const useMouse: typeof import('@vueuse/core').useMouse
@@ -272,8 +344,10 @@ declare global {
   const useScreenSafeArea: typeof import('@vueuse/core').useScreenSafeArea
   const useScriptTag: typeof import('@vueuse/core').useScriptTag
   const useScroll: typeof import('@vueuse/core').useScroll
+  const useScrollLoadMore: typeof import('./src/stores/session.message.example').useScrollLoadMore
   const useScrollLock: typeof import('@vueuse/core').useScrollLock
   const useSessionStorage: typeof import('@vueuse/core').useSessionStorage
+  const useSessionStore: typeof import('./src/stores/session').useSessionStore
   const useShare: typeof import('@vueuse/core').useShare
   const useSlots: typeof import('vue').useSlots
   const useSorted: typeof import('@vueuse/core').useSorted
@@ -320,6 +394,7 @@ declare global {
   const useWindowFocus: typeof import('@vueuse/core').useWindowFocus
   const useWindowScroll: typeof import('@vueuse/core').useWindowScroll
   const useWindowSize: typeof import('@vueuse/core').useWindowSize
+  const vueComponentExample: typeof import('./src/utils/sse.example').vueComponentExample
   const watch: typeof import('vue').watch
   const watchArray: typeof import('@vueuse/core').watchArray
   const watchAtMost: typeof import('@vueuse/core').watchAtMost
@@ -345,6 +420,12 @@ declare global {
   // @ts-ignore
   export type { Theme } from './src/stores/theme'
   import('./src/stores/theme')
+  // @ts-ignore
+  export type { MarkdownOptions, CopyButtonOptions } from './src/utils/markdown'
+  import('./src/utils/markdown')
+  // @ts-ignore
+  export type { SSEError, SSEOptions } from './src/utils/sse'
+  import('./src/utils/sse')
 }
 
 // for vue template auto import
@@ -353,11 +434,13 @@ declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly SSEError: UnwrapRef<typeof import('./src/utils/sse')['SSEError']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly checkPasswordStrength: UnwrapRef<typeof import('./src/utils/validate')['checkPasswordStrength']>
     readonly clearStorage: UnwrapRef<typeof import('./src/utils/storage')['clearStorage']>
+    readonly clearToasts: UnwrapRef<typeof import('./src/utils/toast')['clearToasts']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -365,15 +448,17 @@ declare module 'vue' {
     readonly computedWithControl: UnwrapRef<typeof import('@vueuse/core')['computedWithControl']>
     readonly controlledComputed: UnwrapRef<typeof import('@vueuse/core')['controlledComputed']>
     readonly controlledRef: UnwrapRef<typeof import('@vueuse/core')['controlledRef']>
-    readonly copyToClipboard: UnwrapRef<typeof import('./src/utils/index')['copyToClipboard']>
+    readonly copyToClipboard: UnwrapRef<typeof import('./src/utils/markdown')['copyToClipboard']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly createEventHook: UnwrapRef<typeof import('@vueuse/core')['createEventHook']>
     readonly createGlobalState: UnwrapRef<typeof import('@vueuse/core')['createGlobalState']>
     readonly createInjectionState: UnwrapRef<typeof import('@vueuse/core')['createInjectionState']>
+    readonly createMarkdownRenderer: UnwrapRef<typeof import('./src/utils/markdown')['createMarkdownRenderer']>
     readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
     readonly createReactiveFn: UnwrapRef<typeof import('@vueuse/core')['createReactiveFn']>
     readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
+    readonly createSSEConnection: UnwrapRef<typeof import('./src/utils/sse')['createSSEConnection']>
     readonly createSharedComposable: UnwrapRef<typeof import('@vueuse/core')['createSharedComposable']>
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
     readonly createUnrefFn: UnwrapRef<typeof import('@vueuse/core')['createUnrefFn']>
@@ -387,7 +472,9 @@ declare module 'vue' {
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly escapeHtml: UnwrapRef<typeof import('./src/utils/markdown')['escapeHtml']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly extractPlainText: UnwrapRef<typeof import('./src/utils/markdown')['extractPlainText']>
     readonly formatCurrency: UnwrapRef<typeof import('./src/utils/format')['formatCurrency']>
     readonly formatDate: UnwrapRef<typeof import('./src/utils/format')['formatDate']>
     readonly formatFileSize: UnwrapRef<typeof import('./src/utils/format')['formatFileSize']>
@@ -398,9 +485,12 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
+    readonly getDefaultRenderer: UnwrapRef<typeof import('./src/utils/markdown')['getDefaultRenderer']>
     readonly getStorage: UnwrapRef<typeof import('./src/utils/storage')['getStorage']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
+    readonly hasMarkdownSyntax: UnwrapRef<typeof import('./src/utils/markdown')['hasMarkdownSyntax']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
+    readonly initCodeCopy: UnwrapRef<typeof import('./src/utils/markdown')['initCodeCopy']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
@@ -463,8 +553,12 @@ declare module 'vue' {
     readonly refThrottled: UnwrapRef<typeof import('@vueuse/core')['refThrottled']>
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
     readonly removeStorage: UnwrapRef<typeof import('./src/utils/storage')['removeStorage']>
+    readonly removeToast: UnwrapRef<typeof import('./src/utils/toast')['removeToast']>
+    readonly renderMarkdown: UnwrapRef<typeof import('./src/utils/markdown')['renderMarkdown']>
+    readonly renderMarkdownInline: UnwrapRef<typeof import('./src/utils/markdown')['renderMarkdownInline']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
+    readonly sanitizeHtml: UnwrapRef<typeof import('./src/utils/markdown')['sanitizeHtml']>
     readonly session: UnwrapRef<typeof import('./src/utils/storage')['session']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
@@ -472,8 +566,14 @@ declare module 'vue' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly showError: UnwrapRef<typeof import('./src/utils/toast')['showError']>
+    readonly showInfo: UnwrapRef<typeof import('./src/utils/toast')['showInfo']>
+    readonly showSuccess: UnwrapRef<typeof import('./src/utils/toast')['showSuccess']>
+    readonly showToast: UnwrapRef<typeof import('./src/utils/toast')['showToast']>
+    readonly showWarning: UnwrapRef<typeof import('./src/utils/toast')['showWarning']>
     readonly sleep: UnwrapRef<typeof import('./src/utils/index')['sleep']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
+    readonly stripHtml: UnwrapRef<typeof import('./src/utils/markdown')['stripHtml']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
@@ -485,7 +585,9 @@ declare module 'vue' {
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
+    readonly toasts: UnwrapRef<typeof import('./src/utils/toast')['toasts']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
+    readonly truncateMarkdown: UnwrapRef<typeof import('./src/utils/markdown')['truncateMarkdown']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>
     readonly tryOnBeforeUnmount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeUnmount']>
     readonly tryOnMounted: UnwrapRef<typeof import('@vueuse/core')['tryOnMounted']>
@@ -619,6 +721,7 @@ declare module 'vue' {
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
     readonly useSessionStorage: UnwrapRef<typeof import('@vueuse/core')['useSessionStorage']>
+    readonly useSessionStore: UnwrapRef<typeof import('./src/stores/session')['useSessionStore']>
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useSorted: UnwrapRef<typeof import('@vueuse/core')['useSorted']>

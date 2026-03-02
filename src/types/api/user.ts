@@ -15,6 +15,7 @@ export interface User {
   loginId: string
 
   userBalance: number
+  isAdmin: boolean
 }
 
 /** 登录请求参数 */

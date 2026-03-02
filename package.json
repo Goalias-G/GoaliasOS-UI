@@ -17,10 +17,13 @@
   "dependencies": {
     "@number-flow/vue": "^0.4.9",
     "@tailwindcss/vite": "^4.1.18",
+    "@types/markdown-it": "^14.1.2",
     "@vueuse/core": "^14.2.0",
     "axios": "^1.13.2",
     "element-plus": "^2.13.2",
+    "highlight.js": "^11.11.1",
     "lucide-vue-next": "^0.562.0",
+    "markdown-it": "^14.1.1",
     "motion-v": "^1.10.2",
     "ogl": "^1.0.11",
     "pinia": "^3.0.4",

@@ -10,8 +10,8 @@ export const styleTestRoutes: RouteRecordRaw[] = [
     name: 'ClayDemo',
     component: () => import('./ClayDemoView.vue'),
     meta: {
-      title: 'Clay 工具类演示',
-      icon: 'mdi:palette-advanced',
+      title: 'Clay 风格演示',
+      icon: 'hugeicons:tailwindcss',
       module: 'styleTest',
     } as AppRouteMeta,
   },
@@ -21,7 +21,6 @@ export const styleTestRoutes: RouteRecordRaw[] = [
     component: () => import('./StyleTestView.vue'),
     meta: {
       title: '样式测试',
-      icon: 'mdi:palette-swatch',
       module: 'styleTest',
       hidden: true,
     } as AppRouteMeta,
@@ -32,7 +31,6 @@ export const styleTestRoutes: RouteRecordRaw[] = [
     component: () => import('./TailwindTest.vue'),
     meta: {
       title: 'Tailwind 配置测试',
-      icon: 'mdi:tailwind',
       module: 'styleTest',
       hidden: true, // 在导航中隐藏
     } as AppRouteMeta,

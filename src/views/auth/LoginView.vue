@@ -78,7 +78,7 @@ function handleKeydown(e: KeyboardEvent) {
           <div
             class="inline-flex items-center justify-center w-20 h-20 bg-clay-bg-elevated rounded-clay-lg shadow-clay-card mb-6 animate-float"
           >
-            <AppIcon icon="mdi:heart-pulse" :size="50" class="text-clay-primary" />
+            <AppIcon icon="hugeicons:agreement-01" :size="50" class="text-clay-primary" />
           </div>
           <SparklesText
             text="Goalias OS"

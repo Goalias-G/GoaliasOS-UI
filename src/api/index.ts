@@ -88,25 +88,68 @@ instance.interceptors.response.use(
       code: data.code,
       message: data.message || '请求失败',
     }
+
     // 401 未授权：清除 Token，跳转登录页
     if (error.code === 401) {
       localStorage.removeItem('token')
-      window.location.href = '/auth/login'
+      // 显示错误提示
+      import('@/utils/toast').then(({ showError }) => {
+        showError('登录已过期，请重新登录')
+      })
+      // 延迟跳转，让用户看到提示
+      setTimeout(() => {
+        window.location.href = '/auth/login'
+      }, 1500)
+    } else {
+      // 其他业务错误，显示错误提示（除非配置跳过）
+      const config = response.config as RequestConfig
+      if (!config.skipErrorHandler) {
+        import('@/utils/toast').then(({ showError }) => {
+          showError(error.message)
+        })
+      }
     }
+
     return Promise.reject(error)
   },
   (error) => {
     // HTTP 错误处理
     const status = error.response?.status
+    const config = error.config as RequestConfig
+
+    // 构建错误对象
     const apiError: ApiError = {
       code: status || -1,
       message: ERROR_MESSAGES[status] || error.message || '网络请求失败',
     }
 
+    // 特殊错误处理
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      apiError.message = '请求超时，请检查网络连接'
+    } else if (error.message?.includes('Network Error')) {
+      apiError.message = '网络连接失败，请检查网络设置'
+    }
+
     // 401 未授权：清除 Token，跳转登录页
     if (status === 401) {
       localStorage.removeItem('token')
-      window.location.href = '/auth/login'
+      // 显示错误提示
+      if (!config?.skipErrorHandler) {
+        import('@/utils/toast').then(({ showError }) => {
+          showError('登录已过期，请重新登录')
+        })
+      }
+      // 延迟跳转，让用户看到提示
+      setTimeout(() => {
+        window.location.href = '/auth/login'
+      }, 1500)
+    } else {
+      // 其他 HTTP 错误，显示错误提示（除非配置跳过）
+      if (!config?.skipErrorHandler) {
+        import('@/utils/toast').then(({ showError }) => {
+          showError(apiError.message)
+        })
+      }
     }
 
     // 开发环境打印错误日志
@@ -199,3 +242,15 @@ export function upload<T = any>(
 
 // 导出 Axios 实例（用于特殊场景）
 export { instance as axios }
+
+// ==================== API 模块导出 ====================
+
+export { authApi } from './modules/auth'
+export { healthApi } from './modules/health'
+export { chatApi } from './modules/chat'
+export { chatSessionApi } from './modules/chat-session'
+export { chatMessageApi } from './modules/chat-message'
+export { chatModelApi } from './modules/chat-model'
+export { chatConfigApi } from './modules/chat-config'
+export { promptTemplateApi } from './modules/prompt-template'
+export { knowledgeApi } from './modules/knowledge'

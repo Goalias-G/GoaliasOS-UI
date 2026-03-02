@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', () => {
   /** 用户昵称 */
   const nickName = computed(() => userInfo.value?.nickName || '游客')
 
-  /** 用户余额 */
+  /** 用户次数余额 */
   const userBalance = computed(() => userInfo.value?.userBalance || 0)
 
   /** 用户头像 */
@@ -37,6 +37,8 @@ export const useUserStore = defineStore('user', () => {
 
   /** 用户计划 */
   const userPlan = computed(() => userInfo.value?.userPlan || 'Free')
+
+  const isAdmin = computed(() => userInfo.value?.isAdmin)
 
   // ==================== 方法 ====================
 
@@ -118,9 +120,6 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // 初始化
-  init()
-
   return {
     // 状态
     token,
@@ -128,13 +127,16 @@ export const useUserStore = defineStore('user', () => {
     // 计算属性
     isLoggedIn,
     nickName,
+    userBalance,
     avatar,
     userPlan,
+    isAdmin,
     // 方法
     setToken,
     clearToken,
     login,
     logout,
     fetchUserInfo,
+    init,
   }
 })

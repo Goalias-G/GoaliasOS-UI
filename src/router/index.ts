@@ -46,7 +46,7 @@ const router = createRouter({
 // ==================== 路由守卫 ====================
 
 // 前置守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 获取路由元信息
   const meta = to.meta as AppRouteMeta
 
@@ -77,6 +77,33 @@ router.beforeEach((to, from, next) => {
   if (token && isAuthPage) {
     next({ path: '/' })
     return
+  }
+
+  // 管理员权限检查
+  if (meta?.requiresAdmin && token) {
+    // 动态导入 userStore 避免循环依赖
+    const { useUserStore } = await import('@/stores/user')
+    const userStore = useUserStore()
+
+    // 确保用户信息已加载
+    if (!userStore.userInfo) {
+      try {
+        await userStore.fetchUserInfo()
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+        showError('获取用户信息失败')
+        next({ path: '/', replace: true })
+        return
+      }
+    }
+
+    // 检查是否是管理员
+    if (!userStore.isAdmin) {
+      console.warn('权限不足：需要管理员权限')
+      showWarning('权限不足：需要管理员权限')
+      next({ path: '/', replace: true })
+      return
+    }
   }
 
   // 其他情况正常放行

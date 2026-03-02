@@ -8,29 +8,29 @@
  */
 
 import { get, post } from '@/api'
-import type { HealthMetrics, ScheduleItem } from '@/types'
+import type { ApiResponse, HealthMetrics, ScheduleItem } from '@/types'
 
 export const healthApi = {
   /**
    * 获取今日健康指标
    */
-  getTodayMetrics: () => get<HealthMetrics>('/health/metrics/today'),
+  getTodayMetrics: () => get<ApiResponse<HealthMetrics>>('/health/metrics/today'),
 
   /**
    * 更新健康指标
    * @param data 健康指标数据
    */
   updateMetrics: (data: Partial<HealthMetrics>) =>
-    post<HealthMetrics>('/health/metrics/update', data),
+    post<ApiResponse<HealthMetrics>>('/health/metrics/update', data),
 
   /**
    * 获取今日日程
    */
-  getTodaySchedule: () => get<ScheduleItem[]>('/health/schedule/today'),
+  getTodaySchedule: () => get<ApiResponse<ScheduleItem[]>>('/health/schedule/today'),
 
   /**
    * 完成日程事项
    * @param id 日程 ID
    */
-  completeSchedule: (id: string) => post(`/health/schedule/${id}/complete`),
+  completeSchedule: (id: string) => post<ApiResponse<void>>(`/health/schedule/${id}/complete`),
 }
