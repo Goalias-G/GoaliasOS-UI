@@ -269,7 +269,7 @@ onUnmounted(() => {
             <div class="animate-breathe">
               <AppIcon icon="mdi:dots-horizontal" :size="24" class="text-clay-primary" />
             </div>
-            <span class="text-sm text-clay-text-secondary">OS AI 正在理解...</span>
+            <span class="text-sm text-clay-text-secondary">OS AI 正在思考...</span>
           </div>
         </div>
       </template>

@@ -93,9 +93,7 @@ instance.interceptors.response.use(
     if (error.code === 401) {
       localStorage.removeItem('token')
       // 显示错误提示
-      import('@/utils/toast').then(({ showError }) => {
-        showError('登录已过期，请重新登录')
-      })
+      showError('登录已过期，请重新登录')
       // 延迟跳转，让用户看到提示
       setTimeout(() => {
         window.location.href = '/auth/login'
@@ -104,9 +102,7 @@ instance.interceptors.response.use(
       // 其他业务错误，显示错误提示（除非配置跳过）
       const config = response.config as RequestConfig
       if (!config.skipErrorHandler) {
-        import('@/utils/toast').then(({ showError }) => {
-          showError(error.message)
-        })
+        showError(error.message)
       }
     }
 
@@ -135,9 +131,7 @@ instance.interceptors.response.use(
       localStorage.removeItem('token')
       // 显示错误提示
       if (!config?.skipErrorHandler) {
-        import('@/utils/toast').then(({ showError }) => {
-          showError('登录已过期，请重新登录')
-        })
+        showError('登录已过期，请重新登录')
       }
       // 延迟跳转，让用户看到提示
       setTimeout(() => {
@@ -146,9 +140,7 @@ instance.interceptors.response.use(
     } else {
       // 其他 HTTP 错误，显示错误提示（除非配置跳过）
       if (!config?.skipErrorHandler) {
-        import('@/utils/toast').then(({ showError }) => {
-          showError(apiError.message)
-        })
+        showError(apiError.message)
       }
     }
 

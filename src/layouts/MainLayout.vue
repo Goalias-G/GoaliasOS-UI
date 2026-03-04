@@ -5,12 +5,14 @@
 import { useUserStore } from '@/stores/user'
 import { mainRoutes, type AppRouteMeta } from '@/router/routes'
 import AppIcon from '@/components/common/AppIcon.vue'
+import AudioPlayer from '@/components/common/AudioPlayer.vue'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
 const isUserMenuOpen = ref<boolean>(false)
+const isMobileMenuOpen = ref<boolean>(false)
 const mainRef = ref<HTMLElement | null>(null)
 
 // ==================== Cursor 配置 ====================
@@ -68,6 +70,19 @@ function closeUserMenu() {
   isUserMenuOpen.value = false
 }
 
+function toggleMobileMenu() {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+function closeMobileMenu() {
+  isMobileMenuOpen.value = false
+}
+
+function handleMobileNavClick(path: string) {
+  router.push(path)
+  closeMobileMenu()
+}
+
 async function handleLogout() {
   await userStore.logout()
   router.push('/auth/login')
@@ -80,74 +95,89 @@ onMounted(userStore.init)
 <template>
   <div class="w-screen h-screen flex flex-col overflow-hidden bg-clay-bg-base">
     <ScrollIsland title="OS" :scroll-container="mainRef">
-      <div class="flex flex-col gap-3 p-1">
+      <div class="flex flex-col gap-4 p-1">
         <!-- Cursor 设置区域 -->
         <div class="flex flex-col gap-2">
-          <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">鼠标样式</div>
+          <div class="text-xs font-bold text-white uppercase tracking-wider px-1 drop-shadow-lg">
+            鼠标样式
+          </div>
           <div class="flex flex-col gap-1.5">
             <button
               @click="setCursor('default')"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
               :class="
                 currentCursor === 'default'
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                  : 'hover:bg-white/5 text-gray-300'
+                  ? 'bg-purple-500/30 text-white border border-purple-400/50 shadow-lg'
+                  : 'hover:bg-white/10 text-gray-200 border border-white/10'
               "
             >
               <AppIcon icon="mdi:cursor-default" :size="16" />
               <span>默认</span>
               <AppIcon
                 v-if="currentCursor === 'default'"
-                icon="mdi:check"
+                icon="mdi:check-circle"
                 :size="14"
-                class="ml-auto text-purple-400"
+                class="ml-auto text-purple-300"
               />
             </button>
 
             <button
               @click="setCursor('sleek-line')"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
               :class="
                 currentCursor === 'sleek-line'
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                  : 'hover:bg-white/5 text-gray-300'
+                  ? 'bg-purple-500/30 text-white border border-purple-400/50 shadow-lg'
+                  : 'hover:bg-white/10 text-gray-200 border border-white/10'
               "
             >
               <AppIcon icon="mdi:vector-line" :size="16" />
               <span>柔性线</span>
               <AppIcon
                 v-if="currentCursor === 'sleek-line'"
-                icon="mdi:check"
+                icon="mdi:check-circle"
                 :size="14"
-                class="ml-auto text-purple-400"
+                class="ml-auto text-purple-300"
               />
             </button>
 
             <button
               @click="setCursor('fluid')"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
               :class="
                 currentCursor === 'fluid'
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                  : 'hover:bg-white/5 text-gray-300'
+                  ? 'bg-purple-500/30 text-white border border-purple-400/50 shadow-lg'
+                  : 'hover:bg-white/10 text-gray-200 border border-white/10'
               "
             >
               <AppIcon icon="mdi:water" :size="16" />
               <span>流性纹</span>
               <AppIcon
                 v-if="currentCursor === 'fluid'"
-                icon="mdi:check"
+                icon="mdi:check-circle"
                 :size="14"
-                class="ml-auto text-purple-400"
+                class="ml-auto text-purple-300"
               />
             </button>
           </div>
         </div>
 
+        <!-- 分隔线 -->
+        <div class="h-px bg-linear-to-r from-transparent via-white/20 to-transparent"></div>
+        <div class="text-xs font-bold text-white uppercase tracking-wider px-1 drop-shadow-lg">
+          音频播放器
+        </div>
+        <!-- 音频播放器 -->
+        <AudioPlayer />
+
+        <!-- 分隔线 -->
+        <div class="h-px bg-linear-to-r from-transparent via-white/20 to-transparent"></div>
+
         <!-- 其他设置预留区域 -->
         <div class="flex flex-col gap-2">
-          <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">更多设置</div>
-          <div class="text-xs text-gray-500 italic">敬请期待</div>
+          <div class="text-xs font-bold text-white uppercase tracking-wider px-1 drop-shadow-lg">
+            更多设置
+          </div>
+          <div class="text-xs text-gray-300 italic px-1">敬请期待...</div>
         </div>
       </div>
     </ScrollIsland>
@@ -157,7 +187,7 @@ onMounted(userStore.init)
     <FluidCursor v-if="currentCursor === 'fluid'" />
     <!-- 顶部导航栏 -->
     <header class="w-full h-16 shrink-0 bg-clay-bg-base border-clay-bg-elevated/50">
-      <div class="h-full mx-auto px-6 flex items-center justify-between">
+      <div class="h-full mx-auto px-4 md:px-6 flex items-center justify-between">
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2">
           <div
@@ -166,14 +196,15 @@ onMounted(userStore.init)
             <AppIcon icon="hugeicons:agreement-01" :size="30" color="white" />
           </div>
           <span
-            class="text-xl font-bold bg-linear-to-r from-purple-500 to-yellow-600 bg-clip-text text-transparent"
+            class="text-lg md:text-xl font-bold bg-linear-to-r from-purple-500 to-yellow-600 bg-clip-text text-transparent"
           >
-            GoaliasOS
+            Goalias OS
           </span>
         </router-link>
 
-        <!-- 导航菜单 - MorphingTabs -->
+        <!-- 导航菜单 - MorphingTabs (桌面端) -->
         <MorphingTabs
+          class="hidden lg:block"
           :tabs="tabTitles"
           v-model:activeTab="activeTab"
           :icons="tabIcons"
@@ -182,40 +213,116 @@ onMounted(userStore.init)
           @update:activeTab="handleTabChange"
         />
 
-        <!-- 用户信息 -->
-        <div class="relative">
-          <button
-            @click="toggleUserMenu"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <div
-              class="w-8 h-8 rounded-full bg-linear-to-br from-yellow-400 to-purple-500 flex items-center justify-center text-white text-sm font-medium"
+        <!-- 右侧操作区 -->
+        <div class="flex items-center gap-2">
+          <!-- 用户信息 (桌面端) -->
+          <div class="relative hidden md:block">
+            <button
+              @click="toggleUserMenu"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              {{ userStore.nickName.charAt(0).toUpperCase() }}
+              <div
+                class="w-8 h-8 rounded-full bg-linear-to-br from-yellow-400 to-purple-500 flex items-center justify-center text-white text-sm font-medium"
+              >
+                {{ userStore.nickName.charAt(0).toUpperCase() }}
+              </div>
+              <span class="text-sm font-medium text-gray-700">{{ userStore.nickName }}</span>
+              <AppIcon
+                icon="mdi:chevron-down"
+                :size="16"
+                class="text-gray-500 transition-transform"
+                :class="{ 'rotate-180': isUserMenuOpen }"
+              />
+            </button>
+
+            <div
+              v-if="isUserMenuOpen"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50"
+              @mouseleave="closeUserMenu"
+            >
+              <div class="px-4 py-2 border-b border-gray-100">
+                <p class="text-sm font-medium text-gray-900">{{ userStore.nickName }}</p>
+                <p class="text-xs text-gray-500 truncate">
+                  {{ userStore.userInfo?.loginIp || '未知 IP' }}
+                </p>
+              </div>
+              <button
+                @click="handleLogout"
+                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <AppIcon icon="mdi:logout" :size="16" />
+                <span>退出登录</span>
+              </button>
             </div>
-            <span class="text-sm font-medium text-gray-700">{{ userStore.nickName }}</span>
+          </div>
+
+          <!-- 汉堡菜单按钮 (移动端) -->
+          <button
+            @click="toggleMobileMenu"
+            class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+            :class="{ 'bg-gray-100': isMobileMenuOpen }"
+          >
             <AppIcon
-              icon="mdi:chevron-down"
-              :size="16"
-              class="text-gray-500 transition-transform"
-              :class="{ 'rotate-180': isUserMenuOpen }"
+              :icon="isMobileMenuOpen ? 'mdi:close' : 'mdi:menu'"
+              :size="24"
+              class="text-gray-700"
             />
           </button>
+        </div>
+      </div>
+    </header>
 
-          <div
-            v-if="isUserMenuOpen"
-            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50"
-            @mouseleave="closeUserMenu"
+    <!-- 移动端导航菜单 -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 -translate-y-4"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-4"
+    >
+      <div
+        v-if="isMobileMenuOpen"
+        class="lg:hidden absolute top-16 left-0 right-0 z-40 bg-clay-bg-elevated shadow-clay-card mx-4 rounded-clay-md overflow-hidden"
+      >
+        <!-- 导航项 -->
+        <nav class="py-2">
+          <button
+            v-for="item in navItems"
+            :key="item.name"
+            @click="handleMobileNavClick(item.path)"
+            class="w-full flex items-center gap-3 px-4 py-3 transition-all duration-200"
+            :class="
+              isActive(item.path)
+                ? 'bg-clay-primary text-clay-text-inverse'
+                : 'text-clay-text-primary hover:bg-gray-100'
+            "
           >
-            <div class="px-4 py-2 border-b border-gray-100">
-              <p class="text-sm font-medium text-gray-900">{{ userStore.nickName }}</p>
-              <p class="text-xs text-gray-500 truncate">
-                {{ userStore.userInfo?.loginIp || '未知 IP' }}
-              </p>
+            <AppIcon :icon="item.icon" :size="20" />
+            <span class="text-sm font-medium">{{ item.title }}</span>
+            <AppIcon v-if="isActive(item.path)" icon="mdi:check" :size="16" class="ml-auto" />
+          </button>
+        </nav>
+
+        <!-- 用户信息区 (移动端) -->
+        <div class="border-t border-gray-200 md:hidden">
+          <div class="px-4 py-3 bg-gray-50">
+            <div class="flex items-center gap-3 mb-3">
+              <div
+                class="w-10 h-10 rounded-full bg-linear-to-br from-yellow-400 to-purple-500 flex items-center justify-center text-white font-medium"
+              >
+                {{ userStore.nickName.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-900">{{ userStore.nickName }}</p>
+                <p class="text-xs text-gray-500">
+                  {{ userStore.userInfo?.loginIp || '未知 IP' }}
+                </p>
+              </div>
             </div>
             <button
               @click="handleLogout"
-              class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
             >
               <AppIcon icon="mdi:logout" :size="16" />
               <span>退出登录</span>
@@ -223,7 +330,23 @@ onMounted(userStore.init)
           </div>
         </div>
       </div>
-    </header>
+    </Transition>
+
+    <!-- 移动端遮罩层 -->
+    <Transition
+      enter-active-class="transition-opacity duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isMobileMenuOpen"
+        @click="closeMobileMenu"
+        class="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
+      />
+    </Transition>
 
     <!-- 主内容区域 -->
     <main ref="mainRef" class="flex-1 overflow-auto">

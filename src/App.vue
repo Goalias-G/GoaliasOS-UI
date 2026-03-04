@@ -7,8 +7,6 @@
  * - 样式由全局 style.css 和 Tailwind CSS 处理
  * - 集成全局 Toast 提示组件
  */
-import Toast from '@/components/common/Toast.vue'
-import { toasts, removeToast } from '@/utils/toast'
 </script>
 
 <template>

@@ -144,7 +144,6 @@ export const useSessionStore = defineStore('session', () => {
       console.log('已准备创建新会话,将在首次发送消息时由后端自动创建')
     } catch (error: any) {
       handleError('准备新会话', error)
-      const { showError } = await import('@/utils/toast')
       showError('创建新会话失败')
       throw error
     }
@@ -232,7 +231,6 @@ export const useSessionStore = defineStore('session', () => {
           targetSession.sessionTitle = newTitle
         }
 
-        const { showSuccess } = await import('@/utils/toast')
         showSuccess('会话已重命名')
       } else {
         throw new Error(response.message || '重命名会话失败')
@@ -388,7 +386,6 @@ export const useSessionStore = defineStore('session', () => {
           messageCache.set(currentSessionId.value, messages.value)
         }
 
-        const { showSuccess } = await import('@/utils/toast')
         showSuccess('消息已删除')
       } else {
         throw new Error(response.message || '删除消息失败')
@@ -448,7 +445,6 @@ export const useSessionStore = defineStore('session', () => {
     // 检查是否可以发送
     if (!canSend.value) {
       console.warn('当前无法发送消息：正在发送中或流式传输中')
-      const { showWarning } = await import('@/utils/toast')
       showWarning('请等待当前消息发送完成')
       return
     }
@@ -457,18 +453,15 @@ export const useSessionStore = defineStore('session', () => {
     // 自动选择模式下 currentModelId 为 null 是正常的
     if (currentModelId.value === null && models.value.length === 0) {
       console.warn('没有可用的模型')
-      const { showWarning } = await import('@/utils/toast')
       showWarning('没有可用的模型')
       return
     }
 
     // 获取用户信息
-    const { useUserStore } = await import('@/stores/user')
     const userStore = useUserStore()
 
     if (!userStore.userInfo?.userId) {
       console.warn('用户未登录')
-      const { showWarning } = await import('@/utils/toast')
       showWarning('请先登录')
       return
     }
@@ -617,7 +610,6 @@ export const useSessionStore = defineStore('session', () => {
             } else {
               // 重试次数用尽，清理状态并显示错误
               console.error('重试次数已用尽')
-              const { showError } = await import('@/utils/toast')
 
               if (error.message?.includes('Network Error') || error.message?.includes('timeout')) {
                 showError('网络连接失败,请检查网络设置')
@@ -729,7 +721,6 @@ export const useSessionStore = defineStore('session', () => {
         } else {
           // 重试次数用尽，清理状态并显示错误
           console.error('重试次数已用尽')
-          const { showError } = await import('@/utils/toast')
 
           if (error.message?.includes('Network Error') || error.message?.includes('timeout')) {
             showError('网络连接失败,请检查网络设置')
@@ -780,7 +771,6 @@ export const useSessionStore = defineStore('session', () => {
 
       // 如果有流式消息，保留当前内容并添加到消息列表
       if (streamingMessage.value && currentSessionId.value) {
-        const { useUserStore } = await import('@/stores/user')
         const userStore = useUserStore()
 
         const assistantMessage: ChatMessage = {

@@ -15,6 +15,7 @@ export * from './api/knowledge'
 export * from './theme'
 export * from './components'
 export * from './ai'
+export * from './os-config'
 
 /** 通用的键值对类型 */
 export type AnyObject = Record<string, any>

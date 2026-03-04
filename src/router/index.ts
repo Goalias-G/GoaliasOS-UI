@@ -50,12 +50,6 @@ router.beforeEach(async (to, from, next) => {
   // 获取路由元信息
   const meta = to.meta as AppRouteMeta
 
-  // 设置页面标题
-  const title = meta?.title
-  document.title = title
-    ? `${title} - ${import.meta.env.VITE_APP_TITLE}`
-    : import.meta.env.VITE_APP_TITLE
-
   // 认证检查
   const token = localStorage.getItem('token')
   const isAuthPage = to.path.startsWith('/auth') || to.path === '/login'
@@ -82,7 +76,6 @@ router.beforeEach(async (to, from, next) => {
   // 管理员权限检查
   if (meta?.requiresAdmin && token) {
     // 动态导入 userStore 避免循环依赖
-    const { useUserStore } = await import('@/stores/user')
     const userStore = useUserStore()
 
     // 确保用户信息已加载
@@ -101,11 +94,16 @@ router.beforeEach(async (to, from, next) => {
     if (!userStore.isAdmin) {
       console.warn('权限不足：需要管理员权限')
       showWarning('权限不足：需要管理员权限')
-      next({ path: '/', replace: true })
+      // next({ path: '/', replace: true })
       return
     }
   }
 
+  // 设置页面标题
+  const title = meta?.title
+  document.title = title
+    ? `${title} - ${import.meta.env.VITE_APP_TITLE}`
+    : import.meta.env.VITE_APP_TITLE
   // 其他情况正常放行
   next()
 })

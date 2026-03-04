@@ -21,12 +21,18 @@ import { errorRoutes } from '@/views/error/routes'
 import { homeRoutes } from '@/views/home/routes'
 import { styleTestRoutes } from '@/views/styleTest/routes'
 import { aiRoutes } from '@/views/ai/routes'
+import { osConfigRoutes } from '@/views/os-config/routes'
 
 /**
  * 主布局下的路由
  * 自动聚合各功能模块的路由
  */
-export const mainRoutes: RouteRecordRaw[] = [...homeRoutes, ...styleTestRoutes, ...aiRoutes]
+export const mainRoutes: RouteRecordRaw[] = [
+  ...homeRoutes,
+  ...styleTestRoutes,
+  ...aiRoutes,
+  ...osConfigRoutes,
+]
 
 /**
  * 认证相关路由（独立布局）

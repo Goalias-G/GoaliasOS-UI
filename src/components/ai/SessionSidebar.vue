@@ -88,7 +88,7 @@ function closeSidebar() {
         <!-- 新建会话按钮 -->
         <ShimmerButton
           class="new-session-button flex-1 px-4! py-3! flex items-center justify-center gap-2"
-          :shimmer-color="'var(--clay-accent-green)'"
+          :shimmer-color="'var(--clay-primary)'"
           :background="'var(--clay-accent-pink)'"
           :border-radius="'var(--radius-clay-md)'"
           :shimmerSize="'0.2em'"
