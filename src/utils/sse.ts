@@ -162,10 +162,6 @@ export async function createSSEConnection(
                 content = content.slice(1)
               }
 
-              console.log('SSE 接收到数据:', JSON.stringify(content))
-
-              // 重要：即使内容为空字符串，也要传递给回调
-              // 因为空 data: 可能代表换行符（后端发送 data:\n 时会被分割成 data: 和空行）
               // 连续的空 data: 表示换行
               onMessage(content)
             } catch (parseError) {

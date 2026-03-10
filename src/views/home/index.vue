@@ -197,7 +197,7 @@ const todaySummary = computed(() => {
                 v-if="userStore.avatar"
                 :src="userStore.avatar"
                 alt="avatar"
-                class="w-full h-full object-cover"
+                class="w-full h-full"
               />
               <div v-else class="w-full h-full flex items-center justify-center">
                 <AppIcon icon="mdi:account" :size="32" class="text-clay-text-muted" />

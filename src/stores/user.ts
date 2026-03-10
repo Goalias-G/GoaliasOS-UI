@@ -7,10 +7,8 @@
  * - 提供登录、登出、获取用户信息等方法
  */
 
-import { defineStore } from 'pinia'
 import { authApi } from '@/api/modules/auth'
 import type { User, LoginRequest, LoginResponseData, ApiResponse } from '@/types'
-import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
   // ==================== 状态 ====================
@@ -104,7 +102,7 @@ export const useUserStore = defineStore('user', () => {
       console.error('获取用户信息失败:', error)
       clearToken()
       userInfo.value = null
-      router.push('/auth/login')
+      window.location.href = '/auth/login'
     }
   }
 

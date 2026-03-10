@@ -15,7 +15,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    // 主布局路由（需要导航栏）
+    // 主布局路由
     {
       path: '/',
       component: MainLayout,
@@ -77,18 +77,6 @@ router.beforeEach(async (to, from, next) => {
   if (meta?.requiresAdmin && token) {
     // 动态导入 userStore 避免循环依赖
     const userStore = useUserStore()
-
-    // 确保用户信息已加载
-    if (!userStore.userInfo) {
-      try {
-        await userStore.fetchUserInfo()
-      } catch (error) {
-        console.error('获取用户信息失败:', error)
-        showError('获取用户信息失败')
-        next({ path: '/', replace: true })
-        return
-      }
-    }
 
     // 检查是否是管理员
     if (!userStore.isAdmin) {

@@ -6,7 +6,6 @@
  * - 管理各模块的数据列表、分页、搜索状态
  * - 管理加载状态和错误状态
  */
-import { defineStore } from 'pinia'
 import { chatModelApi } from '@/api/modules/chat-model'
 import { knowledgeApi } from '@/api/modules/knowledge'
 import { promptTemplateApi } from '@/api/modules/prompt-template'
@@ -49,7 +48,7 @@ export const useOsConfigStore = defineStore('osConfig', () => {
         { pageNum: chatModelPage.value, pageSize: chatModelPageSize.value },
       )
 
-      if (response.code === 0 && response.data) {
+      if (response.code === 200 && response.data) {
         chatModels.value = response.data.list || []
         chatModelTotal.value = response.data.total || 0
       }
@@ -83,7 +82,7 @@ export const useOsConfigStore = defineStore('osConfig', () => {
         { pageNum: knowledgePage.value, pageSize: knowledgePageSize.value },
       )
 
-      if (response.code === 0 && response.data) {
+      if (response.code === 200 && response.data) {
         knowledgeList.value = response.data.list || []
         knowledgeTotal.value = response.data.total || 0
       }
@@ -119,7 +118,7 @@ export const useOsConfigStore = defineStore('osConfig', () => {
         { pageNum: promptTemplatePage.value, pageSize: promptTemplatePageSize.value },
       )
 
-      if (response.code === 0 && response.data) {
+      if (response.code === 200 && response.data) {
         promptTemplates.value = response.data.list || []
         promptTemplateTotal.value = response.data.total || 0
       }

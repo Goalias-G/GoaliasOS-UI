@@ -5,6 +5,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
+import circularDependency from 'vite-plugin-circular-dependency'
 
 /**
  * Vite 配置文件
@@ -41,6 +42,10 @@ export default defineConfig({
       deep: true, // 递归扫描子目录
       extensions: ['vue'], // 组件文件扩展名
     }),
+    //build 循环依赖报告
+    circularDependency({
+      outputFilePath: './circular-deps.json',
+    }),
   ],
   resolve: {
     alias: {
@@ -65,91 +70,8 @@ export default defineConfig({
     copyPublicDir: true,
     // 启用 CSS 代码分割
     cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        // 手动分包策略
-        manualChunks: (id) => {
-          // node_modules 中的依赖分包
-          if (id.includes('node_modules')) {
-            // Vue 核心库单独打包
-            if (id.includes('vue') && !id.includes('vue-router') && !id.includes('@vue')) {
-              return 'vue-core'
-            }
-            // Vue Router 单独打包
-            if (id.includes('vue-router')) {
-              return 'vue-router'
-            }
-            // Pinia 状态管理单独打包
-            if (id.includes('pinia')) {
-              return 'pinia'
-            }
-            // VueUse 工具库单独打包
-            if (id.includes('@vueuse')) {
-              return 'vueuse'
-            }
-            // Axios HTTP 库单独打包
-            if (id.includes('axios')) {
-              return 'axios'
-            }
-            // Markdown 相关库单独打包
-            if (id.includes('markdown-it') || id.includes('highlight.js')) {
-              return 'markdown'
-            }
-            // 图标库单独打包
-            if (id.includes('@iconify') || id.includes('lucide-vue-next')) {
-              return 'icons'
-            }
-            // 动画和特效库单独打包
-            if (id.includes('motion-v') || id.includes('ogl') || id.includes('@number-flow')) {
-              return 'animations'
-            }
-            // Tailwind 相关库单独打包
-            if (
-              id.includes('tailwindcss') ||
-              id.includes('tailwind-merge') ||
-              id.includes('class-variance-authority') ||
-              id.includes('clsx')
-            ) {
-              return 'tailwind-utils'
-            }
-            // 其他第三方库统一打包到 vendor
-            return 'vendor'
-          }
-
-          // 业务代码分包
-          // UI 组件库单独打包
-          if (id.includes('src/components/ui')) {
-            return 'ui-components'
-          }
-          // OS 配置模块单独打包
-          if (id.includes('src/views/os-config')) {
-            return 'os-config'
-          }
-          // AI 对话模块单独打包
-          if (id.includes('src/views/ai')) {
-            return 'ai-module'
-          }
-          // 工具函数单独打包
-          if (id.includes('src/utils') || id.includes('src/lib')) {
-            return 'utils'
-          }
-          // Store 单独打包
-          if (id.includes('src/stores')) {
-            return 'stores'
-          }
-          // API 模块单独打包
-          if (id.includes('src/api')) {
-            return 'api'
-          }
-        },
-        // 自定义 chunk 文件名
-        chunkFileNames: 'assets/[name]-[hash].js',
-        // 自定义入口文件名
-        entryFileNames: 'assets/[name]-[hash].js',
-        // 自定义静态资源文件名
-        assetFileNames: 'assets/[name]-[hash].[ext]',
-      },
-    },
+    //chunk 大小警告阈值
+    chunkSizeWarningLimit: 500,
     minify: 'esbuild',
   },
 })

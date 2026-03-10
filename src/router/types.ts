@@ -1,24 +1,7 @@
 /**
  * 路由类型定义
+ *
+ * 注意：为避免循环依赖，类型定义已移至 @/types/router
  */
 
-/** 路由元信息类型 */
-export interface AppRouteMeta {
-  /** 页面标题 */
-  title?: string
-  /** 导航图标（Iconify 图标名） */
-  icon?: string
-  /** 是否在导航中隐藏 */
-  hidden?: boolean
-  /** 是否缓存页面 */
-  keepAlive?: boolean
-  /** 允许访问的角色 */
-  roles?: string[]
-  /** 是否需要管理员权限 */
-  requiresAdmin?: boolean
-  /** 模块名称（用于分组） */
-  module?: string
-  /** 索引签名，兼容 Vue Router 类型 */
-  [key: string]: unknown
-  [key: symbol]: unknown
-}
+export type { AppRouteMeta } from '@/types/router'

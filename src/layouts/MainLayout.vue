@@ -185,21 +185,18 @@ onMounted(userStore.init)
     <!-- Cursor 效果组件 -->
     <SleekLineCursor v-if="currentCursor === 'sleek-line'" />
     <FluidCursor v-if="currentCursor === 'fluid'" />
+
     <!-- 顶部导航栏 -->
     <header class="w-full h-16 shrink-0 bg-clay-bg-base border-clay-bg-elevated/50">
       <div class="h-full mx-auto px-4 md:px-6 flex items-center justify-between">
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2">
           <div
-            class="w-10 h-10 bg-linear-to-br from-yellow-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md"
+            class="w-10 h-10 bg-gradient-clay-primary rounded-lg flex items-center justify-center shadow-clay-button border-2 border-clay-primary-light/50"
           >
             <AppIcon icon="hugeicons:agreement-01" :size="30" color="white" />
           </div>
-          <span
-            class="text-lg md:text-xl font-bold bg-linear-to-r from-purple-500 to-yellow-600 bg-clip-text text-transparent"
-          >
-            Goalias OS
-          </span>
+          <span class="text-lg md:text-xl font-bold text-clay-primary"> Goalias OS </span>
         </router-link>
 
         <!-- 导航菜单 - MorphingTabs (桌面端) -->
@@ -219,36 +216,54 @@ onMounted(userStore.init)
           <div class="relative hidden md:block">
             <button
               @click="toggleUserMenu"
-              class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-clay-sm transition-all duration-200 shadow-clay-card hover:shadow-clay-hover border-2"
+              :class="
+                isUserMenuOpen
+                  ? 'bg-clay-primary/10 border-clay-primary/40'
+                  : 'bg-clay-bg-elevated hover:bg-clay-bg-base border-clay-primary/20'
+              "
             >
               <div
-                class="w-8 h-8 rounded-full bg-linear-to-br from-yellow-400 to-purple-500 flex items-center justify-center text-white text-sm font-medium"
+                v-if="userStore.avatar"
+                class="w-8 h-8 rounded-full overflow-hidden shadow-clay-button border-2 border-clay-primary-light/50"
+              >
+                <img
+                  :src="userStore.avatar"
+                  :alt="userStore.nickName"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div
+                v-else
+                class="w-8 h-8 rounded-full bg-gradient-clay-primary flex items-center justify-center text-white text-sm font-bold shadow-clay-button border-2 border-clay-primary-light/50"
               >
                 {{ userStore.nickName.charAt(0).toUpperCase() }}
               </div>
-              <span class="text-sm font-medium text-gray-700">{{ userStore.nickName }}</span>
+              <span class="text-sm font-medium text-clay-text-primary"
+                >{{ userStore.nickName }}
+              </span>
               <AppIcon
                 icon="mdi:chevron-down"
                 :size="16"
-                class="text-gray-500 transition-transform"
+                class="text-clay-text-secondary transition-transform duration-200"
                 :class="{ 'rotate-180': isUserMenuOpen }"
               />
             </button>
 
             <div
               v-if="isUserMenuOpen"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50"
+              class="absolute right-0 mt-2 w-48 bg-clay-bg-elevated rounded-clay-md shadow-clay-card border-2 border-clay-primary/30 py-1 z-50 overflow-hidden"
               @mouseleave="closeUserMenu"
             >
-              <div class="px-4 py-2 border-b border-gray-100">
-                <p class="text-sm font-medium text-gray-900">{{ userStore.nickName }}</p>
-                <p class="text-xs text-gray-500 truncate">
+              <div class="px-4 py-2 border-b-2 border-clay-primary/20 bg-gradient-clay-user">
+                <p class="text-sm font-medium text-clay-text-primary">{{ userStore.nickName }}</p>
+                <p class="text-xs text-clay-text-muted truncate">
                   {{ userStore.userInfo?.loginIp || '未知 IP' }}
                 </p>
               </div>
               <button
                 @click="handleLogout"
-                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-clay-error hover:bg-clay-error/10 active:bg-clay-error/20 transition-all duration-200"
               >
                 <AppIcon icon="mdi:logout" :size="16" />
                 <span>退出登录</span>
@@ -259,13 +274,17 @@ onMounted(userStore.init)
           <!-- 汉堡菜单按钮 (移动端) -->
           <button
             @click="toggleMobileMenu"
-            class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
-            :class="{ 'bg-gray-100': isMobileMenuOpen }"
+            class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200"
+            :class="
+              isMobileMenuOpen
+                ? 'bg-clay-primary shadow-clay-button'
+                : 'bg-clay-bg-elevated shadow-clay-card hover:shadow-clay-hover'
+            "
           >
             <AppIcon
               :icon="isMobileMenuOpen ? 'mdi:close' : 'mdi:menu'"
               :size="24"
-              class="text-gray-700"
+              :class="isMobileMenuOpen ? 'text-white' : 'text-clay-text-primary'"
             />
           </button>
         </div>
@@ -283,7 +302,7 @@ onMounted(userStore.init)
     >
       <div
         v-if="isMobileMenuOpen"
-        class="lg:hidden absolute top-16 left-0 right-0 z-40 bg-clay-bg-elevated shadow-clay-card mx-4 rounded-clay-md overflow-hidden"
+        class="lg:hidden absolute top-16 left-0 right-0 z-40 bg-clay-bg-elevated shadow-clay-card mx-4 rounded-clay-md overflow-hidden border-2 border-clay-primary/30"
       >
         <!-- 导航项 -->
         <nav class="py-2">
@@ -291,38 +310,63 @@ onMounted(userStore.init)
             v-for="item in navItems"
             :key="item.name"
             @click="handleMobileNavClick(item.path)"
-            class="w-full flex items-center gap-3 px-4 py-3 transition-all duration-200"
+            class="w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 relative"
             :class="
               isActive(item.path)
-                ? 'bg-clay-primary text-clay-text-inverse'
-                : 'text-clay-text-primary hover:bg-gray-100'
+                ? 'bg-gradient-clay-nav text-clay-primary shadow-inner'
+                : 'text-clay-text-primary hover:bg-clay-bg-base active:bg-clay-primary/5'
             "
           >
-            <AppIcon :icon="item.icon" :size="20" />
+            <!-- 选中指示器 -->
+            <div
+              v-if="isActive(item.path)"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-clay-primary rounded-r-full shadow-lg"
+            ></div>
+            <AppIcon
+              :icon="item.icon"
+              :size="20"
+              :class="isActive(item.path) ? 'text-clay-primary' : 'text-clay-text-secondary'"
+            />
             <span class="text-sm font-medium">{{ item.title }}</span>
-            <AppIcon v-if="isActive(item.path)" icon="mdi:check" :size="16" class="ml-auto" />
+            <AppIcon
+              v-if="isActive(item.path)"
+              icon="mdi:check-circle"
+              :size="18"
+              class="ml-auto text-clay-primary"
+            />
           </button>
         </nav>
 
         <!-- 用户信息区 (移动端) -->
-        <div class="border-t border-gray-200 md:hidden">
-          <div class="px-4 py-3 bg-gray-50">
+        <div class="border-t-2 border-clay-primary/20 md:hidden">
+          <div class="px-4 py-3 bg-gradient-clay-user">
             <div class="flex items-center gap-3 mb-3">
               <div
-                class="w-10 h-10 rounded-full bg-linear-to-br from-yellow-400 to-purple-500 flex items-center justify-center text-white font-medium"
+                v-if="userStore.avatar"
+                class="w-10 h-10 rounded-full overflow-hidden shadow-clay-button border-2 border-clay-primary-light/50"
+              >
+                <img
+                  :src="userStore.avatar"
+                  :alt="userStore.nickName"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div
+                v-else
+                class="w-10 h-10 rounded-full bg-gradient-clay-primary flex items-center justify-center text-white font-bold shadow-clay-button border-2 border-clay-primary-light/50"
               >
                 {{ userStore.nickName.charAt(0).toUpperCase() }}
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ userStore.nickName }}</p>
-                <p class="text-xs text-gray-500">
+                <p class="text-sm font-medium text-clay-text-primary">{{ userStore.nickName }}</p>
+                <p class="text-xs text-clay-text-muted">
                   {{ userStore.userInfo?.loginIp || '未知 IP' }}
                 </p>
               </div>
             </div>
             <button
               @click="handleLogout"
-              class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-clay-error/10 text-clay-error rounded-clay-sm text-sm font-medium hover:bg-clay-error/20 active:bg-clay-error/30 transition-all duration-200 shadow-clay-button hover:shadow-clay-hover border-2 border-clay-error/20"
             >
               <AppIcon icon="mdi:logout" :size="16" />
               <span>退出登录</span>

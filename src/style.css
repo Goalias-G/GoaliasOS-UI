@@ -117,9 +117,89 @@
   .bg-clay-accent-yellow {
     background-color: var(--clay-accent-yellow);
   }
+  .bg-clay-error {
+    background-color: var(--clay-error);
+  }
+
+  /* 透明度背景色 */
+  .bg-clay-primary\/5 {
+    background-color: rgb(66 150 237 / 0.05);
+  }
+  .bg-clay-primary\/10 {
+    background-color: rgb(66 150 237 / 0.1);
+  }
+  .bg-clay-primary\/20 {
+    background-color: rgb(66 150 237 / 0.2);
+  }
+  .bg-clay-primary\/30 {
+    background-color: rgb(66 150 237 / 0.3);
+  }
+  .bg-clay-error\/10 {
+    background-color: rgb(239 68 68 / 0.1);
+  }
+  .bg-clay-error\/20 {
+    background-color: rgb(239 68 68 / 0.2);
+  }
+  .bg-clay-error\/30 {
+    background-color: rgb(239 68 68 / 0.3);
+  }
+  .bg-clay-accent-yellow\/5 {
+    background-color: rgb(255 223 149 / 0.05);
+  }
+  .bg-clay-accent-yellow\/10 {
+    background-color: rgb(255 223 149 / 0.1);
+  }
+
+  /* 边框颜色 */
+  .border-clay-primary {
+    border-color: var(--clay-primary);
+  }
+  .border-clay-primary-light {
+    border-color: var(--clay-primary-light);
+  }
+  .border-clay-error {
+    border-color: var(--clay-error);
+  }
+
+  /* 透明度边框色 */
+  .border-clay-primary\/10 {
+    border-color: rgb(66 150 237 / 0.1);
+  }
+  .border-clay-primary\/20 {
+    border-color: rgb(66 150 237 / 0.2);
+  }
+  .border-clay-primary\/30 {
+    border-color: rgb(66 150 237 / 0.3);
+  }
+  .border-clay-primary\/40 {
+    border-color: rgb(66 150 237 / 0.4);
+  }
+  .border-clay-primary-light\/50 {
+    border-color: rgb(106 171 241 / 0.5);
+  }
+  .border-clay-error\/20 {
+    border-color: rgb(239 68 68 / 0.2);
+  }
+
+  /* 渐变背景 */
+  .bg-gradient-clay-primary {
+    background: linear-gradient(to bottom right, var(--clay-primary), var(--clay-primary-dark));
+  }
+  .bg-gradient-clay-accent {
+    background: linear-gradient(to bottom right, var(--clay-accent-yellow), var(--clay-primary));
+  }
+  .bg-gradient-clay-nav {
+    background: linear-gradient(to right, rgb(66 150 237 / 0.1), rgb(255 223 149 / 0.1));
+  }
+  .bg-gradient-clay-user {
+    background: linear-gradient(to bottom right, var(--clay-bg-base), rgb(255 223 149 / 0.05));
+  }
 
   .text-clay-primary {
     color: var(--clay-primary);
+  }
+  .text-clay-primary-light {
+    color: var(--clay-primary-light);
   }
   .text-clay-text-primary {
     color: var(--clay-text-primary);
@@ -132,6 +212,9 @@
   }
   .text-clay-text-inverse {
     color: var(--clay-text-inverse);
+  }
+  .text-clay-error {
+    color: var(--clay-error);
   }
 
   /* 阴影工具类 */

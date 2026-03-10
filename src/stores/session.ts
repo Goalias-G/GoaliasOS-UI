@@ -589,7 +589,6 @@ export const useSessionStore = defineStore('session', () => {
               // 如果接收到空字符串，将其转换为换行符
               const content = data === '' ? '\n' : data
               streamingMessage.value.content += content
-              console.log('当前流式消息长度:', streamingMessage.value.content.length)
             }
           },
           onError: async (error) => {
@@ -808,7 +807,9 @@ export const useSessionStore = defineStore('session', () => {
   async function loadModels() {
     try {
       const { chatModelApi } = await import('@/api/modules/chat-model')
-      const response = await chatModelApi.modelList()
+      const response = await chatModelApi.modelList({
+        category: 'chat',
+      })
 
       if (response.code === 200) {
         models.value = response.data

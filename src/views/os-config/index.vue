@@ -6,7 +6,6 @@
  * - 使用 OSConfigLayout 组件提供左右分栏布局
  * - 通过 router-view 渲染对应模块内容
  */
-import OSConfigLayout from '@/components/os-config/OSConfigLayout.vue'
 </script>
 
 <template>

@@ -234,15 +234,3 @@ export function upload<T = any>(
 
 // 导出 Axios 实例（用于特殊场景）
 export { instance as axios }
-
-// ==================== API 模块导出 ====================
-
-export { authApi } from './modules/auth'
-export { healthApi } from './modules/health'
-export { chatApi } from './modules/chat'
-export { chatSessionApi } from './modules/chat-session'
-export { chatMessageApi } from './modules/chat-message'
-export { chatModelApi } from './modules/chat-model'
-export { chatConfigApi } from './modules/chat-config'
-export { promptTemplateApi } from './modules/prompt-template'
-export { knowledgeApi } from './modules/knowledge'

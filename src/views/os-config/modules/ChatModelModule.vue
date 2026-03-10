@@ -41,7 +41,7 @@ async function handleBatchDelete() {
   try {
     const ids = selectedKeys.value.map((key) => Number(key))
     const response = await chatModelApi.remove(ids)
-    if (response.code === 0) {
+    if (response.code === 200) {
       showSuccess(`成功删除 ${count} 个模型`)
       selectedKeys.value = []
       loadData()
@@ -76,6 +76,11 @@ const columns: TableColumn[] = [
     label: '价格',
     width: '140px',
     formatter: (value: number) => (value ? `¥ ${value}/百万` : '-'),
+  },
+  {
+    key: 'priority',
+    label: '优先级',
+    width: '80px',
   },
   {
     key: 'remark',
@@ -120,14 +125,19 @@ const formFields: FormField[] = [
     options: [
       { label: '对话模型', value: 'chat' },
       { label: '向量模型', value: 'vector' },
+      { label: '图片模型', value: 'image' },
     ],
   },
   {
     key: 'providerName',
     label: '提供商',
-    type: 'text',
+    type: 'select',
     required: true,
-    placeholder: '请输入提供商名称',
+    options: [
+      { label: '阿里百炼', value: 'alibailian' },
+      { label: '智谱AI', value: 'glm' },
+      { label: '图片识别', value: 'image' },
+    ],
   },
   {
     key: 'modelDescribe',
@@ -148,10 +158,25 @@ const formFields: FormField[] = [
     },
   },
   {
+    key: 'apiHost',
+    label: 'API 地址',
+    type: 'text',
+    required: true,
+    placeholder: '请输入 API 地址',
+  },
+  {
     key: 'apiKey',
     label: 'API 密钥',
     type: 'text',
+    required: true,
     placeholder: '请输入 API 密钥',
+  },
+  {
+    key: 'priority',
+    label: '优先级',
+    type: 'number',
+    required: true,
+    placeholder: '请输入优先级（数字越大越靠前）',
   },
   {
     key: 'enableSearch',
@@ -251,7 +276,7 @@ async function handleDelete(row: ChatModel) {
   try {
     deletingIds.value.add(row.id)
     const response = await chatModelApi.remove([row.id])
-    if (response.code === 0) {
+    if (response.code === 200) {
       showSuccess('删除成功')
       loadData()
     } else {
@@ -278,7 +303,7 @@ async function handleSubmit(data: any) {
     const response =
       modalMode.value === 'add' ? await chatModelApi.add(data) : await chatModelApi.edit(data)
 
-    if (response.code === 0) {
+    if (response.code === 200) {
       showSuccess(`${modalMode.value === 'add' ? '新增' : '编辑'}成功`)
       modalVisible.value = false
       loadData()
