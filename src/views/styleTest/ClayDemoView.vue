@@ -48,7 +48,7 @@ function selectPlan(planId: string) {
 </script>
 
 <template>
-  <div class="min-h-screen p-8">
+  <div class="min-h-full p-8">
     <div class="max-w-7xl mx-auto">
       <!-- 页面标题 -->
       <div class="mb-12 text-center">

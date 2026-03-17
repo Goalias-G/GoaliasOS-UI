@@ -51,12 +51,13 @@ export const lifeRecordApi = {
    * @param id 记录 ID
    * @param favoriteFlag 打分评级（1-5）
    */
-  updateRaing: (id: number, ratingNum: number) =>
-    put<ApiResponse<void>>('/life/record/rating', { id, ratingNum }),
+  updateRaing: (id: number, rating: number) =>
+    put<ApiResponse<void>>('/life/record/rating', { id, rating }),
 
   /**
    * 删除生活记录
-   * @param ids 记录 ID 数组
+   * @param params 删除参数（记录 ID 数组和文件 ID 数组）
    */
-  remove: (ids: number[]) => del<ApiResponse<void>>(`/life/record/${ids.join(',')}`),
+  remove: (params: { ids: number[]; fileIds?: number[] }) =>
+    del<ApiResponse<void>>('/life/record', { data: params }),
 }

@@ -93,7 +93,7 @@ onMounted(userStore.init)
 </script>
 
 <template>
-  <div class="w-screen h-screen flex flex-col overflow-hidden bg-clay-bg-base">
+  <div class="w-screen h-full flex flex-col overflow-hidden bg-clay-bg-base">
     <ScrollIsland title="OS" :scroll-container="mainRef">
       <div class="flex flex-col gap-4 p-1">
         <!-- Cursor 设置区域 -->

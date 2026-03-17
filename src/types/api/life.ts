@@ -5,7 +5,8 @@ export interface LifeCategory {
   id?: number
   userId?: number
   name: string
-  order?: number
+  sortOrder?: number
+  recordCount?: number
   createTime?: string
   updateTime?: string
 }
@@ -14,7 +15,7 @@ export interface LifeCategory {
 export interface LifeCategoryParams {
   id?: number
   name?: string
-  order?: number
+  sortOrder?: number
 }
 
 /**

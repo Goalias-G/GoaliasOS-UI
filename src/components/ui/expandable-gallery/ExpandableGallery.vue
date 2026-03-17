@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import type { HTMLAttributes } from "vue";
-import { cn } from "@inspira-ui/plugins";
+import type { HTMLAttributes } from 'vue'
+import { cn } from '@/lib/utils.ts'
 
 interface Props {
-  images: string[];
-  class?: HTMLAttributes["class"];
+  images: string[]
+  class?: HTMLAttributes['class']
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 </script>
 
 <template>
@@ -17,11 +17,7 @@ const props = defineProps<Props>();
       :key="image"
       class="relative flex h-full flex-1 cursor-pointer overflow-hidden rounded-xl transition-all duration-500 ease-in-out hover:flex-3"
     >
-      <img
-        class="relative h-full object-cover"
-        :src="image"
-        :alt="image"
-      />
+      <img class="relative h-full object-cover" :src="image" :alt="image" />
     </div>
   </div>
 </template>

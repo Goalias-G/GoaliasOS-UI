@@ -66,101 +66,122 @@ function handleKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="relative w-screen h-screen overflow-hidden bg-clay-bg-base">
+  <div class="relative w-screen min-h-screen overflow-y-auto bg-clay-bg-base">
     <!-- 背景动画 -->
     <FallingStarsBg :color="themeStore.getThemeColor()" />
 
     <!-- 登录卡片 -->
-    <div class="relative z-10 w-full h-full flex items-center justify-center p-4">
+    <div
+      class="relative z-10 w-full min-h-screen flex items-center justify-center p-4 py-6 sm:py-8"
+    >
       <div class="w-full max-w-md">
         <!-- Logo 和标题 -->
-        <div class="text-center mb-8">
+        <div class="text-center mb-4 sm:mb-6">
           <div
-            class="inline-flex items-center justify-center w-20 h-20 bg-clay-bg-elevated rounded-clay-lg shadow-clay-card mb-6 animate-float"
+            class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-clay-bg-elevated rounded-clay-lg shadow-clay-card mb-3 sm:mb-4 animate-float"
           >
-            <AppIcon icon="hugeicons:agreement-01" :size="50" class="text-clay-primary" />
+            <AppIcon
+              icon="hugeicons:agreement-01"
+              :size="40"
+              class="text-clay-primary sm:!w-[50px] sm:!h-[50px]"
+            />
           </div>
           <SparklesText
             text="Goalias OS"
             :colors="{ first: 'pink', second: 'orange' }"
             :sparkles-count="10"
-            class="text-3xl font-heading font-bold text-clay-text-primary mb-2"
+            class="text-3xl font-heading font-bold text-clay-text-primary mb-1 sm:mb-2"
           />
-          <p class="text-clay-text-secondary">--专注于个人成长与记录的贴身"操作系统"~</p>
+          <p class="text-sm sm:text-base text-clay-text-secondary px-2">
+            --专注于个人成长与记录的贴身"操作系统"~
+          </p>
         </div>
 
         <!-- 登录表单卡片 -->
-        <div class="clay-card p-10 animate-breathe" @keydown="handleKeydown">
-          <h2 class="text-xl font-heading font-bold text-clay-text-primary mb-6">登录账户</h2>
+        <div class="clay-card p-6 sm:p-8 animate-breathe" @keydown="handleKeydown">
+          <h2 class="text-lg sm:text-xl font-heading font-bold text-clay-text-primary mb-4 sm:mb-5">
+            登录账户
+          </h2>
 
           <!-- 错误提示 -->
           <div
             v-if="errorMessage"
-            class="mb-6 p-4 bg-red-50 border-2 border-red-100 rounded-clay-sm flex items-start gap-3"
+            class="mb-4 p-3 bg-red-50 border-2 border-red-100 rounded-clay-sm flex items-start gap-2"
           >
-            <AppIcon icon="mdi:alert-circle" :size="20" class="text-red-500 shrink-0 mt-0.5" />
-            <span class="text-sm text-red-600">{{ errorMessage }}</span>
+            <AppIcon icon="mdi:alert-circle" :size="18" class="text-red-500 shrink-0 mt-0.5" />
+            <span class="text-xs sm:text-sm text-red-600">{{ errorMessage }}</span>
           </div>
 
           <form @submit.prevent="handleLogin">
             <!-- 用户名输入 -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-clay-text-primary mb-2"> 用户名 </label>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-clay-text-primary mb-1.5">
+                用户名
+              </label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <AppIcon icon="mdi:account-outline" :size="20" class="text-clay-text-muted" />
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none"
+                >
+                  <AppIcon icon="mdi:account-outline" :size="18" class="text-clay-text-muted" />
                 </div>
                 <input
                   v-model="username"
                   type="text"
-                  placeholder="请输入用户名"
+                  placeholder="请输入用户名 (游客账号: user)"
                   autocomplete="username"
-                  class="pl-12 clay-input w-full"
+                  class="pl-10 sm:pl-12 clay-input w-full text-sm sm:text-base"
                 />
               </div>
             </div>
 
             <!-- 密码输入 -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-clay-text-primary mb-2"> 密码 </label>
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-clay-text-primary mb-1.5"> 密码 </label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <AppIcon icon="mdi:lock-outline" :size="20" class="text-clay-text-muted" />
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none"
+                >
+                  <AppIcon icon="mdi:lock-outline" :size="18" class="text-clay-text-muted" />
                 </div>
                 <input
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
-                  placeholder="请输入密码"
+                  placeholder="请输入密码 (游客密码: user123456)"
                   autocomplete="current-password"
-                  class="clay-input w-full pl-12 pr-12"
+                  class="clay-input w-full pl-10 sm:pl-12 pr-10 sm:pr-12 text-sm sm:text-base"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute inset-y-0 right-0 pr-4 flex items-center text-clay-text-muted hover:text-clay-text-secondary transition-colors"
+                  class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-clay-text-muted hover:text-clay-text-secondary transition-colors"
                 >
                   <AppIcon
                     :icon="showPassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'"
-                    :size="20"
+                    :size="18"
                   />
                 </button>
               </div>
             </div>
 
             <!-- 记住我 -->
-            <div class="flex items-center mb-6">
+            <div class="flex items-center mb-5">
               <button
                 type="button"
                 @click="rememberMe = !rememberMe"
-                class="flex items-center gap-2 text-sm text-clay-text-secondary hover:text-clay-text-primary transition-colors"
+                class="flex items-center gap-2 text-xs sm:text-sm text-clay-text-secondary hover:text-clay-text-primary transition-colors"
               >
                 <div
-                  class="w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
+                  class="w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors"
                   :class="
                     rememberMe ? 'bg-clay-primary border-clay-primary' : 'border-clay-text-muted'
                   "
                 >
-                  <AppIcon v-if="rememberMe" icon="mdi:check" :size="14" class="text-white" />
+                  <AppIcon
+                    v-if="rememberMe"
+                    icon="mdi:check"
+                    :size="12"
+                    class="text-white sm:!w-[14px] sm:!h-[14px]"
+                  />
                 </div>
                 <span>记住我</span>
               </button>
@@ -170,19 +191,31 @@ function handleKeydown(e: KeyboardEvent) {
             <button
               type="submit"
               :disabled="!isFormValid || isLoading"
-              class="clay-btn w-full h-12 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-8"
+              class="clay-btn w-full h-11 sm:h-12 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
             >
-              <AppIcon v-if="isLoading" icon="mdi:loading" :size="20" class="animate-spin" />
-              <span class="font-medium">{{ isLoading ? '登录中...' : '登录' }}</span>
+              <AppIcon v-if="isLoading" icon="mdi:loading" :size="18" class="animate-spin" />
+              <span class="font-medium text-sm sm:text-base">{{
+                isLoading ? '登录中...' : '登录'
+              }}</span>
             </button>
           </form>
         </div>
 
         <!-- 底部信息 -->
-        <div class="mt-8 text-center">
-          <p class="text-sm text-clay-text-muted">
-            © {{ new Date().getFullYear() }} Goalias OS. 本站所有内容均为原创，转载请注明出处!
+        <div class="mt-4 sm:mt-6 text-center space-y-1.5">
+          <p class="text-xs sm:text-sm text-clay-text-muted">
+            Copyright © {{ new Date().getFullYear() }} Goalias OS. All rights reserved. {Built with
+            💙}
           </p>
+          <div class="text-xs sm:text-sm text-clay-text-muted">
+            ICP证:
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              class="text-clay-primary hover:text-clay-primary-dark transition-colors underline"
+              >鲁ICP备2025150744号-1</a
+            >
+          </div>
         </div>
       </div>
     </div>

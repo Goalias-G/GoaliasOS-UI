@@ -184,7 +184,7 @@ const todaySummary = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-clay-bg-base p-6">
+  <div class="min-h-full bg-clay-bg-base p-6">
     <div class="mx-auto space-y-6">
       <!-- 欢迎区域 -->
       <div class="clay-card-hoverable p-6">

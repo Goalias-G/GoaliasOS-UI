@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue";
-import { cn } from "@inspira-ui/plugins";
-import { computed, onMounted, ref } from "vue";
+import type { HTMLAttributes } from 'vue'
+import { cn } from '@/lib/utils'
+import { computed, onMounted, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
-    words: string;
-    filter?: boolean;
-    duration?: number;
-    delay?: number;
-    class?: HTMLAttributes["class"];
+    words: string
+    filter?: boolean
+    duration?: number
+    delay?: number
+    class?: HTMLAttributes['class']
   }>(),
   { duration: 0.7, delay: 0, filter: true },
-);
+)
 
-const scope = ref(null);
-const wordsArray = computed(() => props.words.split(" "));
+const scope = ref(null)
+const wordsArray = computed(() => props.words.split(' '))
 
 const spanStyle = computed(() => ({
   opacity: 0,
-  filter: props.filter ? "blur(10px)" : "none",
+  filter: props.filter ? 'blur(10px)' : 'none',
   transition: `opacity ${props.duration}s, filter ${props.duration}s`,
-}));
+}))
 
 onMounted(() => {
   if (scope.value) {
-    const spans = (scope.value as HTMLElement).querySelectorAll("span");
+    const spans = (scope.value as HTMLElement).querySelectorAll('span')
 
     setTimeout(() => {
       spans.forEach((span: HTMLElement, index: number) => {
         setTimeout(() => {
-          span.style.opacity = "1";
-          span.style.filter = props.filter ? "blur(0px)" : "none";
-        }, index * 200);
-      });
-    }, props.delay);
+          span.style.opacity = '1'
+          span.style.filter = props.filter ? 'blur(0px)' : 'none'
+        }, index * 200)
+      })
+    }, props.delay)
   }
-});
+})
 </script>
 
 <template>

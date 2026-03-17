@@ -4,8 +4,9 @@
  *
  * 功能说明：
  * - 支持拖拽上传和点击选择文件
- * - 文件类型验证（.txt, .pdf, .doc, .docx, .md）
- * - 文件大小验证（最大 1.5GB）
+ * - 支持单文件和多文件上传
+ * - 文件类型验证
+ * - 文件大小验证
  * - 显示文件名和大小
  * - 显示上传进度条
  * - 使用 Claymorphism 设计风格
@@ -16,36 +17,43 @@ interface Props {
   uploading?: boolean
   /** 上传进度 (0-100) */
   progress?: number
-  /** 最大文件大小（字节），默认 10MB */
+  /** 最大文件大小（MB），默认 10MB */
   maxSize?: number
   /** 允许的文件类型 */
   acceptTypes?: string[]
+  /** 是否支持多文件上传 */
+  multiple?: boolean
+  /** accept 属性（如 "image/*"） */
+  accept?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   uploading: false,
   progress: 0,
-  maxSize: 10 * 1024 * 1024, // 10MB
+  maxSize: 10,
   acceptTypes: () => ['.txt', '.pdf', '.doc', '.docx', '.md'],
+  multiple: false,
+  accept: '',
 })
 
 const emit = defineEmits<{
   upload: [file: File]
+  remove: [fileId: number]
 }>()
 
 // ==================== 状态 ====================
 const isDragging = ref(false)
-const selectedFile = ref<File | null>(null)
+const selectedFiles = ref<File[]>([])
 const errorMessage = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 // ==================== 计算属性 ====================
-const acceptString = computed(() => props.acceptTypes.join(','))
-
-const formattedFileSize = computed(() => {
-  if (!selectedFile.value) return ''
-  return formatFileSize(selectedFile.value.size)
+const acceptString = computed(() => {
+  if (props.accept) return props.accept
+  return props.acceptTypes.join(',')
 })
+
+const maxSizeBytes = computed(() => props.maxSize * 1024 * 1024)
 
 // ==================== 方法 ====================
 /**
@@ -66,9 +74,14 @@ function validateFile(file: File): boolean {
   errorMessage.value = ''
 
   // 验证文件大小
-  if (file.size > props.maxSize) {
-    errorMessage.value = `文件大小不能超过 ${formatFileSize(props.maxSize)}`
+  if (file.size > maxSizeBytes.value) {
+    errorMessage.value = `文件大小不能超过 ${props.maxSize}MB`
     return false
+  }
+
+  // 如果使用 accept 属性（如 image/*），跳过扩展名验证
+  if (props.accept) {
+    return true
   }
 
   // 验证文件类型
@@ -87,14 +100,29 @@ function validateFile(file: File): boolean {
  */
 function handleFileSelect(event: Event) {
   const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (file && validateFile(file)) {
-    selectedFile.value = file
-    emit('upload', file)
+  const files = target.files
+  if (files && files.length > 0) {
+    handleFiles(Array.from(files))
   }
   // 清空 input 值，允许重复选择同一文件
   if (target) {
     target.value = ''
+  }
+}
+
+/**
+ * 处理文件列表
+ */
+function handleFiles(files: File[]) {
+  for (const file of files) {
+    if (validateFile(file)) {
+      if (props.multiple) {
+        selectedFiles.value.push(file)
+      } else {
+        selectedFiles.value = [file]
+      }
+      emit('upload', file)
+    }
   }
 }
 
@@ -128,10 +156,9 @@ function handleDrop(event: DragEvent) {
   event.preventDefault()
   isDragging.value = false
 
-  const file = event.dataTransfer?.files[0]
-  if (file && validateFile(file)) {
-    selectedFile.value = file
-    emit('upload', file)
+  const files = event.dataTransfer?.files
+  if (files && files.length > 0) {
+    handleFiles(Array.from(files))
   }
 }
 
@@ -143,10 +170,18 @@ function triggerFileSelect() {
 }
 
 /**
- * 清除选中的文件
+ * 移除文件
  */
-function clearFile() {
-  selectedFile.value = null
+function removeFile(index: number) {
+  selectedFiles.value.splice(index, 1)
+  errorMessage.value = ''
+}
+
+/**
+ * 清除所有文件
+ */
+function clearAllFiles() {
+  selectedFiles.value = []
   errorMessage.value = ''
 }
 
@@ -156,7 +191,7 @@ watch(
   (newVal, oldVal) => {
     // 从上传中变为非上传中，且进度为 100，说明上传完成
     if (oldVal && !newVal && props.progress === 100) {
-      clearFile()
+      clearAllFiles()
     }
   },
 )
@@ -200,8 +235,12 @@ watch(
           <p class="text-lg font-medium text-clay-text-primary">
             {{ isDragging ? '释放以上传文件' : '拖拽文件到此处或点击选择' }}
           </p>
-          <p class="text-sm text-clay-text-muted mt-2">支持格式: {{ acceptTypes.join(', ') }}</p>
-          <p class="text-sm text-clay-text-muted">最大文件大小: {{ formatFileSize(maxSize) }}</p>
+          <p v-if="accept" class="text-sm text-clay-text-muted mt-2">支持格式: {{ accept }}</p>
+          <p v-else class="text-sm text-clay-text-muted mt-2">
+            支持格式: {{ acceptTypes.join(', ') }}
+          </p>
+          <p class="text-sm text-clay-text-muted">最大文件大小: {{ maxSize }}MB</p>
+          <p v-if="multiple" class="text-sm text-clay-text-muted">支持多文件上传</p>
         </div>
 
         <!-- 错误提示 -->
@@ -215,36 +254,43 @@ watch(
         ref="fileInputRef"
         type="file"
         :accept="acceptString"
+        :multiple="multiple"
         class="hidden"
         @change="handleFileSelect"
       />
     </div>
 
-    <!-- 已选择的文件信息 -->
-    <div v-if="selectedFile" class="file-info bg-clay-bg-elevated rounded-clay-md shadow-clay-card">
-      <div class="file-details">
-        <AppIcon icon="mdi:file-document" :size="24" class="text-clay-primary" />
-        <div class="file-meta">
-          <p class="text-sm font-medium text-clay-text-primary">{{ selectedFile.name }}</p>
-          <p class="text-xs text-clay-text-muted">{{ formattedFileSize }}</p>
+    <!-- 已选择的文件列表 -->
+    <div v-if="selectedFiles.length > 0" class="files-list">
+      <div
+        v-for="(file, index) in selectedFiles"
+        :key="index"
+        class="file-info bg-clay-bg-elevated rounded-clay-md shadow-clay-card"
+      >
+        <div class="file-details">
+          <AppIcon icon="mdi:file-document" :size="24" class="text-clay-primary" />
+          <div class="file-meta">
+            <p class="text-sm font-medium text-clay-text-primary">{{ file.name }}</p>
+            <p class="text-xs text-clay-text-muted">{{ formatFileSize(file.size) }}</p>
+          </div>
+          <button
+            v-if="!uploading"
+            type="button"
+            class="clear-button"
+            @click.stop="removeFile(index)"
+            aria-label="移除文件"
+          >
+            <AppIcon icon="mdi:close" :size="20" class="text-clay-text-muted hover:text-red-500" />
+          </button>
         </div>
-        <button
-          v-if="!uploading"
-          type="button"
-          class="clear-button"
-          @click.stop="clearFile"
-          aria-label="清除文件"
-        >
-          <AppIcon icon="mdi:close" :size="20" class="text-clay-text-muted hover:text-red-500" />
-        </button>
-      </div>
 
-      <!-- 上传进度条 -->
-      <div v-if="uploading" class="progress-container">
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: `${progress}%` }"></div>
+        <!-- 上传进度条 -->
+        <div v-if="uploading" class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" :style="{ width: `${progress}%` }"></div>
+          </div>
+          <p class="text-xs text-clay-text-muted text-center mt-2">上传中... {{ progress }}%</p>
         </div>
-        <p class="text-xs text-clay-text-muted text-center mt-2">上传中... {{ progress }}%</p>
       </div>
     </div>
   </div>
@@ -263,7 +309,7 @@ watch(
 
 .upload-area:hover {
   border-color: var(--clay-primary);
-  background-color: rgba(124, 58, 237, 0.02);
+  background-color: rgba(66, 150, 237, 0.02);
 }
 
 .upload-content {
@@ -288,8 +334,14 @@ watch(
   margin-top: 0.5rem;
 }
 
-.file-info {
+.files-list {
   margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.file-info {
   padding: 1rem;
 }
 

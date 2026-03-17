@@ -211,11 +211,7 @@ onMounted(() => {
 
     <!-- 文件上传 -->
     <div class="mb-6">
-      <FileUpload
-        accept=".txt,.pdf,.doc,.docx,.md"
-        :max-size="1024 * 1024 * 1536"
-        @upload="handleUpload"
-      />
+      <FileUpload :max-size="1536" @upload="handleUpload" />
     </div>
 
     <!-- 数据表格 -->

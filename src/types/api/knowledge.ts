@@ -101,17 +101,3 @@ export interface KnowledgeFragmentParams {
   content: string
   remark: string
 }
-
-/**
- * 系统文件
- */
-export interface SysOss {
-  id: number
-  ossId: string
-  fileName: string
-  filePath: string
-  url: string
-  suffix?: string
-  size?: number
-  createTime?: string
-}

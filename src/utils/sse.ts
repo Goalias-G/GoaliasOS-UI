@@ -157,11 +157,6 @@ export async function createSSEConnection(
               // 注意：只移除 "data:" 和紧跟的一个空格（如果有）
               let content = line.slice(5) // 移除 "data:" 前缀（5个字符）
 
-              // 如果第一个字符是空格，移除它（SSE 规范允许 data: 后有一个可选空格）
-              if (content.startsWith(' ')) {
-                content = content.slice(1)
-              }
-
               // 连续的空 data: 表示换行
               onMessage(content)
             } catch (parseError) {

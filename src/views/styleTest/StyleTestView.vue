@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <div class="min-h-screen p-8">
+  <div class="min-h-full p-8">
     <div class="max-w-6xl mx-auto">
       <h1 class="mb-2">Claymorphism 样式系统测试</h1>
       <p class="text-clay-text-secondary mb-8">验证全局样式、字体、颜色和动画是否正确应用</p>

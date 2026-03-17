@@ -557,7 +557,7 @@ select {
 /* 按钮样式 */
 .clay-btn {
   background-color: var(--clay-primary);
-  color: var(--clay-text-inverse);
+  color: var(--clay-text-inverse) !important;
   box-shadow: var(--shadow-clay-button);
   border-radius: var(--radius-clay-md);
   padding: 0.75rem 1.5rem;
@@ -565,6 +565,15 @@ select {
   transition: all var(--duration-normal) var(--ease-out);
   cursor: pointer;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clay-btn *,
+.clay-btn span,
+.clay-btn svg {
+  color: var(--clay-text-inverse) !important;
 }
 
 .clay-btn:hover {
@@ -586,7 +595,7 @@ select {
 /* 次要按钮 */
 .clay-btn-secondary {
   background-color: var(--clay-bg-elevated);
-  color: var(--clay-primary);
+  color: var(--clay-primary) !important;
   box-shadow: var(--shadow-clay-button);
   border-radius: var(--radius-clay-md);
   padding: 0.75rem 1.5rem;
@@ -594,6 +603,15 @@ select {
   transition: all var(--duration-normal) var(--ease-out);
   cursor: pointer;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clay-btn-secondary *,
+.clay-btn-secondary span,
+.clay-btn-secondary svg {
+  color: var(--clay-primary) !important;
 }
 
 .clay-btn-secondary:hover {

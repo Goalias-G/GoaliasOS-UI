@@ -96,6 +96,20 @@ export const mainRoutes: RouteRecordRaw[] = [
     ],
   },
 
+  // ==================== 生活记录场景 ====================
+  {
+    path: 'lifeRecord',
+    name: 'LifeRecordScene',
+    component: () => import('@/views/lifeRecord/index.vue'),
+    meta: {
+      title: '生活记录',
+      icon: 'hugeicons:note-02',
+      requiresAuth: false,
+      hidden: false,
+      module: 'lifeRecord',
+    },
+  },
+
   // ==================== 样式测试 ====================
   {
     path: 'clay-demo',

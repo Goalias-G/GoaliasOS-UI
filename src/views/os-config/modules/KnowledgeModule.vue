@@ -170,10 +170,10 @@ const formFields: FormField[] = [
     },
   },
   {
-    key: 'embeddingModelId',
-    label: '嵌入模型 ID',
-    type: 'number',
-    placeholder: '请输入嵌入模型 ID',
+    key: 'embeddingModelName',
+    label: '嵌入模型名称',
+    type: 'text',
+    placeholder: '请输入嵌入模型名称',
   },
   {
     key: 'remark',

@@ -19,6 +19,7 @@ declare module 'vue' {
     ChatInput: typeof import('./src/components/ai/ChatInput.vue')['default']
     DataTable: typeof import('./src/components/os-config/DataTable.vue')['default']
     EncryptedText: typeof import('./src/components/ui/encrypted-text/EncryptedText.vue')['default']
+    ExpandableGallery: typeof import('./src/components/ui/expandable-gallery/ExpandableGallery.vue')['default']
     FallingStarsBg: typeof import('./src/components/ui/bg-falling-stars/FallingStarsBg.vue')['default']
     FileUpload: typeof import('./src/components/os-config/FileUpload.vue')['default']
     FlipCard: typeof import('./src/components/ui/flip-card/FlipCard.vue')['default']
@@ -45,6 +46,7 @@ declare module 'vue' {
     ShimmerButton: typeof import('./src/components/ui/shimmer-button/ShimmerButton.vue')['default']
     SleekLineCursor: typeof import('./src/components/ui/sleek-line-cursor/SleekLineCursor.vue')['default']
     SparklesText: typeof import('./src/components/ui/sparkles-text/SparklesText.vue')['default']
+    TextGenerateEffect: typeof import('./src/components/ui/text-generate-effect/TextGenerateEffect.vue')['default']
     Toast: typeof import('./src/components/common/Toast.vue')['default']
     ToolCallStatus: typeof import('./src/components/ai/ToolCallStatus.vue')['default']
   }
