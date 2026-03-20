@@ -29,21 +29,3 @@ export interface LoginResponseData {
   token: string
   userInfo: User
 }
-
-/** 健康指标数据 */
-export interface HealthMetrics {
-  sleepHours: number // 睡眠时长（小时）
-  waterIntake: number // 饮水量（毫升）
-  steps: number // 步数
-  calories: number // 卡路里消耗
-  exerciseMinutes: number // 运动时长（分钟）
-}
-
-/** 日程事项 */
-export interface ScheduleItem {
-  id: string
-  title: string
-  time: string
-  type: 'health' | 'life' | 'exercise' | 'study'
-  completed: boolean
-}

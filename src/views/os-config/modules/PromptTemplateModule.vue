@@ -105,14 +105,9 @@ const formFields: FormField[] = [
   {
     key: 'category',
     label: '分类',
-    type: 'select',
+    type: 'text',
     placeholder: '请输入分类',
     required: true,
-    options: [
-      { label: '对话', value: 'chat' },
-      { label: '知识库', value: 'knowledge' },
-      { label: '总结', value: 'summary' },
-    ],
   },
   {
     key: 'remark',

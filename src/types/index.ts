@@ -19,6 +19,7 @@ export * from './api/chat-common'
 export * from './api/knowledge'
 export * from './api/life'
 export * from './api/file'
+export * from './api/home'
 
 /** 通用的键值对类型 */
 export type AnyObject = Record<string, any>

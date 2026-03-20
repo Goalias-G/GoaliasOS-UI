@@ -44,6 +44,20 @@ export const mainRoutes: RouteRecordRaw[] = [
     },
   },
 
+  // ==================== 生活记录场景 ====================
+  {
+    path: 'lifeRecord',
+    name: 'LifeRecordScene',
+    component: () => import('@/views/lifeRecord/index.vue'),
+    meta: {
+      title: '生活记录',
+      icon: 'hugeicons:note-02',
+      requiresAuth: false,
+      hidden: false,
+      module: 'lifeRecord',
+    },
+  },
+
   // ==================== OS 配置管理 ====================
   {
     path: 'os-config',
@@ -94,52 +108,6 @@ export const mainRoutes: RouteRecordRaw[] = [
         },
       },
     ],
-  },
-
-  // ==================== 生活记录场景 ====================
-  {
-    path: 'lifeRecord',
-    name: 'LifeRecordScene',
-    component: () => import('@/views/lifeRecord/index.vue'),
-    meta: {
-      title: '生活记录',
-      icon: 'hugeicons:note-02',
-      requiresAuth: false,
-      hidden: false,
-      module: 'lifeRecord',
-    },
-  },
-
-  // ==================== 样式测试 ====================
-  {
-    path: 'clay-demo',
-    name: 'ClayDemo',
-    component: () => import('@/views/styleTest/ClayDemoView.vue'),
-    meta: {
-      title: 'Clay 风格演示',
-      icon: 'hugeicons:tailwindcss',
-      module: 'styleTest',
-    },
-  },
-  {
-    path: 'style-test',
-    name: 'StyleTest',
-    component: () => import('@/views/styleTest/StyleTestView.vue'),
-    meta: {
-      title: '样式测试',
-      module: 'styleTest',
-      hidden: true,
-    },
-  },
-  {
-    path: 'tailwind-test',
-    name: 'TailwindTest',
-    component: () => import('@/views/styleTest/TailwindTest.vue'),
-    meta: {
-      title: 'Tailwind 配置测试',
-      module: 'styleTest',
-      hidden: true,
-    },
   },
 ]
 

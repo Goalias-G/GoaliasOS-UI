@@ -19,9 +19,19 @@ const isFavorite = computed(() => currentRecord.value?.favoriteFlag === 1)
 
 const rating = computed(() => currentRecord.value?.rating || 0)
 
-const hasImages = computed(() => {
-  return currentRecord.value?.attachsUrls && currentRecord.value.attachsUrls.length > 0
+// 分离图片和视频
+const imageUrls = computed(() => {
+  if (!currentRecord.value?.attachsUrls) return []
+  return currentRecord.value.attachsUrls.filter((url) => !url.toLowerCase().endsWith('.mp4'))
 })
+
+const videoUrls = computed(() => {
+  if (!currentRecord.value?.attachsUrls) return []
+  return currentRecord.value.attachsUrls.filter((url) => url.toLowerCase().endsWith('.mp4'))
+})
+
+const hasImages = computed(() => imageUrls.value.length > 0)
+const hasVideos = computed(() => videoUrls.value.length > 0)
 
 // 格式化日期（只显示年月日）
 const formattedDate = computed(() => {
@@ -249,8 +259,23 @@ onUnmounted(() => {
           />
         </div>
 
+        <!-- 视频展示 -->
+        <div v-if="hasVideos" class="mb-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div
+              v-for="(videoUrl, index) in videoUrls"
+              :key="`video-${index}`"
+              class="relative rounded-clay-md overflow-hidden bg-black"
+            >
+              <video :src="videoUrl" controls class="w-full h-auto max-h-64" preload="metadata">
+                您的浏览器不支持 video 标签
+              </video>
+            </div>
+          </div>
+        </div>
+
         <!-- 图片画廊 -->
-        <ExpandableGallery v-if="hasImages" :images="currentRecord.attachsUrls!" class="mb-6" />
+        <ExpandableGallery v-if="hasImages" :images="imageUrls" class="mb-6" />
       </div>
     </template>
   </div>

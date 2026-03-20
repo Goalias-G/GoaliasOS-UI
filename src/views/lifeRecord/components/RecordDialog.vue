@@ -55,7 +55,9 @@ const originalFileIds = ref<string[]>([])
 const deletedOriginalFileIds = ref<string[]>([])
 
 // 已上传的文件信息（用于显示）
-const uploadedFiles = ref<Array<{ id: string; url: string; name: string }>>([])
+const uploadedFiles = ref<
+  Array<{ id: string; url: string; name: string; type: 'image' | 'video' }>
+>([])
 
 const errors = ref<{
   categoryId?: string
@@ -120,6 +122,12 @@ async function handleFileUpload(file: File): Promise<void> {
       const fileId = response.data.ossId.toString()
       const fileUrl = response.data.url || URL.createObjectURL(file)
 
+      // 判断文件类型
+      const fileType =
+        file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4')
+          ? 'video'
+          : 'image'
+
       // 保存新上传的文件 ID
       newUploadedFileIds.value.push(fileId)
 
@@ -128,6 +136,7 @@ async function handleFileUpload(file: File): Promise<void> {
         id: fileId,
         url: fileUrl,
         name: file.name,
+        type: fileType,
       })
     } else {
       throw new Error(response.message || '文件上传失败')
@@ -170,6 +179,17 @@ async function handleSubmit() {
 
   isSubmitting.value = true
   try {
+    // 编辑模式下，删除被移除的原有文件
+    if (isEditing.value && deletedOriginalFileIds.value.length > 0) {
+      try {
+        const deleteIds = deletedOriginalFileIds.value.map((id) => Number(id))
+        await ossApi.remove(deleteIds)
+      } catch (error) {
+        console.error('删除文件失败:', error)
+        showError('删除文件失败')
+      }
+    }
+
     const submitData: LifeRecordParams = {
       categoryId: formData.value.categoryId!,
       title: formData.value.title.trim(),
@@ -183,9 +203,7 @@ async function handleSubmit() {
     }
 
     // 添加附件 ID（多个以英文逗号分隔）
-    if (finalFileIds.value.length > 0) {
-      submitData.attachsId = finalFileIds.value.join(',')
-    }
+    submitData.attachsId = finalFileIds.value.join(',')
 
     // 添加备注
     if (formData.value.remark?.trim()) {
@@ -260,13 +278,19 @@ watch(
       if (props.record.attachsId) {
         originalFileIds.value = props.record.attachsId.split(',').filter((id) => id.trim())
 
-        // 如果有 attachsUrls，使用它们来显示图片
+        // 如果有 attachsUrls，使用它们来显示
         if (props.record.attachsUrls && props.record.attachsUrls.length > 0) {
-          uploadedFiles.value = originalFileIds.value.map((id, index) => ({
-            id,
-            url: props.record!.attachsUrls![index] || '',
-            name: `图片 ${index + 1}`,
-          }))
+          uploadedFiles.value = originalFileIds.value.map((id, index) => {
+            const url = props.record!.attachsUrls![index] || ''
+            // 根据URL后缀判断类型
+            const fileType = url.toLowerCase().endsWith('.mp4') ? 'video' : 'image'
+            return {
+              id,
+              url,
+              name: fileType === 'video' ? `视频 ${index + 1}` : `图片 ${index + 1}`,
+              type: fileType,
+            }
+          })
         }
       }
 
@@ -433,25 +457,36 @@ onUnmounted(() => {
                   </p>
                 </div>
 
-                <!-- 图片上传 -->
+                <!-- 图片/视频上传 -->
                 <div>
                   <label class="block text-sm font-medium text-clay-text-primary mb-2">
-                    图片 <span class="text-clay-text-muted font-normal">(可选)</span>
+                    图片/视频 <span class="text-clay-text-muted font-normal">(可选)</span>
                   </label>
 
-                  <!-- 已上传的图片列表 -->
+                  <!-- 已上传的文件列表 -->
                   <div v-if="uploadedFiles.length > 0" class="mb-4 grid grid-cols-3 gap-3">
                     <div
                       v-for="file in uploadedFiles"
                       :key="file.id"
                       class="relative group aspect-square rounded-clay-sm overflow-hidden bg-gray-100"
                     >
-                      <img :src="file.url" :alt="file.name" class="w-full h-full object-cover" />
+                      <img
+                        v-if="file.type === 'image'"
+                        :src="file.url"
+                        :alt="file.name"
+                        class="w-full h-full object-cover"
+                      />
+                      <div
+                        v-else
+                        class="w-full h-full flex items-center justify-center bg-gray-200"
+                      >
+                        <AppIcon icon="mdi:video" :size="40" class="text-clay-text-muted" />
+                      </div>
                       <button
                         type="button"
                         @click="handleRemoveFile(file.id)"
                         class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                        title="删除图片"
+                        title="删除"
                       >
                         <AppIcon icon="mdi:close" :size="14" />
                       </button>
@@ -460,9 +495,9 @@ onUnmounted(() => {
 
                   <!-- 文件上传组件 -->
                   <FileUpload
-                    accept="image/*"
+                    accept="image/*,video/mp4"
                     :multiple="true"
-                    :max-size="10"
+                    :max-size="500"
                     @upload="handleFileUpload"
                   />
                 </div>
