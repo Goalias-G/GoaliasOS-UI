@@ -538,7 +538,7 @@ export const useSessionStore = defineStore('session', () => {
         }
 
         // 构建完整的 URL
-        const baseURL = '/api'
+        const baseURL = '/goalias-os'
         const url = `${baseURL}/chat/send`
 
         // 建立 SSE 连接

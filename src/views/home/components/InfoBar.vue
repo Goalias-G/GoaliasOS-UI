@@ -71,8 +71,8 @@ const currentLocation = computed(() => {
       </div>
 
       <!-- 中间：天气信息 -->
-      <div v-if="weather" class="flex items-center gap-3 md:gap-4 text-sm">
-        <div class="flex items-center gap-2">
+      <div v-if="weather" class="flex items-center gap-3 md:gap-4 text-sm min-w-0">
+        <div class="flex items-center gap-2 shrink-0">
           <AppIcon icon="mdi:weather-partly-cloudy" :size="24" class="text-clay-primary" />
           <div>
             <div class="font-medium text-clay-text-primary whitespace-nowrap">
@@ -84,14 +84,14 @@ const currentLocation = computed(() => {
           </div>
         </div>
         <!-- 风向、风力、湿度（移动端也显示） -->
-        <div class="flex flex-col text-xs text-clay-text-secondary">
-          <div class="whitespace-nowrap">{{ weather.wind_direction }} {{ weather.wind_power }}</div>
-          <div class="whitespace-nowrap">湿度 {{ weather.humidity }}</div>
+        <div class="flex flex-col text-xs text-clay-text-secondary min-w-0">
+          <div class="truncate">{{ weather.wind_direction }} {{ weather.wind_power }}</div>
+          <div class="truncate">湿度 {{ weather.humidity }}</div>
         </div>
         <!-- 更新时间（桌面端显示） -->
         <div
           v-if="weather.report_time"
-          class="hidden md:block text-xs text-clay-text-muted whitespace-nowrap"
+          class="hidden md:block text-xs text-clay-text-muted whitespace-nowrap shrink-0"
         >
           更新于 {{ weather.report_time }}
         </div>

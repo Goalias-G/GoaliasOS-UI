@@ -21,7 +21,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // ==================== 响应式状态 ====================
-const expandedSections = ref<Set<string>>(new Set(['greeting']))
+const expandedSections = ref<Set<string>>(new Set(['greeting', 'lifeAnalysis']))
 
 // ==================== 方法 ====================
 function toggleSection(section: string) {
@@ -64,56 +64,52 @@ function isExpanded(section: string): boolean {
     </div>
 
     <!-- 心理学知识 -->
-    <div v-if="aiRecommend?.psychology" class="clay-card p-6">
-      <div
-        class="flex items-center justify-between cursor-pointer"
-        @click="toggleSection('psychology')"
-      >
-        <h3 class="text-lg font-bold text-clay-text-primary flex items-center gap-2">
-          <AppIcon icon="hugeicons:brain-02" :size="24" class="text-clay-primary" />
-          {{ aiRecommend.psychology.title }}
-        </h3>
-        <AppIcon
-          :icon="isExpanded('psychology') ? 'mdi:chevron-up' : 'mdi:chevron-down'"
-          :size="24"
-          class="text-clay-text-secondary transition-transform"
-        />
-      </div>
-      <Transition name="expand">
-        <div
-          v-if="isExpanded('psychology')"
-          class="mt-4 text-clay-text-primary leading-relaxed whitespace-pre-wrap"
-        >
-          {{ aiRecommend.psychology.content }}
+    <FlipCard v-if="aiRecommend?.psychology" class="h-48">
+      <template #default>
+        <div class="flex flex-col items-center justify-center h-full">
+          <AppIcon icon="hugeicons:brain-02" :size="48" class="text-clay-accent-pink mb-4" />
+          <h3 class="text-lg font-bold text-clay-text-primary text-center">
+            {{ aiRecommend.psychology.title }}
+          </h3>
         </div>
-      </Transition>
-    </div>
+      </template>
+      <template #back>
+        <div class="flex min-h-full flex-col gap-2 p-4">
+          <h1 class="text-lg font-bold text-clay-text-primary">
+            {{ aiRecommend.psychology.title }}
+          </h1>
+          <p
+            class="mt-2 border-t border-clay-primary/20 pt-3 text-sm leading-relaxed text-clay-text-primary whitespace-pre-wrap overflow-y-auto"
+          >
+            {{ aiRecommend.psychology.content }}
+          </p>
+        </div>
+      </template>
+    </FlipCard>
 
     <!-- 每日知识 -->
-    <div v-if="aiRecommend?.knowledge" class="clay-card p-6">
-      <div
-        class="flex items-center justify-between cursor-pointer"
-        @click="toggleSection('knowledge')"
-      >
-        <h3 class="text-lg font-bold text-clay-text-primary flex items-center gap-2">
-          <AppIcon icon="hugeicons:book-02" :size="24" class="text-clay-primary" />
-          {{ aiRecommend.knowledge.title || '每日知识' }}
-        </h3>
-        <AppIcon
-          :icon="isExpanded('knowledge') ? 'mdi:chevron-up' : 'mdi:chevron-down'"
-          :size="24"
-          class="text-clay-text-secondary transition-transform"
-        />
-      </div>
-      <Transition name="expand">
-        <div
-          v-if="isExpanded('knowledge')"
-          class="mt-4 text-clay-text-primary leading-relaxed whitespace-pre-wrap"
-        >
-          {{ aiRecommend.knowledge.content }}
+    <FlipCard v-if="aiRecommend?.knowledge" class="h-48">
+      <template #default>
+        <div class="flex flex-col items-center justify-center h-full">
+          <AppIcon icon="hugeicons:book-02" :size="48" class="text-clay-accent-pink mb-4" />
+          <h3 class="text-lg font-bold text-clay-text-primary text-center">
+            {{ aiRecommend.knowledge.title || '每日知识' }}
+          </h3>
         </div>
-      </Transition>
-    </div>
+      </template>
+      <template #back>
+        <div class="flex min-h-full flex-col gap-2 p-4">
+          <h1 class="text-lg font-bold text-clay-text-primary">
+            {{ aiRecommend.knowledge.title || '每日知识' }}
+          </h1>
+          <p
+            class="mt-2 border-t border-clay-primary/20 pt-3 text-sm leading-relaxed text-clay-text-primary whitespace-pre-wrap overflow-y-auto"
+          >
+            {{ aiRecommend.knowledge.content }}
+          </p>
+        </div>
+      </template>
+    </FlipCard>
 
     <!-- 健康分析 -->
     <div v-if="aiRecommend?.lifeAnalysis" class="clay-card p-6">

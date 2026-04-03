@@ -131,20 +131,20 @@ function closeSidebar() {
       </button>
 
       <!-- 提示词按钮 -->
-      <button
+      <!-- <button
         class="w-full clay-btn-secondary px-4 py-2.5 flex items-center justify-center gap-2"
         @click="openPromptSelector"
       >
         <AppIcon icon="mdi:text-box-outline" :size="18" />
         <span>提示词</span>
-      </button>
+      </button> -->
     </div>
 
     <!-- 知识库选择器对话框 -->
     <KnowledgeSelector v-model:visible="showKnowledgeSelector" />
 
     <!-- 提示词选择器对话框 -->
-    <PromptSelector v-model:visible="showPromptSelector" @select="handlePromptSelect" />
+    <!-- <PromptSelector v-model:visible="showPromptSelector" @select="handlePromptSelect" /> -->
   </div>
 </template>
 
@@ -173,7 +173,7 @@ function closeSidebar() {
     bottom: 0;
     width: 85vw;
     max-width: 320px;
-    z-index: 100;
+    z-index: 1000;
     transform: translateX(-100%);
     border-radius: 0 var(--radius-clay-lg) var(--radius-clay-lg) 0;
   }

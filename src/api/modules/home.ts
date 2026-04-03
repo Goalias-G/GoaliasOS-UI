@@ -8,7 +8,14 @@
  */
 
 import { get, post, del, put } from '@/api'
-import type { ApiResponse, DailyHealth, DailyHealthParams, PageQuery, PageResult } from '@/types'
+import type {
+  ApiResponse,
+  DailyHealth,
+  DailyHealthParams,
+  PageQuery,
+  PageResult,
+  HealthSleepChart,
+} from '@/types'
 
 export const dailyHealthApi = {
   /**
@@ -42,6 +49,13 @@ export const dailyHealthApi = {
    * @param ids 健康记录 ID
    */
   remove: (ids: number[]) => del<ApiResponse<void>>(`/life/health/${ids.join(',')}`),
+
+  /**
+   * 获取健康睡眠图表数据
+   * @param days 近几天的数据，默认10天
+   */
+  getHealthChart: (days: number = 10) =>
+    get<ApiResponse<HealthSleepChart[]>>('/life/health/chart', { days }),
 }
 
 /**
@@ -62,7 +76,10 @@ export const dailyKnowledgeApi = {
    * @param pageQuery 分页参数
    */
   list: (params?: Partial<DailyKnowledgeParams>, pageQuery?: PageQuery) =>
-    get<ApiResponse<PageResult<DailyKnowledge>>>('/life/knowledge/list', { ...params, ...pageQuery }),
+    get<ApiResponse<PageResult<DailyKnowledge>>>('/life/knowledge/list', {
+      ...params,
+      ...pageQuery,
+    }),
 
   /**
    * 获取每日知识详情

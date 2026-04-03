@@ -121,7 +121,7 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
 
   // 更新分类排序
   async function updateCategoryOrder(
-    updates: Array<{ id: number; sortOrder: number }>,
+    updates: Array<{ id: number; sortOrder: number; name?: string }>,
   ): Promise<void> {
     await Promise.all(updates.map((update) => lifeCategoryApi.updateOrder(update)))
     await loadCategories()

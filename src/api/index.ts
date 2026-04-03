@@ -46,7 +46,7 @@ const ERROR_MESSAGES: Record<number, string> = {
 // ==================== Axios 实例 ====================
 
 const instance: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: '/goalias-os',
   timeout: Number(import.meta.env.VITE_REQUEST_TIMEOUT) || 10000,
   headers: {
     'Content-Type': 'application/json',

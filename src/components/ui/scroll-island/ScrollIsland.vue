@@ -13,7 +13,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   class: '',
-  title: 'Progress',
+  title: 'OS',
   height: 44,
   scrollContainer: null,
 })
@@ -104,7 +104,7 @@ onUnmounted(() => {
         }"
         :animate="{
           height: open && isSlotAvailable ? 'auto' : props.height,
-          width: open && isSlotAvailable ? 320 : 260,
+          width: open && isSlotAvailable ? 320 : 120,
         }"
         class="scroll-island-content relative overflow-hidden"
       >
@@ -123,7 +123,9 @@ onUnmounted(() => {
             :gauge-secondary-color="'rgba(255, 255, 255, 0.2)'"
             :gauge-primary-color="'rgba(255, 255, 255, 0.9)'"
           />
-          <h1 class="grow text-center font-bold text-white drop-shadow-lg">{{ title }}</h1>
+          <h1 class="grow text-center font-bold text-white drop-shadow-lg">
+            {{ open && isSlotAvailable ? title : ' ' }}
+          </h1>
           <NumberFlow
             :value="scrollPercentage"
             :format="{

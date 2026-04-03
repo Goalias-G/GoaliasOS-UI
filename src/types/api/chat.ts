@@ -85,6 +85,8 @@ export interface ChatModel {
   providerName: string
   remark: string
   enableSearch?: number // 0: 不支持联网搜索, 1: 支持联网搜索
+  inputUsage?: number
+  outputUsage?: number
   createTime?: string
   updateTime?: string
 }

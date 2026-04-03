@@ -49,7 +49,7 @@ export class SSEError extends Error {
  * ```typescript
  * const controller = new AbortController()
  *
- * await createSSEConnection('/api/chat/send', {
+ * await createSSEConnection('/goalias-os/chat/send', {
  *   messages: [{ role: 'user', content: '你好' }],
  *   sessionId: 123
  * }, {

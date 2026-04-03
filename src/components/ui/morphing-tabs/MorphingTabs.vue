@@ -27,7 +27,7 @@ const emit = defineEmits<{
     <button
       v-for="(tab, index) in props.tabs"
       :key="tab"
-      class="bg-primary text-background px-4 py-2 transition-all duration-500 inline-flex items-center gap-1"
+      class="bg-primary text-background px-4 py-2 transition-all duration-500 inline-flex items-center gap-1 rounded-2xl"
       :style="{
         margin: `0 ${activeTab === tab ? props.margin : 0}px`,
       }"
@@ -37,7 +37,7 @@ const emit = defineEmits<{
       <span>{{ tab }}</span>
     </button>
 
-    <div class="absolute w-full">
+    <!-- <div class="absolute w-full">
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
         <defs>
           <filter
@@ -63,7 +63,7 @@ const emit = defineEmits<{
           </filter>
         </defs>
       </svg>
-    </div>
+    </div> -->
   </div>
 </template>
 

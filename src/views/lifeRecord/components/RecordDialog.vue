@@ -67,6 +67,10 @@ const errors = ref<{
 
 const isSubmitting = ref(false)
 
+// 文件上传状态
+const isUploading = ref(false)
+const uploadProgress = ref(0)
+
 // ==================== 计算属性 ====================
 const isEditing = computed(() => !!props.record)
 
@@ -116,6 +120,9 @@ function validateForm(): boolean {
 
 // ==================== 文件上传处理 ====================
 async function handleFileUpload(file: File): Promise<void> {
+  isUploading.value = true
+  uploadProgress.value = 0
+
   try {
     const response = await ossApi.upload(file)
     if (response.code === 200 && response.data) {
@@ -138,6 +145,8 @@ async function handleFileUpload(file: File): Promise<void> {
         name: file.name,
         type: fileType,
       })
+
+      uploadProgress.value = 100
     } else {
       throw new Error(response.message || '文件上传失败')
     }
@@ -145,6 +154,9 @@ async function handleFileUpload(file: File): Promise<void> {
     console.error('文件上传失败:', error)
     showError('文件上传失败')
     throw error
+  } finally {
+    isUploading.value = false
+    uploadProgress.value = 0
   }
 }
 
@@ -229,8 +241,8 @@ async function handleSubmit() {
 
 // ==================== 对话框控制 ====================
 async function handleClose() {
-  // 如果是新增模式且有未保存的上传文件，删除它们
-  if (!isEditing.value && newUploadedFileIds.value.length > 0) {
+  // 清理未保存的上传文件（新增模式和编辑模式都需要清理）
+  if (newUploadedFileIds.value.length > 0) {
     try {
       const fileIds = newUploadedFileIds.value.map((id) => Number(id))
       await ossApi.remove(fileIds)
@@ -485,7 +497,7 @@ onUnmounted(() => {
                       <button
                         type="button"
                         @click="handleRemoveFile(file.id)"
-                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                         title="删除"
                       >
                         <AppIcon icon="mdi:close" :size="14" />
@@ -498,6 +510,8 @@ onUnmounted(() => {
                     accept="image/*,video/mp4"
                     :multiple="true"
                     :max-size="500"
+                    :uploading="isUploading"
+                    :progress="uploadProgress"
                     @upload="handleFileUpload"
                   />
                 </div>

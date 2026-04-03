@@ -24,26 +24,31 @@ interface AudioItem {
 // 手动定义音频列表
 const audioList: AudioItem[] = [
   {
-    name: '为你写诗',
-    path: '/audio/为你写诗.mp3',
-  },
-  {
-    name: 'Harvest Symphony',
-    path: '/audio/harvest-symphony.mp3',
-  },
-  {
     name: 'Risk It All - Blue',
     path: '/audio/Risk It All - Blue.mp3',
   },
   {
-    name: 'Summer Memories',
-    path: '/audio/summer-memories.mp3',
+    name: '太阳之子 - 周杰伦',
+    path: '/audio/太阳之子-周杰伦2MBLQD.mp3',
   },
   {
-    name: 'What Makes You Beautiful',
-    path: '/audio/What Makes You Beautiful.mp3',
+    name: 'No Sleep - Martin',
+    path: '/audio/No Sleep .feat. Bonn.-Martin Garrix.BonnhSeyE.mp3',
   },
-].sort((a, b) => a.name.localeCompare(b.name)) // 按名称排序
+
+  {
+    name: '女儿殿下 - 周杰伦',
+    path: '/audio/女儿殿下-周杰伦2MBLQL.mp3',
+  },
+  {
+    name: 'Green Green Grass - George Ezra',
+    path: '/audio/George Ezra - Green Green Grass.mp3',
+  },
+  {
+    name: '友人说 - 林俊杰',
+    path: '/audio/林俊杰, 张怀秋 - 友人说.mp3',
+  },
+]
 
 // ==================== 状态管理 ====================
 const audioRef = ref<HTMLAudioElement | null>(null)
@@ -83,7 +88,7 @@ function saveState() {
 onMounted(() => {
   // 检查是否有音频文件
   if (audioList.length === 0) {
-    console.warn('No audio files found in /public/audio directory')
+    console.warn('No audio files found')
     return
   }
 

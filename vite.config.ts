@@ -58,10 +58,10 @@ export default defineConfig({
     host: true, // 允许局域网访问
     open: true,
     proxy: {
-      '/api': {
+      '/goalias-os': {
         target: 'http://localhost:7000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
@@ -71,7 +71,7 @@ export default defineConfig({
     // 启用 CSS 代码分割
     cssCodeSplit: true,
     //chunk 大小警告阈值
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 800,
     minify: 'esbuild',
   },
 })

@@ -411,6 +411,16 @@ a:hover {
   scrollbar-color: var(--clay-primary-light) var(--clay-bg-base);
 }
 
+/* 隐藏滚动条但保留滚动功能 */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ==================== 选中文本样式 ==================== */
 ::selection {
   background-color: var(--clay-primary-light);

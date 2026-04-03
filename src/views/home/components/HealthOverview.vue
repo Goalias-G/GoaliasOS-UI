@@ -32,9 +32,32 @@ const formData = ref({
 })
 
 // ==================== 计算属性 ====================
-const healthDate = computed(() => {
-  return formatDate(new Date(), 'YYYY-MM-DD')
+// 可选择的日期列表（最近15天）
+const dateOptions = computed(() => {
+  const options: { value: string; label: string }[] = []
+  const today = new Date()
+
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(today)
+    date.setDate(today.getDate() - i)
+    const dateStr = formatDate(date, 'YYYY-MM-DD')
+    const isToday = i === 0
+    const dayOfWeek = date.toLocaleDateString('zh-CN', { weekday: 'short' })
+
+    options.push({
+      value: dateStr,
+      label: isToday ? `今天 (${dayOfWeek})` : `${dateStr} (${dayOfWeek})`,
+    })
+  }
+
+  return options
 })
+
+// 当前选中的日期（默认为今天）
+const selectedDate = ref(formatDate(new Date(), 'YYYY-MM-DD'))
+
+// 是否可以选择今天（只有今天可以编辑）
+const isToday = computed(() => selectedDate.value === formatDate(new Date(), 'YYYY-MM-DD'))
 
 // ==================== 辅助函数 ====================
 function stripSeconds(time: string | undefined | null): string {
@@ -42,10 +65,24 @@ function stripSeconds(time: string | undefined | null): string {
 }
 
 // ==================== 方法 ====================
+function switchToPrevDay() {
+  const date = new Date(selectedDate.value)
+  date.setDate(date.getDate() - 1)
+  selectedDate.value = formatDate(date, 'YYYY-MM-DD')
+  loadHealthData()
+}
+
+function switchToNextDay() {
+  const date = new Date(selectedDate.value)
+  date.setDate(date.getDate() + 1)
+  selectedDate.value = formatDate(date, 'YYYY-MM-DD')
+  loadHealthData()
+}
+
 async function loadHealthData() {
   loading.value = true
   try {
-    const response = await dailyHealthApi.list({ healthDate: healthDate.value })
+    const response = await dailyHealthApi.list({ healthDate: selectedDate.value })
     if (response.code === 200 && response.data?.list) {
       const records = response.data.list
       if (records.length > 0 && records[0]) {
@@ -62,17 +99,40 @@ async function loadHealthData() {
       } else {
         isEditMode.value = false
         healthData.value = null
+        // 重置表单
+        formData.value = {
+          upTime: '',
+          sleepTime: '',
+          food: '',
+          exercise: '',
+          remark: '',
+        }
       }
     }
   } catch (error) {
     console.error('加载健康数据失败:', error)
     showError('加载健康数据失败')
+    // 发生错误时也重置表单
+    isEditMode.value = false
+    healthData.value = null
+    formData.value = {
+      upTime: '',
+      sleepTime: '',
+      food: '',
+      exercise: '',
+      remark: '',
+    }
   } finally {
     loading.value = false
   }
 }
 
 async function saveHealthData() {
+  if (!isToday.value) {
+    showError('只能编辑当天的健康数据')
+    return
+  }
+
   saving.value = true
   try {
     const data = {
@@ -81,7 +141,7 @@ async function saveHealthData() {
       food: formData.value.food,
       exercise: formData.value.exercise,
       remark: formData.value.remark,
-      healthDate: healthDate.value,
+      healthDate: selectedDate.value,
       id: healthData.value?.id,
     }
 
@@ -119,13 +179,35 @@ onMounted(() => {
 <template>
   <div class="clay-card p-6">
     <!-- 标题 -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
       <h2 class="text-xl font-bold text-clay-text-primary">生活记录</h2>
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-clay-text-secondary">{{ healthDate }}</span>
+      <div class="flex items-center gap-1.5">
+        <button
+          class="p-1.5 rounded-clay-md hover:bg-clay-bg-base transition-colors text-clay-text-secondary hover:text-clay-text-primary"
+          title="前一天"
+          @click="switchToPrevDay"
+        >
+          <AppIcon icon="mdi:chevron-left" :size="20" />
+        </button>
+        <select
+          v-model="selectedDate"
+          class="clay-input px-3 py-1.5 text-sm min-w-40"
+          @change="loadHealthData"
+        >
+          <option v-for="opt in dateOptions" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+        <button
+          class="p-1.5 rounded-clay-md hover:bg-clay-bg-base transition-colors text-clay-text-secondary hover:text-clay-text-primary"
+          title="后一天"
+          @click="switchToNextDay"
+        >
+          <AppIcon icon="mdi:chevron-right" :size="20" />
+        </button>
         <button
           class="clay-btn-secondary px-4 py-1.5 text-sm"
-          :disabled="saving"
+          :disabled="saving || !isToday"
           @click="saveHealthData"
         >
           <span v-if="saving" role="status" aria-live="polite" class="flex items-center gap-1.5">
@@ -166,6 +248,7 @@ onMounted(() => {
           v-model="formData.upTime"
           type="time"
           class="clay-input w-full"
+          :disabled="!isToday"
           placeholder="请选择起床时间"
           aria-describedby="upTime-hint"
         />
@@ -182,6 +265,7 @@ onMounted(() => {
           v-model="formData.sleepTime"
           type="time"
           class="clay-input w-full"
+          :disabled="!isToday"
           placeholder="请输入睡眠时间"
           aria-describedby="sleepTime-hint"
         />
@@ -198,6 +282,7 @@ onMounted(() => {
           v-model="formData.food"
           rows="3"
           class="clay-input w-full resize-none"
+          :disabled="!isToday"
           placeholder="记录今日饮食..."
           aria-describedby="food-hint"
         ></textarea>
@@ -214,6 +299,7 @@ onMounted(() => {
           v-model="formData.exercise"
           rows="3"
           class="clay-input w-full resize-none"
+          :disabled="!isToday"
           placeholder="记录今日运动..."
           aria-describedby="exercise-hint"
         ></textarea>
@@ -230,6 +316,7 @@ onMounted(() => {
           v-model="formData.remark"
           rows="3"
           class="clay-input w-full resize-none"
+          :disabled="!isToday"
           placeholder="其他备注信息..."
           aria-describedby="remark-hint"
         ></textarea>

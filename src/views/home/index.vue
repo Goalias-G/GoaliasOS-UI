@@ -85,8 +85,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-full bg-clay-bg-base">
-    <div class="container mx-auto px-4 md:px-6 py-6 md:py-8">
+  <div class="min-h-full bg-clay-bg-base relative overflow-hidden">
+    <!-- 左侧呼吸泛光 -->
+    <div class="side-glow side-glow--left" aria-hidden="true"></div>
+    <!-- 右侧呼吸泛光 -->
+    <div class="side-glow side-glow--right" aria-hidden="true"></div>
+
+    <div class="container mx-auto px-4 md:px-6 py-6 md:py-8 relative z-10">
       <!-- 加载状态 -->
       <div v-if="loading && !homeInfo" class="flex items-center justify-center min-h-[60vh]">
         <div class="text-center space-y-4">
@@ -159,6 +164,66 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* 侧边呼吸泛光 */
+.side-glow {
+  position: fixed;
+  top: 2%;
+  bottom: 5%;
+  width: 150px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  filter: blur(50px);
+  background: radial-gradient(ellipse at center, var(--clay-accent-pink) 0%, transparent 65%);
+  animation: sideGlow 5s ease-in-out infinite;
+}
+
+.side-glow--left {
+  left: 0;
+  transform: translateX(-40%);
+}
+
+.side-glow--right {
+  right: 0;
+  transform: translateX(40%);
+}
+
+@keyframes sideGlow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateX(-40%) scaleY(0.95);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(-40%) scaleY(1.05);
+  }
+}
+
+.side-glow--right {
+  animation-name: sideGlowRight;
+}
+
+@keyframes sideGlowRight {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateX(40%) scaleY(0.9);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(40%) scaleY(1.1);
+  }
+}
+
+@media (max-width: 768px) {
+  .side-glow {
+    width: 100px;
+    filter: blur(40px);
+    opacity: 0.2;
+  }
+}
+
 /* 淡入淡出动画 */
 .fade-enter-active,
 .fade-leave-active {

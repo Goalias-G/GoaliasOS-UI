@@ -118,3 +118,15 @@ export interface AiKnowledgeInfo {
   title?: string
   content?: string
 }
+
+/**
+ * 健康睡眠图表数据
+ */
+export interface HealthSleepChart {
+  /** 日期 */
+  date: string
+  /** 起床时间 */
+  upTime?: string | null
+  /** 睡眠时间 */
+  sleepTime?: string | null
+}

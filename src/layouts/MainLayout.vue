@@ -170,15 +170,9 @@ onMounted(userStore.init)
         <AudioPlayer />
 
         <!-- 分隔线 -->
-        <div class="h-px bg-linear-to-r from-transparent via-white/20 to-transparent"></div>
+        <!-- <div class="h-px bg-linear-to-r from-transparent via-white/20 to-transparent"></div> -->
 
         <!-- 其他设置预留区域 -->
-        <div class="flex flex-col gap-2">
-          <div class="text-xs font-bold text-white uppercase tracking-wider px-1 drop-shadow-lg">
-            更多设置
-          </div>
-          <div class="text-xs text-gray-300 italic px-1">敬请期待...</div>
-        </div>
       </div>
     </ScrollIsland>
 
@@ -196,7 +190,7 @@ onMounted(userStore.init)
           >
             <AppIcon icon="hugeicons:agreement-01" :size="30" color="white" />
           </div>
-          <span class="text-lg md:text-xl font-bold text-clay-primary"> Goalias OS </span>
+          <span class="text-lg md:text-xl font-bold text-clay-primary"> GoaliasOS </span>
         </router-link>
 
         <!-- 导航菜单 - MorphingTabs (桌面端) -->

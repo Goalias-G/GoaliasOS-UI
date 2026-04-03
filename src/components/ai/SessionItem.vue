@@ -112,10 +112,12 @@ function handleContextMenu(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
 
-  // 设置菜单位置
+  // 获取调整后的菜单位置（防止移动端超出屏幕）
+  const adjustedPos = getAdjustedPosition(event.clientX, event.clientY)
+
   menuPosition.value = {
-    x: event.clientX,
-    y: event.clientY,
+    x: adjustedPos.x,
+    y: adjustedPos.y,
   }
 
   showContextMenu.value = true
@@ -173,6 +175,32 @@ function closeContextMenu() {
   showContextMenu.value = false
 }
 
+/** 获取调整后的菜单位置（防止移动端超出屏幕） */
+function getAdjustedPosition(x: number, y: number) {
+  const menuWidth = 160
+  const menuHeight = 100
+  const padding = 10
+
+  let adjustedX = x
+  let adjustedY = y
+
+  // 获取视口尺寸
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+
+  // 水平方向调整
+  if (x + menuWidth + padding > viewportWidth) {
+    adjustedX = viewportWidth - menuWidth - padding
+  }
+
+  // 垂直方向调整
+  if (y + menuHeight + padding > viewportHeight) {
+    adjustedY = viewportHeight - menuHeight - padding
+  }
+
+  return { x: adjustedX, y: adjustedY }
+}
+
 // ==================== 生命周期 ====================
 /** 监听全局点击事件，关闭右键菜单 */
 onMounted(() => {
@@ -222,7 +250,7 @@ onUnmounted(() => {
       <Transition name="fade">
         <div
           v-if="showContextMenu"
-          class="context-menu fixed z-50 min-w-[160px] bg-clay-bg-elevated rounded-clay-md shadow-clay-card py-2"
+          class="context-menu fixed z-100 min-w-[160px] bg-clay-bg-elevated rounded-clay-md shadow-clay-card py-2"
           :style="{
             left: `${menuPosition.x}px`,
             top: `${menuPosition.y}px`,

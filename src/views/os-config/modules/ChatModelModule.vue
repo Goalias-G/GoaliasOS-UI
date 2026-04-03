@@ -78,6 +78,18 @@ const columns: TableColumn[] = [
     formatter: (value: number) => (value ? `¥ ${value}/百万` : '-'),
   },
   {
+    key: 'inputUsage',
+    label: '输入Token',
+    width: '100px',
+    formatter: (value: number) => value.toString() ?? '-',
+  },
+  {
+    key: 'outputUsage',
+    label: '输出Token',
+    width: '100px',
+    formatter: (value: number) => value.toString() ?? '-',
+  },
+  {
     key: 'priority',
     label: '优先级',
     width: '80px',
