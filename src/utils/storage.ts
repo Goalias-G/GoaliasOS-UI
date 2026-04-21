@@ -9,7 +9,7 @@
 
  */
 
-const STORAGE_PREFIX = 'app_'
+const STORAGE_PREFIX = 'goalias-os:'
 
 interface StorageData<T> {
   value: T

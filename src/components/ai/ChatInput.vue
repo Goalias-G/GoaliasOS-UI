@@ -171,7 +171,7 @@ onMounted(() => {
           v-model="inputValue"
           :placeholder="isInputDisabled ? '发送中，请稍候...' : placeholder"
           :disabled="isInputDisabled"
-          class="clay-input w-full resize-none overflow-y-auto"
+          class="clay-input w-full resize-none"
           :class="{
             'opacity-50 cursor-not-allowed': isInputDisabled,
           }"
@@ -295,8 +295,7 @@ onMounted(() => {
   min-height: 3rem;
 
   /* 滚动条样式 */
-  scrollbar-width: thin;
-  scrollbar-color: var(--clay-primary-light) transparent;
+  scrollbar-width: none;
 }
 
 .clay-input::-webkit-scrollbar {

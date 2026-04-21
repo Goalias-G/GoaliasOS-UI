@@ -4,8 +4,6 @@
 <script setup lang="ts">
 import { useSessionStore } from '@/stores/session'
 import { storeToRefs } from 'pinia'
-import { useVirtualList } from '@vueuse/core'
-import type { ChatSession } from '@/types'
 
 // ==================== Store ====================
 const sessionStore = useSessionStore()

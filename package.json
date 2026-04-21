@@ -20,6 +20,7 @@
     "@types/markdown-it": "^14.1.2",
     "@vueuse/core": "^14.2.0",
     "axios": "^1.13.2",
+    "dayjs": "^1.11.20",
     "echarts": "^6.0.0",
     "highlight.js": "^11.11.1",
     "lucide-vue-next": "^0.562.0",

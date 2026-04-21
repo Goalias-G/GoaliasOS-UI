@@ -4,7 +4,6 @@
 import { useLifeRecordStore } from '@/stores/lifeRecord'
 import { storeToRefs } from 'pinia'
 import EmptyState from './EmptyState.vue'
-import TextGenerateEffect from '@/components/ui/text-generate-effect/TextGenerateEffect.vue'
 import ExpandableGallery from '@/components/ui/expandable-gallery/ExpandableGallery.vue'
 
 // ==================== Store ====================
@@ -101,18 +100,13 @@ function handleKeydown(event: KeyboardEvent) {
   }
 }
 
-// ==================== 监听记录变化，重新触发打字效果 ====================
-watch(
-  () => currentRecord.value?.id,
-  () => {
-    // 每次记录变化时，更新 key 以重新渲染打字效果组件
-    contentKey.value++
-  },
-)
+// ==================== 状态 ====================
+const contentVisible = ref(false)
 
 // ==================== 生命周期 ====================
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  contentVisible.value = true
 })
 
 onUnmounted(() => {
@@ -204,7 +198,7 @@ onUnmounted(() => {
       </div>
 
       <!-- 详情内容 -->
-      <div class="detail-content flex-1 overflow-y-auto p-6">
+      <div class="detail-content flex-1 overflow-y-auto p-6 scrollbar-hide">
         <!-- 标题和元信息区域 -->
         <div class="flex items-start justify-between gap-6 mb-6">
           <!-- 左侧：标题和日期 -->
@@ -250,13 +244,14 @@ onUnmounted(() => {
 
         <!-- 内容区域 -->
         <div class="prose max-w-none mb-6">
-          <TextGenerateEffect
-            :key="contentKey"
-            :words="currentRecord.content || ''"
-            :duration="1"
-            :delay="200"
-            class="text-clay-text-primary text-base leading-relaxed whitespace-pre-wrap"
-          />
+          <p
+            :class="[
+              'text-clay-text-primary text-base leading-relaxed whitespace-pre-wrap',
+              contentVisible ? 'animate-fade-in' : 'blur-md',
+            ]"
+          >
+            {{ currentRecord.content || '' }}
+          </p>
         </div>
 
         <!-- 视频展示 -->
@@ -302,5 +297,20 @@ onUnmounted(() => {
 /* 确保内容区域不会被截断 */
 .prose {
   max-width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
 }
 </style>

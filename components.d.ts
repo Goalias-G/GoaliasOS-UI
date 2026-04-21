@@ -46,7 +46,6 @@ declare module 'vue' {
     ShimmerButton: typeof import('./src/components/ui/shimmer-button/ShimmerButton.vue')['default']
     SleekLineCursor: typeof import('./src/components/ui/sleek-line-cursor/SleekLineCursor.vue')['default']
     SparklesText: typeof import('./src/components/ui/sparkles-text/SparklesText.vue')['default']
-    TextGenerateEffect: typeof import('./src/components/ui/text-generate-effect/TextGenerateEffect.vue')['default']
     Toast: typeof import('./src/components/common/Toast.vue')['default']
     ToolCallStatus: typeof import('./src/components/ai/ToolCallStatus.vue')['default']
   }

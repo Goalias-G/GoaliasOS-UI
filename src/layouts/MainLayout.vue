@@ -6,6 +6,7 @@ import { useUserStore } from '@/stores/user'
 import { mainRoutes, type AppRouteMeta } from '@/router/routes'
 import AppIcon from '@/components/common/AppIcon.vue'
 import AudioPlayer from '@/components/common/AudioPlayer.vue'
+import { getStorage, setStorage } from '@/utils/storage'
 
 const router = useRouter()
 const route = useRoute()
@@ -17,10 +18,11 @@ const mainRef = ref<HTMLElement | null>(null)
 
 // ==================== Cursor 配置 ====================
 type CursorType = 'default' | 'sleek-line' | 'fluid'
-const currentCursor = ref<CursorType>('default')
+const currentCursor = ref<CursorType>(getStorage<CursorType>('cursorType', 'default')!)
 
 function setCursor(type: CursorType) {
   currentCursor.value = type
+  setStorage('cursorType', type)
 }
 
 // ==================== MorphingTabs 导航 ====================

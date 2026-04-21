@@ -59,6 +59,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/goalias-os': {
+        // target: 'https://gaows.top',
         target: 'http://localhost:7000',
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, ''),
@@ -71,7 +72,7 @@ export default defineConfig({
     // 启用 CSS 代码分割
     cssCodeSplit: true,
     //chunk 大小警告阈值
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 700,
     minify: 'esbuild',
   },
 })

@@ -122,7 +122,7 @@ onClickOutside(dropdownRef, closeDropdown)
     <Transition name="dropdown">
       <div
         v-if="isOpen"
-        class="model-selector-dropdown absolute top-full left-0 right-0 mt-2 clay-card shadow-clay-card max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-clay-primary/20 scrollbar-track-transparent z-50"
+        class="model-selector-dropdown absolute top-full left-0 right-0 mt-2 clay-card shadow-clay-card max-h-80 overflow-y-auto scrollbar-hide z-50"
       >
         <!-- 模型列表 -->
         <div class="py-2">

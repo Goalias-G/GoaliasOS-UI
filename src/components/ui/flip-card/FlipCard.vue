@@ -81,7 +81,7 @@ onUnmounted(() => {
 
       <!-- Back -->
       <div
-        class="absolute inset-0 overflow-y-auto rounded-clay-lg shadow-clay-card bg-clay-bg-elevated p-4 text-clay-text-primary [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:rotateY(180deg)]"
+        class="absolute inset-0 overflow-y-auto rounded-clay-lg shadow-clay-card bg-clay-bg-elevated p-4 text-clay-text-primary [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:rotateY(180deg)] scrollbar-hide"
       >
         <slot name="back" />
       </div>

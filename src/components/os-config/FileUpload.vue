@@ -7,6 +7,7 @@
  * - 支持单文件和多文件上传
  * - 文件类型验证
  * - 文件大小验证
+ * - 图片自动压缩（仅对图片类型）
  * - 显示文件名和大小
  * - 显示上传进度条
  * - 使用 Claymorphism 设计风格
@@ -25,6 +26,14 @@ interface Props {
   multiple?: boolean
   /** accept 属性（如 "image/*"） */
   accept?: string
+  /** 图片压缩质量 (0-1)，默认 0.8 */
+  compressQuality?: number
+  /** 图片压缩后最大宽度，默认 1920 */
+  compressMaxWidth?: number
+  /** 图片压缩后最大高度，默认 1080 */
+  compressMaxHeight?: number
+  /** 是否启用图片压缩，默认 true */
+  enableCompress?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -34,6 +43,10 @@ const props = withDefaults(defineProps<Props>(), {
   acceptTypes: () => ['.txt', '.pdf', '.doc', '.docx', '.md'],
   multiple: false,
   accept: '',
+  compressQuality: 0.7,
+  compressMaxWidth: 1920,
+  compressMaxHeight: 1080,
+  enableCompress: true,
 })
 
 const emit = defineEmits<{
@@ -46,6 +59,8 @@ const isDragging = ref(false)
 const selectedFiles = ref<File[]>([])
 const errorMessage = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const isCompressing = ref(false)
+const compressingFileName = ref('')
 
 // ==================== 计算属性 ====================
 const acceptString = computed(() => {
@@ -65,6 +80,88 @@ function formatFileSize(bytes: number): string {
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
+}
+
+/**
+ * 判断文件是否为图片
+ */
+function isImageFile(file: File): boolean {
+  return file.type.startsWith('image/')
+}
+
+/**
+ * 压缩图片
+ * @param file 原始图片文件
+ * @returns 压缩后的图片文件
+ */
+async function compressImage(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      const img = new Image()
+
+      img.onload = () => {
+        // 计算压缩后的尺寸
+        let { width, height } = img
+        const maxWidth = props.compressMaxWidth
+        const maxHeight = props.compressMaxHeight
+
+        // 按比例缩放
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height)
+          width = Math.round(width * ratio)
+          height = Math.round(height * ratio)
+        }
+
+        // 创建 canvas 进行压缩
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('无法创建 Canvas 上下文'))
+          return
+        }
+
+        // 绘制图片
+        ctx.drawImage(img, 0, 0, width, height)
+
+        // 转换为 Blob
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('图片压缩失败'))
+              return
+            }
+
+            // 创建新的 File 对象
+            const compressedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            })
+
+            resolve(compressedFile)
+          },
+          file.type,
+          props.compressQuality,
+        )
+      }
+
+      img.onerror = () => {
+        reject(new Error('图片加载失败'))
+      }
+
+      img.src = e.target?.result as string
+    }
+
+    reader.onerror = () => {
+      reject(new Error('文件读取失败'))
+    }
+
+    reader.readAsDataURL(file)
+  })
 }
 
 /**
@@ -113,15 +210,38 @@ function handleFileSelect(event: Event) {
 /**
  * 处理文件列表
  */
-function handleFiles(files: File[]) {
+async function handleFiles(files: File[]) {
   for (const file of files) {
     if (validateFile(file)) {
-      if (props.multiple) {
-        selectedFiles.value.push(file)
-      } else {
-        selectedFiles.value = [file]
+      let processedFile = file
+
+      // 如果是图片且启用了压缩，则进行压缩
+      if (isImageFile(file) && props.enableCompress) {
+        try {
+          isCompressing.value = true
+          compressingFileName.value = file.name
+          processedFile = await compressImage(file)
+          console.log(
+            `图片压缩完成: ${file.name}`,
+            `原始大小: ${formatFileSize(file.size)}`,
+            `压缩后: ${formatFileSize(processedFile.size)}`,
+          )
+        } catch (error) {
+          console.error('图片压缩失败，使用原始文件:', error)
+          // 压缩失败时使用原始文件
+          processedFile = file
+        } finally {
+          isCompressing.value = false
+          compressingFileName.value = ''
+        }
       }
-      emit('upload', file)
+
+      if (props.multiple) {
+        selectedFiles.value.push(processedFile)
+      } else {
+        selectedFiles.value = [processedFile]
+      }
+      emit('upload', processedFile)
     }
   }
 }
@@ -224,7 +344,13 @@ watch(
         <!-- 上传图标 -->
         <div class="upload-icon">
           <AppIcon
-            :icon="errorMessage ? 'mdi:alert-circle' : 'mdi:cloud-upload'"
+            :icon="
+              errorMessage
+                ? 'mdi:alert-circle'
+                : isCompressing
+                  ? 'mdi:compress'
+                  : 'mdi:cloud-upload'
+            "
             :size="48"
             :class="errorMessage ? 'text-red-500' : 'text-clay-primary'"
           />
@@ -233,14 +359,24 @@ watch(
         <!-- 上传提示文本 -->
         <div class="upload-text">
           <p class="text-lg font-medium text-clay-text-primary">
-            {{ isDragging ? '释放以上传文件' : '拖拽文件到此处或点击选择' }}
+            {{
+              isDragging
+                ? '释放以上传文件'
+                : isCompressing
+                  ? '正在压缩图片...'
+                  : '拖拽文件到此处或点击选择'
+            }}
           </p>
-          <p v-if="accept" class="text-sm text-clay-text-muted mt-2">支持格式: {{ accept }}</p>
+          <p v-if="isCompressing && compressingFileName" class="text-sm text-clay-primary mt-2">
+            {{ compressingFileName }}
+          </p>
+          <p v-else-if="accept" class="text-sm text-clay-text-muted mt-2">支持格式: {{ accept }}</p>
           <p v-else class="text-sm text-clay-text-muted mt-2">
             支持格式: {{ acceptTypes.join(', ') }}
           </p>
           <p class="text-sm text-clay-text-muted">最大文件大小: {{ maxSize }}MB</p>
           <p v-if="multiple" class="text-sm text-clay-text-muted">支持多文件上传</p>
+          <p v-if="enableCompress" class="text-sm text-clay-text-muted">图片将自动压缩</p>
         </div>
 
         <!-- 错误提示 -->
@@ -268,20 +404,29 @@ watch(
         class="file-info bg-clay-bg-elevated rounded-clay-md shadow-clay-card"
       >
         <div class="file-details">
-          <AppIcon icon="mdi:file-document" :size="24" class="text-clay-primary" />
+          <AppIcon
+            :icon="isImageFile(file) ? 'mdi:image' : 'mdi:file-document'"
+            :size="24"
+            class="text-clay-primary"
+          />
           <div class="file-meta">
             <p class="text-sm font-medium text-clay-text-primary">{{ file.name }}</p>
-            <p class="text-xs text-clay-text-muted">{{ formatFileSize(file.size) }}</p>
+            <p class="text-xs text-clay-text-muted">
+              {{ formatFileSize(file.size) }}
+              <span v-if="isImageFile(file) && enableCompress" class="text-green-600 ml-1"
+                >(已压缩)</span
+              >
+            </p>
           </div>
-          <button
-            v-if="!uploading"
+          <!-- <button
+            v-if="!uploading && !isCompressing"
             type="button"
             class="clear-button"
             @click.stop="removeFile(index)"
             aria-label="移除文件"
           >
             <AppIcon icon="mdi:close" :size="20" class="text-clay-text-muted hover:text-red-500" />
-          </button>
+          </button> -->
         </div>
 
         <!-- 上传进度条 -->

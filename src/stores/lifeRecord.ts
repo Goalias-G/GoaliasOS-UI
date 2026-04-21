@@ -38,7 +38,7 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
   // 分页信息
   const pagination = ref({
     pageNum: 1,
-    pageSize: 20,
+    pageSize: 5,
     total: 0,
     hasMore: true,
   })

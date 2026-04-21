@@ -14,6 +14,7 @@ import type { DailyHealth } from '@/types'
 import { dailyHealthApi } from '@/api/modules/home'
 import { formatDate } from '@/utils/format'
 import { showSuccess, showError } from '@/utils/toast'
+import dayjs from 'dayjs'
 
 // ==================== 注入父组件提供的 healthData ====================
 const healthData = inject<Ref<DailyHealth | null>>('healthData')!
@@ -56,8 +57,18 @@ const dateOptions = computed(() => {
 // 当前选中的日期（默认为今天）
 const selectedDate = ref(formatDate(new Date(), 'YYYY-MM-DD'))
 
-// 是否可以选择今天（只有今天可以编辑）
-const isToday = computed(() => selectedDate.value === formatDate(new Date(), 'YYYY-MM-DD'))
+const isRecentThreeDays = computed(() => {
+  if (!selectedDate.value) return false
+
+  const selected = dayjs(selectedDate.value)
+  const today = dayjs()
+
+  // 计算日期差值（天）
+  const diffDays = today.diff(selected, 'day')
+
+  // 0=今天，1=昨天，2=前天 → 小于 3 即为最近三天
+  return diffDays >= 0 && diffDays < 3
+})
 
 // ==================== 辅助函数 ====================
 function stripSeconds(time: string | undefined | null): string {
@@ -128,8 +139,8 @@ async function loadHealthData() {
 }
 
 async function saveHealthData() {
-  if (!isToday.value) {
-    showError('只能编辑当天的健康数据')
+  if (!isRecentThreeDays.value) {
+    showError('只能编辑近三天的健康数据')
     return
   }
 
@@ -207,7 +218,7 @@ onMounted(() => {
         </button>
         <button
           class="clay-btn-secondary px-4 py-1.5 text-sm"
-          :disabled="saving || !isToday"
+          :disabled="saving || !isRecentThreeDays"
           @click="saveHealthData"
         >
           <span v-if="saving" role="status" aria-live="polite" class="flex items-center gap-1.5">
@@ -248,7 +259,7 @@ onMounted(() => {
           v-model="formData.upTime"
           type="time"
           class="clay-input w-full"
-          :disabled="!isToday"
+          :disabled="!isRecentThreeDays"
           placeholder="请选择起床时间"
           aria-describedby="upTime-hint"
         />
@@ -265,7 +276,7 @@ onMounted(() => {
           v-model="formData.sleepTime"
           type="time"
           class="clay-input w-full"
-          :disabled="!isToday"
+          :disabled="!isRecentThreeDays"
           placeholder="请输入睡眠时间"
           aria-describedby="sleepTime-hint"
         />
@@ -282,7 +293,7 @@ onMounted(() => {
           v-model="formData.food"
           rows="3"
           class="clay-input w-full resize-none"
-          :disabled="!isToday"
+          :disabled="!isRecentThreeDays"
           placeholder="记录今日饮食..."
           aria-describedby="food-hint"
         ></textarea>
@@ -299,7 +310,7 @@ onMounted(() => {
           v-model="formData.exercise"
           rows="3"
           class="clay-input w-full resize-none"
-          :disabled="!isToday"
+          :disabled="!isRecentThreeDays"
           placeholder="记录今日运动..."
           aria-describedby="exercise-hint"
         ></textarea>
@@ -316,7 +327,7 @@ onMounted(() => {
           v-model="formData.remark"
           rows="3"
           class="clay-input w-full resize-none"
-          :disabled="!isToday"
+          :disabled="!isRecentThreeDays"
           placeholder="其他备注信息..."
           aria-describedby="remark-hint"
         ></textarea>

@@ -250,7 +250,7 @@ onUnmounted(() => {
       <Transition name="fade">
         <div
           v-if="showContextMenu"
-          class="context-menu fixed z-100 min-w-[160px] bg-clay-bg-elevated rounded-clay-md shadow-clay-card py-2"
+          class="context-menu fixed z-1001 min-w-[160px] bg-clay-bg-elevated rounded-clay-md shadow-clay-card py-2"
           :style="{
             left: `${menuPosition.x}px`,
             top: `${menuPosition.y}px`,

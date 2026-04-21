@@ -231,6 +231,9 @@ async function handleSubmit() {
       showSuccess('记录创建成功')
     }
 
+    // 提交成功后清空新上传文件列表，避免 handleClose 时重复删除
+    newUploadedFileIds.value = []
+
     handleClose()
   } catch (error: any) {
     showError(error.message || '操作失败')
