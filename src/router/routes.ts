@@ -58,6 +58,18 @@ export const mainRoutes: RouteRecordRaw[] = [
     },
   },
 
+  // ==================== 财务流水 ====================
+  {
+    path: 'finance',
+    name: 'Finance',
+    component: () => import('@/views/finance/index.vue'),
+    meta: {
+      title: '财务收支',
+      icon: 'hugeicons:bitcoin-up-02',
+      module: 'finance',
+    },
+  },
+
   // ==================== OS 配置管理 ====================
   {
     path: 'os-config',
