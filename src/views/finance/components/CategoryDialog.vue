@@ -210,12 +210,12 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
         >
           <div
             v-if="modelValue"
-            class="w-full max-w-md bg-clay-bg-elevated rounded-clay-lg shadow-clay-card overflow-hidden"
+            class="w-full max-w-md bg-clay-bg-elevated rounded-clay-lg shadow-clay-card overflow-hidden max-h-[90vh] flex flex-col"
             role="dialog"
             aria-modal="true"
           >
             <!-- 标题栏 -->
-            <div class="flex items-center justify-between p-5 border-b border-gray-100">
+            <div class="flex items-center justify-between p-5 border-b border-gray-100 shrink-0">
               <h3 class="text-lg font-semibold text-clay-text-primary font-heading">
                 {{ isEditing ? '编辑分类' : '新增分类' }}
               </h3>
@@ -229,7 +229,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
             </div>
 
             <!-- 表单 -->
-            <form @submit.prevent="handleSubmit" class="p-5 space-y-5">
+            <form @submit.prevent="handleSubmit" class="p-5 space-y-5 overflow-y-auto flex-1">
               <!-- 名称 -->
               <div>
                 <label class="block text-sm font-medium text-clay-text-primary mb-2">
@@ -312,7 +312,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
             </form>
 
             <!-- 底部按钮 -->
-            <div class="flex items-center justify-end gap-3 p-5 border-t border-gray-100">
+            <div class="flex items-center justify-end gap-3 p-5 border-t border-gray-100 shrink-0">
               <button
                 @click="handleClose"
                 :disabled="isSubmitting"
@@ -334,3 +334,20 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
     </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+@media (max-width: 767px) {
+  .fixed.inset-0 {
+    padding: 0;
+    align-items: stretch;
+  }
+  .fixed.inset-0 > div {
+    max-width: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+    height: 100vh;
+    max-height: 100dvh;
+    height: 100dvh;
+  }
+}
+</style>

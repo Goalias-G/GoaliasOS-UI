@@ -435,9 +435,11 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
   }
   .fixed.inset-0 > div {
     max-width: 100%;
+    border-radius: 0;
     max-height: 100vh;
     height: 100vh;
-    border-radius: 0;
+    max-height: 100dvh;
+    height: 100dvh;
   }
 }
 </style>

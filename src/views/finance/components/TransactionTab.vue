@@ -90,18 +90,23 @@ function handlePageChange(page: number) {
         <!-- 分类筛选 -->
         <div class="flex-1 min-w-[140px]">
           <label class="block text-xs font-medium text-clay-text-secondary mb-1">分类</label>
-          <select
-            v-model="filterCategory"
-            class="clay-input w-full px-3 py-2 text-sm"
-          >
+          <select v-model="filterCategory" class="clay-input w-full px-3 py-2 text-sm">
             <option :value="undefined">全部分类</option>
             <optgroup label="支出">
-              <option v-for="cat in categories.filter((c) => c.type === 1)" :key="cat.id" :value="cat.id">
+              <option
+                v-for="cat in categories.filter((c) => c.type === 1)"
+                :key="cat.id"
+                :value="cat.id"
+              >
                 {{ cat.name }}
               </option>
             </optgroup>
             <optgroup label="收入">
-              <option v-for="cat in categories.filter((c) => c.type === 2)" :key="cat.id" :value="cat.id">
+              <option
+                v-for="cat in categories.filter((c) => c.type === 2)"
+                :key="cat.id"
+                :value="cat.id"
+              >
                 {{ cat.name }}
               </option>
             </optgroup>
@@ -131,11 +136,7 @@ function handlePageChange(page: number) {
         </div>
         <div class="min-w-[130px]">
           <label class="block text-xs font-medium text-clay-text-secondary mb-1">结束日期</label>
-          <input
-            v-model="filterEndDate"
-            type="date"
-            class="clay-input w-full px-3 py-2 text-sm"
-          />
+          <input v-model="filterEndDate" type="date" class="clay-input w-full px-3 py-2 text-sm" />
         </div>
 
         <!-- 操作按钮 -->
@@ -156,12 +157,18 @@ function handlePageChange(page: number) {
 
     <!-- 加载状态 -->
     <div v-if="loading.transactions" class="flex items-center justify-center py-12">
-      <div class="w-8 h-8 border-4 border-clay-primary/20 border-t-clay-primary rounded-full animate-spin"></div>
+      <div
+        class="w-8 h-8 border-4 border-clay-primary/20 border-t-clay-primary rounded-full animate-spin"
+      ></div>
     </div>
 
     <!-- 空状态 -->
     <div v-else-if="transactions.length === 0" class="clay-card p-12 text-center">
-      <AppIcon icon="mdi:receipt-text-outline" :size="56" class="text-clay-text-muted mx-auto mb-3" />
+      <AppIcon
+        icon="mdi:receipt-text-outline"
+        :size="56"
+        class="text-clay-text-muted mx-auto mb-3"
+      />
       <p class="text-clay-text-secondary">暂无流水记录</p>
       <button @click="emit('add')" class="clay-btn px-5 py-2.5 text-sm mt-4">记第一笔</button>
     </div>
@@ -172,12 +179,24 @@ function handlePageChange(page: number) {
         <table class="w-full">
           <thead>
             <tr class="bg-clay-bg-base border-b border-gray-100">
-              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">日期</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">分类</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">标签</th>
-              <th class="px-4 py-3 text-right text-xs font-semibold text-clay-text-secondary">金额</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">备注</th>
-              <th class="px-4 py-3 text-right text-xs font-semibold text-clay-text-secondary">操作</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">
+                日期
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">
+                分类
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">
+                标签
+              </th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-clay-text-secondary">
+                金额
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-clay-text-secondary">
+                备注
+              </th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-clay-text-secondary">
+                操作
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -248,13 +267,13 @@ function handlePageChange(page: number) {
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <AppIcon
-                :icon="
-                  categories.find((c) => c.id === tx.categoryId)?.icon || 'mdi:circle-outline'
-                "
+                :icon="categories.find((c) => c.id === tx.categoryId)?.icon || 'mdi:circle-outline'"
                 :size="18"
                 :class="tx.categoryType === 1 ? 'text-red-400' : 'text-green-400'"
               />
-              <span class="font-medium text-clay-text-primary text-sm">{{ tx.categoryName || '-' }}</span>
+              <span class="font-medium text-clay-text-primary text-sm">{{
+                tx.categoryName || '-'
+              }}</span>
             </div>
             <span
               class="text-sm font-semibold"
@@ -289,7 +308,9 @@ function handlePageChange(page: number) {
               </button>
             </div>
           </div>
-          <p v-if="tx.remark" class="text-xs text-clay-text-muted mt-1.5 truncate">{{ tx.remark }}</p>
+          <p v-if="tx.remark" class="text-xs text-clay-text-muted mt-1.5 truncate">
+            {{ tx.remark }}
+          </p>
         </div>
       </div>
 
@@ -303,7 +324,7 @@ function handlePageChange(page: number) {
             :class="
               transactionPagination.pageNum === 1
                 ? 'text-clay-text-muted'
-                : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary hover:text-white'
+                : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary hover:bg-purple-500'
             "
           >
             <AppIcon icon="mdi:chevron-left" :size="20" />
@@ -316,7 +337,7 @@ function handlePageChange(page: number) {
               class="w-9 h-9 rounded-clay-sm text-sm transition-colors font-medium"
               :class="
                 transactionPagination.pageNum === page
-                  ? 'bg-clay-primary text-white shadow-clay-button'
+                  ? 'bg-clay-primary text-purple-500 shadow-clay-button'
                   : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-bg-elevated'
               "
             >
@@ -330,7 +351,7 @@ function handlePageChange(page: number) {
             :class="
               transactionPagination.pageNum === totalPages
                 ? 'text-clay-text-muted'
-                : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary hover:text-white'
+                : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary hover:bg-purple-500'
             "
           >
             <AppIcon icon="mdi:chevron-right" :size="20" />

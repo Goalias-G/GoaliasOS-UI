@@ -114,7 +114,9 @@ async function loadHealthData() {
         formData.value = {
           upTime: '',
           sleepTime: '',
-          food: '',
+          food: `早：
+中：
+晚：`,
           exercise: '',
           remark: '',
         }

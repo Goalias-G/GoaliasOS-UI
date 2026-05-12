@@ -99,8 +99,18 @@ function handleKeydown(e: KeyboardEvent) {
 
         <!-- 登录表单卡片 -->
         <div class="clay-card p-6 sm:p-8 animate-breathe" @keydown="handleKeydown">
-          <h2 class="text-lg sm:text-xl font-heading font-bold text-clay-text-primary mb-4 sm:mb-5">
-            登录账户
+          <h2
+            class="flex items-center text-lg sm:text-xl font-heading font-bold text-clay-text-primary mb-4 sm:mb-5"
+          >
+            <span>登录账户</span>
+            <span
+              class="flex-1 text-[12px] leading-tight font-normal text-clay-text-muted text-right"
+            >
+              <span class="inline-flex flex-col items-start gap-0.5">
+                <span>游客用户名: <span class="text-clay-primary">user</span></span>
+                <span>游客密码: <span class="text-clay-primary">user123456</span></span>
+              </span>
+            </span>
           </h2>
 
           <!-- 错误提示 -->
@@ -127,7 +137,7 @@ function handleKeydown(e: KeyboardEvent) {
                 <input
                   v-model="username"
                   type="text"
-                  placeholder="请输入用户名 (游客账号: user)"
+                  placeholder="请输入用户名"
                   autocomplete="username"
                   class="pl-10 sm:pl-12 clay-input w-full text-sm sm:text-base"
                 />
@@ -146,7 +156,7 @@ function handleKeydown(e: KeyboardEvent) {
                 <input
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
-                  placeholder="请输入密码 (游客密码: user123456)"
+                  placeholder="请输入密码"
                   autocomplete="current-password"
                   class="clay-input w-full pl-10 sm:pl-12 pr-10 sm:pr-12 text-sm sm:text-base"
                 />

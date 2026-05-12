@@ -174,11 +174,11 @@ onUnmounted(() => {
 
 <template>
   <div class="h-full bg-clay-bg-base overflow-auto">
-    <div class="max-w-6xl mx-auto p-4 md:p-6">
+    <div class="mx-auto p-4 md:p-6">
       <!-- 页面标题 -->
       <div class="mb-5">
         <h2 class="text-xl md:text-2xl font-bold text-clay-text-primary font-heading">
-          财务收支看板
+          财务收支明细
         </h2>
       </div>
 

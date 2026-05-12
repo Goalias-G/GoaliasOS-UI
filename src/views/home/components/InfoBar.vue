@@ -101,16 +101,7 @@ const currentLocation = computed(() => {
         class="flex items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm min-w-0"
       >
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <AppIcon
-            icon="mdi:weather-partly-cloudy"
-            :size="20"
-            class="text-clay-primary sm:hidden"
-          />
-          <AppIcon
-            icon="mdi:weather-partly-cloudy"
-            :size="24"
-            class="text-clay-primary hidden sm:inline"
-          />
+          <AppIcon icon="mdi:weather-partly-cloudy" :size="24" class="text-clay-primary" />
           <div>
             <div class="font-medium text-clay-text-primary whitespace-nowrap">
               {{ weather.weather }}

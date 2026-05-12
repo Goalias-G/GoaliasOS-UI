@@ -59,7 +59,6 @@ export default defineConfig({
     open: true,
     proxy: {
       '/goalias-os': {
-        // target: 'https://gaows.top',
         target: 'http://localhost:7000',
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, ''),

@@ -20,6 +20,7 @@ import {
   LegendComponent,
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
+import type { FinanceTrend, FinanceDayTrend } from '@/types'
 
 echarts.use([
   LineChart,
@@ -57,6 +58,27 @@ const yearOptions = computed(() => {
 
 const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1)
 
+// ==================== 补全缺失日期/月份 ====================
+const filledMonthTrendData = computed(() => {
+  const year = trendYear.value
+  const dataMap = new Map(trendData.value.map((d) => [d.month, d]))
+  return Array.from({ length: 12 }, (_, i) => {
+    const monthKey = `${year}-${String(i + 1).padStart(2, '0')}`
+    return dataMap.get(monthKey) || { month: monthKey, income: 0, expense: 0 }
+  })
+})
+
+const filledDayTrendData = computed(() => {
+  const year = trendYear.value
+  const month = trendMonth.value
+  const daysInMonth = new Date(year, month, 0).getDate()
+  const dataMap = new Map(dayTrendData.value.map((d) => [d.day, d]))
+  return Array.from({ length: daysInMonth }, (_, i) => {
+    const dayKey = `${year}-${String(month).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`
+    return dataMap.get(dayKey) || { day: dayKey, income: 0, expense: 0 }
+  })
+})
+
 // ==================== 日期范围筛选（饼图） ====================
 const now = new Date()
 const pieStartDate = ref(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`)
@@ -71,9 +93,9 @@ const pieChartInstance = ref<echarts.ECharts | null>(null)
 // ==================== 初始化趋势图 ====================
 function initTrendChart() {
   const isMonthMode = trendMode.value === 'month'
-  const data = isMonthMode ? trendData.value : dayTrendData.value
+  const data = isMonthMode ? filledMonthTrendData.value : filledDayTrendData.value
 
-  if (!trendChartRef.value || data.length === 0) return
+  if (!trendChartRef.value) return
 
   if (trendChartInstance.value) trendChartInstance.value.dispose()
 
@@ -81,8 +103,8 @@ function initTrendChart() {
   trendChartInstance.value = chart
 
   const labels = isMonthMode
-    ? trendData.value.map((d) => d.month)
-    : dayTrendData.value.map((d) => d.day)
+    ? data.map((d) => (d as FinanceTrend).month)
+    : data.map((d) => (d as FinanceDayTrend).day)
   const incomeData = data.map((d) => d.income / 100)
   const expenseData = data.map((d) => d.expense / 100)
 
@@ -262,10 +284,10 @@ watch(trendMonth, () => {
 })
 
 // 监听数据变化重新初始化图表
-watch(trendData, () => {
+watch(filledMonthTrendData, () => {
   if (trendMode.value === 'month') nextTick(() => initTrendChart())
 })
-watch(dayTrendData, () => {
+watch(filledDayTrendData, () => {
   if (trendMode.value === 'day') nextTick(() => initTrendChart())
 })
 watch(pieData, () => nextTick(() => initPieChart()))
@@ -285,43 +307,53 @@ onUnmounted(() => {
 <template>
   <div class="space-y-5">
     <!-- 指标卡片 -->
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-3 gap-3 md:gap-4">
       <!-- 本月收入 -->
-      <div class="clay-card p-5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-clay-sm bg-green-50 flex items-center justify-center">
-            <AppIcon icon="mdi:arrow-up-bold" :size="20" class="text-green-500" />
+      <div class="clay-card p-3 md:p-5 min-w-0 overflow-hidden">
+        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+          <div
+            class="w-5 h-5 md:w-10 md:h-10 rounded-clay-sm bg-green-50 flex items-center justify-center shrink-0"
+          >
+            <AppIcon icon="mdi:arrow-up-bold" :size="18" class="text-green-500" />
           </div>
-          <span class="text-sm text-clay-text-secondary">本月收入</span>
+          <span class="text-xs md:text-sm text-clay-text-secondary truncate">本月收入</span>
         </div>
-        <div class="text-2xl font-bold text-green-500 font-heading">
+        <div
+          class="text-lg md:text-2xl font-bold text-green-500 font-heading break-all leading-tight"
+        >
           ¥{{ formatAmount(overview?.monthIncome ?? 0) }}
         </div>
       </div>
 
       <!-- 本月支出 -->
-      <div class="clay-card p-5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-clay-sm bg-red-50 flex items-center justify-center">
-            <AppIcon icon="mdi:arrow-down-bold" :size="20" class="text-red-500" />
+      <div class="clay-card p-3 md:p-5 min-w-0 overflow-hidden">
+        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+          <div
+            class="w-5 h-5 md:w-10 md:h-10 rounded-clay-sm bg-red-50 flex items-center justify-center shrink-0"
+          >
+            <AppIcon icon="mdi:arrow-down-bold" :size="18" class="text-red-500" />
           </div>
-          <span class="text-sm text-clay-text-secondary">本月支出</span>
+          <span class="text-xs md:text-sm text-clay-text-secondary truncate">本月支出</span>
         </div>
-        <div class="text-2xl font-bold text-red-500 font-heading">
+        <div
+          class="text-lg md:text-2xl font-bold text-red-500 font-heading break-all leading-tight"
+        >
           ¥{{ formatAmount(overview?.monthExpense ?? 0) }}
         </div>
       </div>
 
       <!-- 本月结余 -->
-      <div class="clay-card p-5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-clay-sm bg-blue-50 flex items-center justify-center">
-            <AppIcon icon="mdi:wallet-outline" :size="20" class="text-blue-500" />
+      <div class="clay-card p-3 md:p-5 min-w-0 overflow-hidden">
+        <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+          <div
+            class="w-5 h-5 md:w-10 md:h-10 rounded-clay-sm bg-blue-50 flex items-center justify-center shrink-0"
+          >
+            <AppIcon icon="mdi:wallet-outline" :size="18" class="text-blue-500" />
           </div>
-          <span class="text-sm text-clay-text-secondary">本月结余</span>
+          <span class="text-xs md:text-sm text-clay-text-secondary truncate">本月结余</span>
         </div>
         <div
-          class="text-2xl font-bold font-heading"
+          class="text-lg md:text-2xl font-bold font-heading break-all leading-tight"
           :class="(overview?.monthBalance ?? 0) >= 0 ? 'text-blue-500' : 'text-red-500'"
         >
           ¥{{ formatAmount(overview?.monthBalance ?? 0) }}
@@ -397,28 +429,25 @@ onUnmounted(() => {
       </div>
 
       <!-- 分类饼图 -->
-      <div class="flex-1 min-w-0 md:basis-2/5 clay-card p-5">
-        <div class="flex items-center justify-between mb-4">
-          <!-- <h4 class="text-base font-semibold text-clay-text-primary font-heading">分类占比</h4> -->
-          <div class="flex items-center gap-2">
-            <input
-              v-model="pieStartDate"
-              type="date"
-              class="px-2 py-1 rounded-clay-sm bg-clay-bg-base text-clay-text-primary text-xs border border-transparent focus:outline-none focus:border-clay-primary"
-            />
-            <span class="text-clay-text-muted text-xs">~</span>
-            <input
-              v-model="pieEndDate"
-              type="date"
-              class="px-2 py-1 rounded-clay-sm bg-clay-bg-base text-clay-text-primary text-xs border border-transparent focus:outline-none focus:border-clay-primary"
-            />
-            <button
-              @click="loadPieData"
-              class="px-2.5 py-1 rounded-clay-sm bg-clay-primary text-xs font-medium shadow-clay-button hover:shadow-clay-hover transition-all"
-            >
-              查询
-            </button>
-          </div>
+      <div class="flex-1 min-w-0 md:basis-2/5 clay-card p-3 md:p-5">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <input
+            v-model="pieStartDate"
+            type="date"
+            class="px-2 py-1 rounded-clay-sm bg-clay-bg-base text-clay-text-primary text-xs border border-transparent focus:outline-none focus:border-clay-primary w-auto min-w-0"
+          />
+          <span class="text-clay-text-muted text-xs">~</span>
+          <input
+            v-model="pieEndDate"
+            type="date"
+            class="px-2 py-1 rounded-clay-sm bg-clay-bg-base text-clay-text-primary text-xs border border-transparent focus:outline-none focus:border-clay-primary w-auto min-w-0"
+          />
+          <button
+            @click="loadPieData"
+            class="px-2.5 py-1 rounded-clay-sm bg-clay-primary text-xs font-medium shadow-clay-button hover:shadow-clay-hover transition-all"
+          >
+            查询
+          </button>
         </div>
 
         <div v-if="loading.pie" class="flex items-center justify-center py-12">
