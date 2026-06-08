@@ -53,6 +53,9 @@ function selectRecord(index: number, recordId: number) {
 function handleKeydown(event: KeyboardEvent) {
   if (!records.value.length) return
 
+  const tag = (event.target as HTMLElement).tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+
   switch (event.key) {
     case 'ArrowUp':
       event.preventDefault()

@@ -49,6 +49,7 @@ declare global {
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
   const deleteSessionExample: typeof import('./src/stores/session.example').deleteSessionExample
+  const describeCron: typeof import('./src/utils/cron').describeCron
   const eagerComputed: typeof import('@vueuse/core').eagerComputed
   const effectScope: typeof import('vue').effectScope
   const errorHandlingExample: typeof import('./src/stores/session.example').errorHandlingExample
@@ -121,6 +122,7 @@ declare global {
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
   const isUrl: typeof import('./src/utils/validate').isUrl
+  const isValidCron: typeof import('./src/utils/cron').isValidCron
   const loadSessionsExample: typeof import('./src/stores/session.example').loadSessionsExample
   const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
@@ -473,6 +475,7 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
+    readonly describeCron: UnwrapRef<typeof import('./src/utils/cron')['describeCron']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly escapeHtml: UnwrapRef<typeof import('./src/utils/markdown')['escapeHtml']>
@@ -507,6 +510,7 @@ declare module 'vue' {
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
     readonly isUrl: UnwrapRef<typeof import('./src/utils/validate')['isUrl']>
+    readonly isValidCron: UnwrapRef<typeof import('./src/utils/cron')['isValidCron']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
     readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>

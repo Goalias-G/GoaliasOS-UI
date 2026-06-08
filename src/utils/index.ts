@@ -8,6 +8,7 @@
 export * from './storage'
 export * from './format'
 export * from './validate'
+export * from './cron'
 
 /**
  * 防抖函数

@@ -119,6 +119,15 @@ export const mainRoutes: RouteRecordRaw[] = [
           requiresAdmin: true,
         },
       },
+      {
+        path: 'scheduled-task',
+        name: 'OSConfigScheduledTask',
+        component: () => import('@/views/os-config/modules/ScheduledTaskModule.vue'),
+        meta: {
+          title: '定时任务',
+          requiresAdmin: true,
+        },
+      },
     ],
   },
 ]

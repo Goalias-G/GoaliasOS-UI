@@ -88,6 +88,9 @@ function gotoNext() {
 function handleKeydown(event: KeyboardEvent) {
   if (!currentRecord.value) return
 
+  const tag = (event.target as HTMLElement).tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+
   switch (event.key) {
     case 'ArrowLeft':
       event.preventDefault()

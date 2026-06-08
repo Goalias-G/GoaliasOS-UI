@@ -6,7 +6,7 @@
  * - 提供左右分栏布局结构
  * - 左侧导航栏固定宽度 240px
  * - 右侧内容区域占据剩余空间
- * - 包含三个导航项：聊天模型、知识库、提示词模板
+ * - 包含四个导航项：聊天模型、知识库、提示词模板、定时任务
  * - 使用 Claymorphism 设计风格
  * - 支持响应式布局（移动端汉堡菜单）
  */
@@ -30,6 +30,12 @@ const navItems = [
     name: 'OSConfigPromptTemplate',
     label: '提示词模板',
     icon: 'mdi:text-box-outline',
+  },
+  {
+    path: '/os-config/scheduled-task',
+    name: 'OSConfigScheduledTask',
+    label: '定时任务',
+    icon: 'mdi:clock-time-five-outline',
   },
 ]
 
