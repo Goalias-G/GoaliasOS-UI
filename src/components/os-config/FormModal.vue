@@ -107,19 +107,44 @@ function handleCancel() {
 }
 
 /**
- * 处理遮罩层点击
+ * 处理键盘事件
  */
-function handleOverlayClick() {
-  if (!props.loading) {
+function handleKeydown(event: KeyboardEvent) {
+  // 只在弹窗显示时处理键盘事件
+  if (!props.visible) return
+
+  // Esc 键关闭弹窗
+  if (event.key === 'Escape' && !props.loading) {
+    event.preventDefault()
     handleCancel()
+    return
+  }
+
+  // Enter 键触发保存（仅在非 textarea 元素中）
+  if (event.key === 'Enter' && !event.shiftKey && !props.loading) {
+    const target = event.target as HTMLElement
+    // 如果不是 textarea，则触发保存
+    if (target.tagName !== 'TEXTAREA') {
+      event.preventDefault()
+      handleSubmit()
+    }
   }
 }
+
+// ==================== 生命周期 ====================
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="visible" class="modal-overlay" @click.self="handleOverlayClick">
+      <div v-if="visible" class="modal-overlay">
         <div class="modal-container clay-card">
           <!-- 标题栏 -->
           <div class="modal-header">

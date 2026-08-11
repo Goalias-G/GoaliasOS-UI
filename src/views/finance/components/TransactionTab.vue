@@ -67,12 +67,17 @@ function resetFilter() {
 }
 
 // ==================== 分页 ====================
-const totalPages = computed(() =>
-  Math.ceil(transactionPagination.value.total / transactionPagination.value.pageSize),
-)
-
 function handlePageChange(page: number) {
   store.setTransactionPage(page)
+  loadFilteredTransactions()
+}
+
+function handlePageSizeChange(size: number) {
+  store.setTransactionPageSize(size)
+  loadFilteredTransactions()
+}
+
+function loadFilteredTransactions() {
   const params: Record<string, any> = {}
   if (filterCategory.value) params.categoryId = filterCategory.value
   if (filterTag.value) params.tag = filterTag.value
@@ -315,49 +320,15 @@ function handlePageChange(page: number) {
       </div>
 
       <!-- 分页 -->
-      <div v-if="totalPages > 1" class="flex justify-center pt-2">
-        <div class="flex items-center gap-2">
-          <button
-            @click="handlePageChange(transactionPagination.pageNum - 1)"
-            :disabled="transactionPagination.pageNum === 1"
-            class="px-3 py-2 rounded-clay-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :class="
-              transactionPagination.pageNum === 1
-                ? 'text-clay-text-muted'
-                : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary hover:bg-purple-500'
-            "
-          >
-            <AppIcon icon="mdi:chevron-left" :size="20" />
-          </button>
-          <div class="flex items-center gap-1">
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              @click="handlePageChange(page)"
-              class="w-9 h-9 rounded-clay-sm text-sm transition-colors font-medium"
-              :class="
-                transactionPagination.pageNum === page
-                  ? 'bg-clay-primary text-purple-500 shadow-clay-button'
-                  : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-bg-elevated'
-              "
-            >
-              {{ page }}
-            </button>
-          </div>
-          <button
-            @click="handlePageChange(transactionPagination.pageNum + 1)"
-            :disabled="transactionPagination.pageNum === totalPages"
-            class="px-3 py-2 rounded-clay-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :class="
-              transactionPagination.pageNum === totalPages
-                ? 'text-clay-text-muted'
-                : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary hover:bg-purple-500'
-            "
-          >
-            <AppIcon icon="mdi:chevron-right" :size="20" />
-          </button>
-        </div>
-      </div>
+      <Pagination
+        v-if="transactionPagination.total > 0"
+        :page="transactionPagination.pageNum"
+        :page-size="transactionPagination.pageSize"
+        :total="transactionPagination.total"
+        :page-size-options="[10, 20, 50, 100]"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+      />
     </template>
   </div>
 </template>

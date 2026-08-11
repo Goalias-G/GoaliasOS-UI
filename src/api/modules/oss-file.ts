@@ -47,6 +47,7 @@ export const ossApi = {
     formData.append('file', file)
     return post<ApiResponse<SysOssUploadVo>>('/system/oss/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 600000, //10分钟
     })
   },
 

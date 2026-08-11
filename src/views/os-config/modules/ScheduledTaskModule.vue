@@ -283,7 +283,7 @@ const baseTaskFields: FormField[] = [
     label: 'Cron 表达式',
     type: 'text',
     required: true,
-    placeholder: '例如：0 0 * * * （每天0点）',
+    placeholder: '例如：1 2 * * * （每天每时2分1秒）',
   },
   {
     key: 'description',
@@ -895,6 +895,30 @@ async function handleLogDelete(row: SysScheduledTaskLog) {
   }
 }
 
+// ==================== 键盘快捷键 ====================
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    if (resultModalVisible.value) {
+      closeResultModal()
+      return
+    }
+    if (taskModalVisible.value && !taskModalLoading.value) {
+      handleCancelTask()
+      return
+    }
+  }
+
+  if (e.key === 'Enter' && !e.shiftKey) {
+    if (taskModalVisible.value && !taskModalLoading.value) {
+      const target = e.target as HTMLElement
+      if (target.tagName !== 'TEXTAREA') {
+        e.preventDefault()
+        handleTaskSubmit()
+      }
+    }
+  }
+}
+
 // ==================== 初始化 ====================
 // Tab 懒加载：首次进入对应 tab 时才拉取该 tab 的列表
 watch(activeTab, (tab) => {
@@ -908,6 +932,8 @@ watch(activeTab, (tab) => {
 })
 
 onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+
   // 进入页面时若默认 tab 仍为 'task'，先做一次首次加载
   if (activeTab.value === 'task') {
     loadedTabs.value.add('task')
@@ -916,6 +942,10 @@ onMounted(() => {
     loadedTabs.value.add('log')
     loadLogs()
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -1185,7 +1215,6 @@ onMounted(() => {
         <div
           v-if="taskModalVisible"
           class="modal-overlay"
-          @click.self="!taskModalLoading && handleCancelTask()"
         >
           <div class="modal-container clay-card">
             <div class="modal-header">
@@ -1309,7 +1338,7 @@ onMounted(() => {
     <!-- 立即执行结果弹窗 -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="resultModalVisible" class="modal-overlay" @click.self="closeResultModal">
+        <div v-if="resultModalVisible" class="modal-overlay">
           <div class="modal-container result-modal clay-card">
             <div class="modal-header">
               <h3 class="modal-title">执行结果 - {{ resultRow?.taskName }}</h3>
@@ -1775,6 +1804,7 @@ onMounted(() => {
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
 .modal-title {
@@ -1813,6 +1843,7 @@ onMounted(() => {
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
+  min-height: 0;
 }
 
 .form-field {
@@ -1858,6 +1889,7 @@ textarea.clay-input {
   gap: 0.75rem;
   padding: 1.25rem 1.5rem;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
 /* ==================== 结果弹窗内部 ==================== */
@@ -1997,8 +2029,14 @@ textarea.clay-input {
   .modal-container {
     max-width: 100%;
     max-height: 100vh;
+    max-height: 100dvh;
     height: 100vh;
+    height: 100dvh;
     border-radius: 0;
+  }
+
+  .modal-footer {
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
   }
 
   .result-grid {

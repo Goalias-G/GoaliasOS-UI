@@ -137,6 +137,12 @@ function handleKnowledgePageChange(page: number) {
   loadKnowledgeList()
 }
 
+function handleKnowledgePageSizeChange(size: number) {
+  knowledgePageSize.value = size
+  knowledgePage.value = 1
+  loadKnowledgeList()
+}
+
 function toggleKnowledgeExpand(id: number) {
   if (expandedKnowledgeItems.value.has(id)) {
     expandedKnowledgeItems.value.delete(id)
@@ -204,6 +210,12 @@ async function loadPsychologyList() {
 // 分页方法
 function handlePsychologyPageChange(page: number) {
   psychologyPage.value = page
+  loadPsychologyList()
+}
+
+function handlePsychologyPageSizeChange(size: number) {
+  psychologyPageSize.value = size
+  psychologyPage.value = 1
   loadPsychologyList()
 }
 
@@ -646,49 +658,15 @@ onUnmounted(() => {
             </div>
 
             <!-- 分页 -->
-            <div v-if="knowledgeTotal > knowledgePageSize" class="flex justify-center pt-4">
-              <div class="flex items-center gap-2">
-                <button
-                  @click="handleKnowledgePageChange(knowledgePage - 1)"
-                  :disabled="knowledgePage === 1"
-                  class="px-4 py-2 rounded-clay-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  :class="
-                    knowledgePage === 1
-                      ? 'text-clay-text-muted'
-                      : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary'
-                  "
-                >
-                  <AppIcon icon="mdi:chevron-left" :size="20" />
-                </button>
-                <div class="flex items-center gap-1">
-                  <button
-                    v-for="page in Math.ceil(knowledgeTotal / knowledgePageSize)"
-                    :key="page"
-                    @click="handleKnowledgePageChange(page)"
-                    class="w-10 h-10 rounded-clay-sm transition-colors font-medium"
-                    :class="
-                      knowledgePage === page
-                        ? 'bg-clay-primary shadow-clay-button'
-                        : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-bg-elevated'
-                    "
-                  >
-                    {{ page }}
-                  </button>
-                </div>
-                <button
-                  @click="handleKnowledgePageChange(knowledgePage + 1)"
-                  :disabled="knowledgePage === Math.ceil(knowledgeTotal / knowledgePageSize)"
-                  class="px-4 py-2 rounded-clay-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  :class="
-                    knowledgePage === Math.ceil(knowledgeTotal / knowledgePageSize)
-                      ? 'text-clay-text-muted'
-                      : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary'
-                  "
-                >
-                  <AppIcon icon="mdi:chevron-right" :size="20" />
-                </button>
-              </div>
-            </div>
+            <Pagination
+              v-if="knowledgeTotal > 0"
+              :page="knowledgePage"
+              :page-size="knowledgePageSize"
+              :total="knowledgeTotal"
+              :page-size-options="[5, 10, 20, 50]"
+              @update:page="handleKnowledgePageChange"
+              @update:page-size="handleKnowledgePageSizeChange"
+            />
           </div>
 
           <!-- 空状态 -->
@@ -772,49 +750,15 @@ onUnmounted(() => {
             </div>
 
             <!-- 分页 -->
-            <div v-if="psychologyTotal > psychologyPageSize" class="flex justify-center pt-4">
-              <div class="flex items-center gap-2">
-                <button
-                  @click="handlePsychologyPageChange(psychologyPage - 1)"
-                  :disabled="psychologyPage === 1"
-                  class="px-4 py-2 rounded-clay-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  :class="
-                    psychologyPage === 1
-                      ? 'text-clay-text-muted'
-                      : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary '
-                  "
-                >
-                  <AppIcon icon="mdi:chevron-left" :size="20" />
-                </button>
-                <div class="flex items-center gap-1">
-                  <button
-                    v-for="page in Math.ceil(psychologyTotal / psychologyPageSize)"
-                    :key="page"
-                    @click="handlePsychologyPageChange(page)"
-                    class="w-10 h-10 rounded-clay-sm transition-colors font-medium"
-                    :class="
-                      psychologyPage === page
-                        ? 'bg-clay-primary  shadow-clay-button'
-                        : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-bg-elevated'
-                    "
-                  >
-                    {{ page }}
-                  </button>
-                </div>
-                <button
-                  @click="handlePsychologyPageChange(psychologyPage + 1)"
-                  :disabled="psychologyPage === Math.ceil(psychologyTotal / psychologyPageSize)"
-                  class="px-4 py-2 rounded-clay-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  :class="
-                    psychologyPage === Math.ceil(psychologyTotal / psychologyPageSize)
-                      ? 'text-clay-text-muted'
-                      : 'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary '
-                  "
-                >
-                  <AppIcon icon="mdi:chevron-right" :size="20" />
-                </button>
-              </div>
-            </div>
+            <Pagination
+              v-if="psychologyTotal > 0"
+              :page="psychologyPage"
+              :page-size="psychologyPageSize"
+              :total="psychologyTotal"
+              :page-size-options="[5, 10, 20, 50]"
+              @update:page="handlePsychologyPageChange"
+              @update:page-size="handlePsychologyPageSizeChange"
+            />
           </div>
 
           <!-- 空状态 -->

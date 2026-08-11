@@ -115,10 +115,15 @@ export const useFinanceStore = defineStore('finance', () => {
     }
   }
 
-  async function addTransaction(data: FinanceTransactionParams): Promise<void> {
+  async function addTransaction(
+    data: FinanceTransactionParams,
+    isHome: boolean = false,
+  ): Promise<void> {
     const response = await financeTransactionApi.add(data)
     if (response.code === 200) {
-      await loadTransactions(undefined, true)
+      if (!isHome) {
+        await loadTransactions(undefined, true)
+      }
     } else {
       throw new Error(response.message || '新增流水失败')
     }
@@ -204,6 +209,11 @@ export const useFinanceStore = defineStore('finance', () => {
     transactionPagination.value.pageNum = page
   }
 
+  function setTransactionPageSize(size: number) {
+    transactionPagination.value.pageSize = size
+    transactionPagination.value.pageNum = 1
+  }
+
   return {
     // 状态
     categories,
@@ -228,6 +238,7 @@ export const useFinanceStore = defineStore('finance', () => {
     editTransaction,
     deleteTransaction,
     setTransactionPage,
+    setTransactionPageSize,
     // 统计方法
     loadOverview,
     loadTrend,

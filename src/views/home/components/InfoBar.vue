@@ -37,7 +37,7 @@ const showTransactionDialog = ref(false)
 // ==================== 记一笔 ====================
 async function handleTransactionSave(data: FinanceTransactionParams) {
   try {
-    await financeStore.addTransaction(data)
+    await financeStore.addTransaction(data, true)
     showSuccess('记账成功')
   } catch (error: any) {
     showError(error.message || '记账失败')
