@@ -24,6 +24,8 @@ const emit = defineEmits<{
   rename: [newTitle: string]
   /** 删除会话 */
   delete: []
+  /** 归档会话 */
+  archive: []
 }>()
 
 // ==================== 响应式状态 ====================
@@ -53,44 +55,16 @@ const containerClass = computed(() => {
   ]
 })
 
-/** 格式化创建时间 */
+/** 完整的更新时间 */
 const formattedTime = computed(() => {
-  if (!props.session.createTime) {
-    return '刚刚'
-  }
+  const sourceTime = props.session.updateTime || props.session.createTime
+  if (!sourceTime) return '暂无更新时间'
 
-  const date = new Date(props.session.createTime)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
+  const date = new Date(sourceTime)
+  if (Number.isNaN(date.getTime())) return sourceTime
 
-  // 小于 1 分钟
-  if (diff < 60 * 1000) {
-    return '刚刚'
-  }
-
-  // 小于 1 小时
-  if (diff < 60 * 60 * 1000) {
-    const minutes = Math.floor(diff / (60 * 1000))
-    return `${minutes} 分钟前`
-  }
-
-  // 小于 24 小时
-  if (diff < 24 * 60 * 60 * 1000) {
-    const hours = Math.floor(diff / (60 * 60 * 1000))
-    return `${hours} 小时前`
-  }
-
-  // 小于 7 天
-  if (diff < 7 * 24 * 60 * 60 * 1000) {
-    const days = Math.floor(diff / (24 * 60 * 60 * 1000))
-    return `${days} 天前`
-  }
-
-  // 显示日期
-  return date.toLocaleDateString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-  })
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 })
 
 /** 显示的会话标题（截断过长的标题） */
@@ -170,6 +144,12 @@ function handleDelete() {
   emit('delete')
 }
 
+/** 归档会话 */
+function handleArchive() {
+  showContextMenu.value = false
+  emit('archive')
+}
+
 /** 关闭右键菜单 */
 function closeContextMenu() {
   showContextMenu.value = false
@@ -178,7 +158,7 @@ function closeContextMenu() {
 /** 获取调整后的菜单位置（防止移动端超出屏幕） */
 function getAdjustedPosition(x: number, y: number) {
   const menuWidth = 160
-  const menuHeight = 100
+  const menuHeight = 150
   const padding = 10
 
   let adjustedX = x
@@ -264,6 +244,15 @@ onUnmounted(() => {
           >
             <AppIcon icon="mdi:pencil-outline" :size="16" />
             <span>重命名</span>
+          </button>
+
+          <!-- 归档选项 -->
+          <button
+            class="menu-item w-full px-4 py-2 text-left text-sm text-clay-text-primary hover:bg-clay-primary/10 transition-colors duration-fast flex items-center gap-2"
+            @click="handleArchive"
+          >
+            <AppIcon icon="mdi:archive-arrow-down-outline" :size="16" />
+            <span>归档会话</span>
           </button>
 
           <!-- 分割线 -->

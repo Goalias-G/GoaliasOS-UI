@@ -27,6 +27,15 @@ const sessionStore = useSessionStore()
 /** 是否显示知识库选择器 */
 const showKnowledgeSelector = ref(false)
 
+/** 是否展开底部设置菜单 */
+const showSettingsMenu = ref(false)
+
+/** 是否显示已归档会话 */
+const showArchivedSessions = ref(false)
+
+/** 是否显示用户画像 */
+const showUserProfile = ref(false)
+
 /** 是否显示提示词选择器 */
 const showPromptSelector = ref(false)
 
@@ -49,9 +58,21 @@ async function handleCreateSession() {
  * 打开知识库选择器
  */
 function openKnowledgeSelector() {
+  showSettingsMenu.value = false
   showKnowledgeSelector.value = true
 }
 
+/** 打开已归档会话 */
+function openArchivedSessions() {
+  showSettingsMenu.value = false
+  showArchivedSessions.value = true
+}
+
+/** 打开用户画像 */
+function openUserProfile() {
+  showSettingsMenu.value = false
+  showUserProfile.value = true
+}
 /**
  * 打开提示词选择器
  */
@@ -119,36 +140,73 @@ function closeSidebar() {
       <SessionList />
     </div>
 
-    <!-- 侧边栏底部 -->
-    <div class="sidebar-footer px-4 py-3 space-y-2">
-      <!-- 知识库按钮 -->
+    <!-- 侧边栏底部设置 -->
+    <div class="sidebar-footer relative px-4 py-3">
+      <Transition name="settings-menu">
+        <div
+          v-if="showSettingsMenu"
+          class="absolute bottom-full left-4 right-4 mb-2 overflow-hidden rounded-clay-md bg-clay-bg-elevated p-2 shadow-clay-card"
+        >
+          <button
+            class="settings-option w-full rounded-clay-sm px-3 py-2.5 text-left text-sm text-clay-text-primary hover:bg-clay-primary/10"
+            @click="openKnowledgeSelector"
+          >
+            <AppIcon icon="mdi:database-outline" :size="18" />
+            <span>知识库</span>
+          </button>
+          <button
+            class="settings-option w-full rounded-clay-sm px-3 py-2.5 text-left text-sm text-clay-text-primary hover:bg-clay-primary/10"
+            @click="openArchivedSessions"
+          >
+            <AppIcon icon="mdi:archive-clock-outline" :size="18" />
+            <span>已归档会话记录</span>
+          </button>
+          <button
+            class="settings-option w-full rounded-clay-sm px-3 py-2.5 text-left text-sm text-clay-text-primary hover:bg-clay-primary/10"
+            @click="openUserProfile"
+          >
+            <AppIcon icon="mdi:account-details-outline" :size="18" />
+            <span>用户画像</span>
+          </button>
+        </div>
+      </Transition>
+
       <button
         class="w-full clay-btn-secondary px-4 py-2.5 flex items-center justify-center gap-2"
-        @click="openKnowledgeSelector"
+        @click="showSettingsMenu = !showSettingsMenu"
       >
-        <AppIcon icon="mdi:database" :size="18" />
-        <span>知识库</span>
+        <AppIcon icon="mdi:cog-outline" :size="18" />
+        <span>设置</span>
+        <AppIcon :icon="showSettingsMenu ? 'mdi:chevron-down' : 'mdi:chevron-up'" :size="18" />
       </button>
-
-      <!-- 提示词按钮 -->
-      <!-- <button
-        class="w-full clay-btn-secondary px-4 py-2.5 flex items-center justify-center gap-2"
-        @click="openPromptSelector"
-      >
-        <AppIcon icon="mdi:text-box-outline" :size="18" />
-        <span>提示词</span>
-      </button> -->
     </div>
 
-    <!-- 知识库选择器对话框 -->
     <KnowledgeSelector v-model:visible="showKnowledgeSelector" />
-
-    <!-- 提示词选择器对话框 -->
-    <!-- <PromptSelector v-model:visible="showPromptSelector" @select="handlePromptSelect" /> -->
+    <ArchivedSessionSelector v-model:visible="showArchivedSessions" />
+    <UserProfileViewer v-model:visible="showUserProfile" />
   </div>
 </template>
 
 <style scoped>
+.settings-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.settings-menu-enter-active,
+.settings-menu-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.settings-menu-enter-from,
+.settings-menu-leave-to {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
 /* ==================== 侧边栏容器 ==================== */
 .session-sidebar {
   border-radius: var(--radius-clay-lg);

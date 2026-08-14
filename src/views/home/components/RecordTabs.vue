@@ -13,6 +13,7 @@
 
 import type { DailyHealth, DailyKnowledge, HealthSleepChart } from '@/types'
 import { dailyKnowledgeApi, dailyHealthApi } from '@/api/modules/home'
+import { formatDate } from '@/utils/format'
 import * as echarts from 'echarts/core'
 import type { EChartsOption } from 'echarts'
 import { LineChart } from 'echarts/charts'
@@ -105,6 +106,10 @@ const knowledgePage = ref(1)
 const knowledgePageSize = ref(5)
 const knowledgeTotal = ref(0)
 const expandedKnowledgeItems = ref<Set<number>>(new Set())
+/** 将记录创建时间压缩为单行日期标签。 */
+function formatRecordDate(date?: string): string {
+  return date ? formatDate(date, 'YYYY-MM-DD') : ''
+}
 
 async function loadKnowledgeList() {
   if (knowledgeLoading.value) return
@@ -162,9 +167,13 @@ async function handleDeleteKnowledge(id: number) {
     const response = await dailyKnowledgeApi.remove([id])
     if (response.code === 200) {
       showSuccess('删除成功')
-      // 移除本地数据
-      knowledgeList.value = knowledgeList.value.filter((item) => item.id !== id)
-      knowledgeTotal.value = Math.max(0, knowledgeTotal.value - 1)
+      expandedKnowledgeItems.value.delete(id)
+
+      // 删除当前页最后一条时回退到上一页，再从服务端拉取真实分页结果。
+      if (knowledgePage.value > 1 && knowledgeList.value.length === 1) {
+        knowledgePage.value -= 1
+      }
+      await loadKnowledgeList()
     } else {
       showError(response.message || '删除失败')
     }
@@ -225,13 +234,19 @@ async function handleDeletePsychology(id: number) {
     const response = await dailyKnowledgeApi.remove([id])
     if (response.code === 200) {
       showSuccess('删除成功')
-      psychologyList.value = psychologyList.value.filter((item) => item.id !== id)
-      psychologyTotal.value = Math.max(0, psychologyTotal.value - 1)
+      expandedPsychologyItems.value.delete(id)
+
+      // 删除当前页最后一条时回退到上一页，再从服务端拉取真实分页结果。
+      if (psychologyPage.value > 1 && psychologyList.value.length === 1) {
+        psychologyPage.value -= 1
+      }
+      await loadPsychologyList()
     } else {
       showError(response.message || '删除失败')
     }
   } catch (error) {
     console.error('删除心理学记录失败:', error)
+    showError('删除失败，请重试')
   } finally {
     deletingId.value = null
   }
@@ -499,7 +514,7 @@ onUnmounted(() => {
           :aria-hidden="activeTab !== 'progress'"
           class="clay-card p-6"
         >
-          <h3 class="text-lg font-bold text-clay-text-primary mb-6">记录进度</h3>
+          <h3 class="clay-section-title mb-6">记录进度</h3>
 
           <!-- 环形进度图 -->
           <div class="flex justify-center mb-8">
@@ -598,7 +613,7 @@ onUnmounted(() => {
           :aria-hidden="activeTab !== 'knowledge'"
           class="clay-card p-6"
         >
-          <h3 class="text-lg font-bold text-clay-text-primary mb-6">历史知识</h3>
+          <h3 class="clay-section-title mb-6">历史知识</h3>
 
           <!-- 加载状态 -->
           <div v-if="knowledgeLoading" class="flex items-center justify-center py-12">
@@ -619,8 +634,11 @@ onUnmounted(() => {
                   <h4 class="font-medium text-clay-text-primary mb-2 line-clamp-2">
                     {{ item.title || '无标题' }}
                   </h4>
-                  <div v-if="item.createTime" class="text-sm text-clay-text-secondary">
-                    {{ item.createTime }}
+                  <div
+                    v-if="item.createTime"
+                    class="text-sm text-clay-text-secondary whitespace-nowrap"
+                  >
+                    {{ formatRecordDate(item.createTime) }}
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -690,7 +708,7 @@ onUnmounted(() => {
           :aria-hidden="activeTab !== 'psychology'"
           class="clay-card p-6"
         >
-          <h3 class="text-lg font-bold text-clay-text-primary mb-6">历史心理学</h3>
+          <h3 class="clay-section-title mb-6">历史心理学</h3>
 
           <!-- 加载状态 -->
           <div v-if="psychologyLoading" class="flex items-center justify-center py-12">
@@ -711,8 +729,11 @@ onUnmounted(() => {
                   <h4 class="font-medium text-clay-text-primary mb-2 line-clamp-2">
                     {{ item.title || '无标题' }}
                   </h4>
-                  <div v-if="item.createTime" class="text-sm text-clay-text-secondary">
-                    {{ item.createTime }}
+                  <div
+                    v-if="item.createTime"
+                    class="text-sm text-clay-text-secondary whitespace-nowrap"
+                  >
+                    {{ formatRecordDate(item.createTime) }}
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -779,7 +800,7 @@ onUnmounted(() => {
           class="clay-card p-6"
         >
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-bold text-clay-text-primary">历日分布</h3>
+            <h3 class="clay-section-title clay-section-title--compact">历日分布</h3>
             <!-- 天数选择 -->
             <select
               v-model="sleepDays"

@@ -19,6 +19,9 @@ export const useUserStore = defineStore('user', () => {
   /** 用户信息 */
   const userInfo = ref<User | null>(null)
 
+  /** 是否正在等待退出接口完成 */
+  const isLoggingOut = ref(false)
+
   // ==================== 计算属性 ====================
 
   /** 是否已登录 */
@@ -79,6 +82,9 @@ export const useUserStore = defineStore('user', () => {
    * 登出
    */
   async function logout() {
+    if (isLoggingOut.value) return
+
+    isLoggingOut.value = true
     try {
       await authApi.logout()
     } catch (error) {
@@ -86,6 +92,7 @@ export const useUserStore = defineStore('user', () => {
     } finally {
       clearToken()
       userInfo.value = null
+      isLoggingOut.value = false
     }
   }
 
@@ -122,6 +129,7 @@ export const useUserStore = defineStore('user', () => {
     // 状态
     token,
     userInfo,
+    isLoggingOut,
     // 计算属性
     isLoggedIn,
     nickName,

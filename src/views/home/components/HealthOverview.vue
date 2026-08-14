@@ -14,7 +14,6 @@ import type { DailyHealth } from '@/types'
 import { dailyHealthApi } from '@/api/modules/home'
 import { formatDate } from '@/utils/format'
 import { showSuccess, showError } from '@/utils/toast'
-import dayjs from 'dayjs'
 
 // ==================== 注入父组件提供的 healthData ====================
 const healthData = inject<Ref<DailyHealth | null>>('healthData')!
@@ -33,42 +32,8 @@ const formData = ref({
 })
 
 // ==================== 计算属性 ====================
-// 可选择的日期列表（最近15天）
-const dateOptions = computed(() => {
-  const options: { value: string; label: string }[] = []
-  const today = new Date()
-
-  for (let i = 0; i < 15; i++) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
-    const dateStr = formatDate(date, 'YYYY-MM-DD')
-    const isToday = i === 0
-    const dayOfWeek = date.toLocaleDateString('zh-CN', { weekday: 'short' })
-
-    options.push({
-      value: dateStr,
-      label: isToday ? `今天 (${dayOfWeek})` : `${dateStr} (${dayOfWeek})`,
-    })
-  }
-
-  return options
-})
-
 // 当前选中的日期（默认为今天）
 const selectedDate = ref(formatDate(new Date(), 'YYYY-MM-DD'))
-
-const isRecentThreeDays = computed(() => {
-  if (!selectedDate.value) return false
-
-  const selected = dayjs(selectedDate.value)
-  const today = dayjs()
-
-  // 计算日期差值（天）
-  const diffDays = today.diff(selected, 'day')
-
-  // 0=今天，1=昨天，2=前天 → 小于 3 即为最近三天
-  return diffDays >= 0 && diffDays < 3
-})
 
 // ==================== 辅助函数 ====================
 function stripSeconds(time: string | undefined | null): string {
@@ -141,11 +106,6 @@ async function loadHealthData() {
 }
 
 async function saveHealthData() {
-  if (!isRecentThreeDays.value) {
-    showError('只能编辑近三天的健康数据')
-    return
-  }
-
   saving.value = true
   try {
     const data = {
@@ -193,8 +153,8 @@ onMounted(() => {
   <div class="clay-card p-6">
     <!-- 标题 -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-      <h2 class="text-xl font-bold text-clay-text-primary">生活记录</h2>
-      <div class="flex items-center gap-1.5">
+      <h2 class="clay-section-title">生活记录</h2>
+      <div class="flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
         <button
           class="p-1.5 rounded-clay-md hover:bg-clay-bg-base transition-colors text-clay-text-secondary hover:text-clay-text-primary"
           title="前一天"
@@ -202,15 +162,14 @@ onMounted(() => {
         >
           <AppIcon icon="mdi:chevron-left" :size="20" />
         </button>
-        <select
+        <label for="health-date" class="sr-only">选择记录日期</label>
+        <input
+          id="health-date"
           v-model="selectedDate"
-          class="clay-input px-3 py-1.5 text-sm min-w-40"
+          type="date"
+          class="clay-input h-10 min-w-0 flex-1 px-3 py-1.5 text-sm sm:min-w-40"
           @change="loadHealthData"
-        >
-          <option v-for="opt in dateOptions" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
-          </option>
-        </select>
+        />
         <button
           class="p-1.5 rounded-clay-md hover:bg-clay-bg-base transition-colors text-clay-text-secondary hover:text-clay-text-primary"
           title="后一天"
@@ -219,8 +178,8 @@ onMounted(() => {
           <AppIcon icon="mdi:chevron-right" :size="20" />
         </button>
         <button
-          class="clay-btn-secondary px-4 py-1.5 text-sm"
-          :disabled="saving || !isRecentThreeDays"
+          class="clay-btn-secondary h-10 px-4 py-1.5 text-sm"
+          :disabled="saving"
           @click="saveHealthData"
         >
           <span v-if="saving" role="status" aria-live="polite" class="flex items-center gap-1.5">
@@ -261,7 +220,6 @@ onMounted(() => {
           v-model="formData.upTime"
           type="time"
           class="clay-input w-full"
-          :disabled="!isRecentThreeDays"
           placeholder="请选择起床时间"
           aria-describedby="upTime-hint"
         />
@@ -278,7 +236,6 @@ onMounted(() => {
           v-model="formData.sleepTime"
           type="time"
           class="clay-input w-full"
-          :disabled="!isRecentThreeDays"
           placeholder="请输入睡眠时间"
           aria-describedby="sleepTime-hint"
         />
@@ -295,7 +252,6 @@ onMounted(() => {
           v-model="formData.food"
           rows="3"
           class="clay-input w-full resize-none"
-          :disabled="!isRecentThreeDays"
           placeholder="记录今日饮食..."
           aria-describedby="food-hint"
         ></textarea>
@@ -312,7 +268,6 @@ onMounted(() => {
           v-model="formData.exercise"
           rows="3"
           class="clay-input w-full resize-none"
-          :disabled="!isRecentThreeDays"
           placeholder="记录今日运动..."
           aria-describedby="exercise-hint"
         ></textarea>
@@ -329,7 +284,6 @@ onMounted(() => {
           v-model="formData.remark"
           rows="3"
           class="clay-input w-full resize-none"
-          :disabled="!isRecentThreeDays"
           placeholder="其他备注信息..."
           aria-describedby="remark-hint"
         ></textarea>

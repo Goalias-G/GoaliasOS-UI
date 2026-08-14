@@ -63,6 +63,17 @@ async function handleSessionDelete(sessionId: number) {
 }
 
 /**
+ * 处理会话归档
+ */
+async function handleSessionArchive(sessionId: number) {
+  try {
+    await sessionStore.archiveSession(sessionId)
+  } catch (error) {
+    console.error('归档会话失败:', error)
+  }
+}
+
+/**
  * 检查会话是否为当前选中
  */
 function isActiveSession(sessionId: number): boolean {
@@ -108,6 +119,7 @@ function isActiveSession(sessionId: number): boolean {
         @click="handleSessionClick(session.id)"
         @rename="(newTitle: string) => handleSessionRename(session.id, newTitle)"
         @delete="handleSessionDelete(session.id)"
+        @archive="handleSessionArchive(session.id)"
       />
     </div>
   </div>

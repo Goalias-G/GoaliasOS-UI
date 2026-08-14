@@ -23,9 +23,7 @@ const emit = defineEmits<{
 
 // ==================== 响应式状态 ====================
 /** 是否显示操作按钮 */
-const showActions = ref(false)
-
-/** 复制按钮状态 */
+/* 复制按钮状态 */
 const copyStatus = ref<'idle' | 'success' | 'error'>('idle')
 
 /** 消息内容容器引用 */
@@ -52,42 +50,17 @@ const messageClass = computed(() => {
     : 'bg-clay-bg-elevated text-clay-text-primary'
 })
 
-/** 格式化时间 */
+/** 完整的更新时间 */
 const formattedTime = computed(() => {
-  if (!props.message.createTime) {
-    return '刚刚'
-  }
+  const sourceTime = props.message.updateTime || props.message.createTime
+  if (!sourceTime) return '暂无更新时间'
 
-  const date = new Date(props.message.createTime)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
+  const date = new Date(sourceTime)
+  if (Number.isNaN(date.getTime())) return sourceTime
 
-  // 小于 1 分钟
-  if (diff < 60 * 1000) {
-    return '刚刚'
-  }
-
-  // 小于 1 小时
-  if (diff < 60 * 60 * 1000) {
-    const minutes = Math.floor(diff / (60 * 1000))
-    return `${minutes} 分钟前`
-  }
-
-  // 小于 24 小时
-  if (diff < 24 * 60 * 60 * 1000) {
-    const hours = Math.floor(diff / (60 * 60 * 1000))
-    return `${hours} 小时前`
-  }
-
-  // 显示日期时间
-  return date.toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 })
-
 // ==================== 方法 ====================
 /** 复制消息内容 */
 async function handleCopy() {
@@ -115,16 +88,6 @@ function handleDelete() {
   emit('delete', props.message.id)
 }
 
-/** 鼠标进入 */
-function handleMouseEnter() {
-  showActions.value = true
-}
-
-/** 鼠标离开 */
-function handleMouseLeave() {
-  showActions.value = false
-}
-
 // ==================== 生命周期 ====================
 /** 初始化代码块复制功能 */
 onMounted(() => {
@@ -147,8 +110,6 @@ onMounted(() => {
         'message-item relative max-w-[80%] px-4 py-3 rounded-clay-md shadow-clay-card transition-all duration-normal ease-clay-out',
         messageClass,
       ]"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
     >
       <!-- 消息内容 -->
       <div
@@ -157,29 +118,21 @@ onMounted(() => {
         v-html="renderedContent"
       />
 
-      <!-- 时间戳 -->
+      <!-- 消息扩展行：完整更新时间和操作 -->
       <div
         :class="[
-          'mt-2 text-xs opacity-70',
+          'message-meta mt-3 flex items-center justify-between gap-3 text-xs opacity-70',
           isUser ? 'text-clay-text-inverse' : 'text-clay-text-muted',
         ]"
       >
-        {{ formattedTime }}
-      </div>
-
-      <!-- 操作按钮 -->
-      <Transition name="fade">
-        <div
-          v-show="showActions"
-          :class="['absolute top-2 flex gap-1', isUser ? 'left-2' : 'right-2']"
-        >
-          <!-- 复制按钮 -->
+        <span>{{ formattedTime }}</span>
+        <div class="flex items-center gap-1">
           <button
             :class="[
-              'action-btn p-1.5 rounded-clay-sm transition-all duration-fast ease-clay-out',
+              'action-btn p-1 rounded-clay-sm transition-all duration-fast ease-clay-out',
               isUser
-                ? 'bg-white/20 hover:bg-white/30 text-clay-text-inverse'
-                : 'bg-clay-bg-base hover:bg-clay-primary/10 text-clay-text-secondary hover:text-clay-primary',
+                ? 'hover:bg-white/20 text-clay-text-inverse'
+                : 'hover:bg-clay-primary/10 text-clay-text-secondary hover:text-clay-primary',
             ]"
             :title="copyStatus === 'success' ? '已复制' : '复制消息'"
             @click="handleCopy"
@@ -188,14 +141,12 @@ onMounted(() => {
             <AppIcon v-else-if="copyStatus === 'success'" icon="mdi:check" :size="16" />
             <AppIcon v-else icon="mdi:alert-circle" :size="16" />
           </button>
-
-          <!-- 删除按钮 -->
           <button
             :class="[
-              'action-btn p-1.5 rounded-clay-sm transition-all duration-fast ease-clay-out',
+              'action-btn p-1 rounded-clay-sm transition-all duration-fast ease-clay-out',
               isUser
-                ? 'bg-white/20 hover:bg-red-500/80 text-clay-text-inverse'
-                : 'bg-clay-bg-base hover:bg-red-500/10 text-clay-text-secondary hover:text-red-500',
+                ? 'hover:bg-red-500/80 text-clay-text-inverse'
+                : 'hover:bg-red-500/10 text-clay-text-secondary hover:text-red-500',
             ]"
             title="删除消息"
             @click="handleDelete"
@@ -203,7 +154,7 @@ onMounted(() => {
             <AppIcon icon="mdi:delete-outline" :size="16" />
           </button>
         </div>
-      </Transition>
+      </div>
     </div>
   </div>
 </template>

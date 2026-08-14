@@ -206,7 +206,7 @@ onMounted(() => {
         <AppIcon icon="mdi:arrow-left" class="mr-2" />
         返回
       </button>
-      <h2 class="text-xl font-bold text-clay-text-primary">附件管理</h2>
+      <h2 class="clay-section-title">附件管理</h2>
     </div>
 
     <!-- 文件上传 -->

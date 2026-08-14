@@ -199,7 +199,10 @@ onUnmounted(() => {
           <!-- 对话框头部 -->
           <div class="dialog-header px-6 py-4 border-b border-clay-primary/10">
             <div class="flex items-center justify-between">
-              <h2 class="text-lg font-semibold text-clay-text-primary">选择知识库</h2>
+              <div>
+                <h2 class="text-xl font-bold tracking-tight text-clay-text-primary">知识库</h2>
+                <p class="mt-1 text-xs text-clay-text-muted">为本次对话补充专属上下文</p>
+              </div>
               <button
                 class="close-button p-2 rounded-full hover:bg-clay-primary/10 transition-colors"
                 @click="closeDialog"

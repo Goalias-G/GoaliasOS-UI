@@ -104,7 +104,7 @@ function handleOverlayClick() {
       <!-- 左侧导航栏 -->
       <aside class="sidebar w-72 shrink-0" :class="{ 'mobile-open': isMobileMenuOpen }">
         <nav class="clay-card p-6 space-y-3 sticky top-6">
-          <h2 class="text-xl font-bold text-clay-text-primary mb-6 px-3">OS 配置</h2>
+          <h2 class="clay-section-title mb-6 ml-3">OS 配置</h2>
 
           <a
             v-for="item in navItems"

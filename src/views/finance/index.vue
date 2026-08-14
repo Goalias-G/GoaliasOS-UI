@@ -177,9 +177,7 @@ onUnmounted(() => {
     <div class="mx-auto p-4 md:p-6">
       <!-- 页面标题 -->
       <div class="mb-5">
-        <h2 class="text-xl md:text-2xl font-bold text-clay-text-primary font-heading">
-          财务收支明细
-        </h2>
+        <h2 class="clay-section-title">财务收支明细</h2>
       </div>
 
       <!-- Tab 导航 -->

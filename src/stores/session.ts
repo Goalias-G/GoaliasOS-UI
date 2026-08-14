@@ -27,6 +27,9 @@ export const useSessionStore = defineStore('session', () => {
   /** 当前会话 ID */
   const currentSessionId = ref<number | null>(null)
 
+  /** 当前只读查看的归档会话 */
+  const archivedSession = ref<ChatSession | null>(null)
+
   /** 当前会话的消息列表 */
   const messages = ref<ChatMessage[]>([])
 
@@ -75,7 +78,12 @@ export const useSessionStore = defineStore('session', () => {
   /**
    * 当前会话信息
    */
-  const currentSession = computed(() => sessions.value.find((s) => s.id === currentSessionId.value))
+  const currentSession = computed(
+    () => archivedSession.value || sessions.value.find((s) => s.id === currentSessionId.value),
+  )
+
+  /** 是否正在只读查看归档会话 */
+  const isViewingArchivedSession = computed(() => archivedSession.value !== null)
 
   /**
    * 当前模型信息
@@ -131,6 +139,7 @@ export const useSessionStore = defineStore('session', () => {
     try {
       // 清空当前会话 ID,表示进入新会话模式
       currentSessionId.value = null
+      archivedSession.value = null
 
       // 清空消息列表
       messages.value = []
@@ -154,12 +163,13 @@ export const useSessionStore = defineStore('session', () => {
    * @param sessionId 会话 ID
    */
   async function switchSession(sessionId: number) {
-    if (currentSessionId.value === sessionId) {
+    if (currentSessionId.value === sessionId && !archivedSession.value) {
       return
     }
 
     try {
       // 切换会话 ID
+      archivedSession.value = null
       currentSessionId.value = sessionId
 
       // 清空当前消息列表
@@ -241,6 +251,66 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
+  /**
+   * 归档会话并从正常会话列表移除。
+   */
+  async function archiveSession(sessionId: number) {
+    try {
+      const { chatSessionApi } = await import('@/api/modules/chat-session')
+      const response = await chatSessionApi.archive(sessionId)
+      if (response.code !== 200) {
+        throw new Error(response.message || '归档会话失败')
+      }
+
+      sessions.value = sessions.value.filter((session) => session.id !== sessionId)
+      clearMessageCache(sessionId)
+      if (currentSessionId.value === sessionId) {
+        await createSession()
+      }
+      showSuccess('会话已归档')
+    } catch (error: any) {
+      handleError('归档会话', error)
+      throw error
+    }
+  }
+
+  /**
+   * 取消归档会话，并使其重新出现在正常会话列表。
+   */
+  async function unarchiveSession(session: ChatSession) {
+    try {
+      const { chatSessionApi } = await import('@/api/modules/chat-session')
+      const response = await chatSessionApi.unarchive(session.id)
+      if (response.code !== 200) {
+        throw new Error(response.message || '取消归档失败')
+      }
+
+      session.archiveStatus = 0
+      sessions.value = [session, ...sessions.value.filter((item) => item.id !== session.id)]
+      if (archivedSession.value?.id === session.id) {
+        archivedSession.value = null
+      }
+      showSuccess('已取消归档')
+    } catch (error: any) {
+      handleError('取消归档会话', error)
+      throw error
+    }
+  }
+
+  /**
+   * 在主对话区只读查看归档会话。
+   */
+  async function viewArchivedSession(session: ChatSession) {
+    try {
+      archivedSession.value = session
+      currentSessionId.value = session.id
+      messages.value = []
+      await loadMessages(session.id)
+    } catch (error: any) {
+      handleError('查看归档会话', error)
+      throw error
+    }
+  }
   /**
    * 获取会话详情
    * @param sessionId 会话 ID
@@ -1068,6 +1138,8 @@ export const useSessionStore = defineStore('session', () => {
     // 状态
     sessions,
     currentSessionId,
+    archivedSession,
+    isViewingArchivedSession,
     messages,
     streamingMessage,
     currentModelId,
@@ -1088,6 +1160,9 @@ export const useSessionStore = defineStore('session', () => {
     switchSession,
     deleteSession,
     renameSession,
+    archiveSession,
+    unarchiveSession,
+    viewArchivedSession,
     getSessionInfo,
     // 消息管理方法
     loadMessages,

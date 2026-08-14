@@ -79,7 +79,7 @@ function formatUpdateTime(time?: string): string {
 
 <template>
   <div class="news-flow">
-    <h2 class="text-lg md:text-xl font-bold text-clay-text-primary mb-6">热点资讯</h2>
+    <h2 class="clay-section-title mb-6">热点资讯</h2>
 
     <!-- 资讯流内容 -->
     <div
@@ -101,7 +101,7 @@ function formatUpdateTime(time?: string): string {
                 <AppIcon :icon="board.icon" :size="24" />
               </div>
               <div>
-                <h3 class="font-bold text-clay-text-primary">
+                <h3 class="clay-section-title clay-section-title--compact">
                   {{ board.name }}
                 </h3>
                 <div v-if="board.update_time" class="text-xs text-clay-text-secondary">
@@ -171,7 +171,7 @@ function formatUpdateTime(time?: string): string {
         :size="64"
         class="text-clay-text-muted mx-auto mb-4"
       />
-      <h3 class="text-lg font-bold text-clay-text-primary mb-2">暂无资讯</h3>
+      <h3 class="clay-section-title clay-section-title--compact mb-2">暂无资讯</h3>
       <p class="text-clay-text-secondary">热点资讯将在这里显示</p>
     </div>
   </div>

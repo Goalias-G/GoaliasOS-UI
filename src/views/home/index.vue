@@ -164,63 +164,81 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 侧边呼吸泛光 */
+/* 侧边流光：缓慢变色的渐变带，为页面增加层次但不影响阅读。 */
 .side-glow {
   position: fixed;
-  top: 2%;
-  bottom: 5%;
-  width: 150px;
+  top: 8vh;
+  bottom: 8vh;
+  width: min(18vw, 240px);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.5;
-  filter: blur(50px);
-  background: radial-gradient(ellipse at center, var(--clay-accent-pink) 0%, transparent 65%);
-  animation: sideGlow 5s ease-in-out infinite;
+  opacity: 0.42;
+  border-radius: 999px;
+  filter: blur(54px) saturate(1.15);
+  background: linear-gradient(
+    180deg,
+    var(--clay-primary),
+    var(--clay-accent-pink),
+    var(--clay-accent-yellow),
+    var(--clay-accent-green),
+    var(--clay-primary)
+  );
+  background-size: 100% 320%;
+  will-change: transform, background-position, filter;
 }
 
 .side-glow--left {
   left: 0;
-  transform: translateX(-40%);
+  animation: side-light-flow-left 14s ease-in-out infinite;
 }
 
 .side-glow--right {
   right: 0;
-  transform: translateX(40%);
+  animation: side-light-flow-right 17s ease-in-out infinite reverse;
 }
 
-@keyframes sideGlow {
+@keyframes side-light-flow-left {
   0%,
   100% {
-    opacity: 0.3;
-    transform: translateX(-40%) scaleY(0.95);
+    transform: translateX(-62%) translateY(-3%) rotate(-7deg) scaleY(0.92);
+    background-position: 50% 0%;
+    filter: blur(54px) saturate(1.05) hue-rotate(0deg);
   }
   50% {
-    opacity: 0.6;
-    transform: translateX(-40%) scaleY(1.05);
+    transform: translateX(-48%) translateY(4%) rotate(8deg) scaleY(1.08);
+    background-position: 50% 100%;
+    filter: blur(62px) saturate(1.25) hue-rotate(38deg);
   }
 }
 
-.side-glow--right {
-  animation-name: sideGlowRight;
-}
-
-@keyframes sideGlowRight {
+@keyframes side-light-flow-right {
   0%,
   100% {
-    opacity: 0.3;
-    transform: translateX(40%) scaleY(0.9);
+    transform: translateX(62%) translateY(5%) rotate(8deg) scaleY(1.08);
+    background-position: 50% 100%;
+    filter: blur(56px) saturate(1.05) hue-rotate(28deg);
   }
   50% {
-    opacity: 0.6;
-    transform: translateX(40%) scaleY(1.1);
+    transform: translateX(48%) translateY(-4%) rotate(-7deg) scaleY(0.92);
+    background-position: 50% 0%;
+    filter: blur(62px) saturate(1.3) hue-rotate(76deg);
   }
 }
 
 @media (max-width: 768px) {
   .side-glow {
-    width: 100px;
-    filter: blur(40px);
+    top: 14vh;
+    bottom: 14vh;
+    width: 112px;
     opacity: 0.2;
+    filter: blur(42px) saturate(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .side-glow {
+    animation: none;
+    background-position: 50% 45%;
   }
 }
 

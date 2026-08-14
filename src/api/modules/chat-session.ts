@@ -42,4 +42,13 @@ export const chatSessionApi = {
    * @param ids 会话 ID 数组
    */
   remove: (ids: number[]) => del<ApiResponse<void>>(`/chat/session/${ids.join(',')}`),
+
+  /** 归档会话 */
+  archive: (id: number) => put<ApiResponse<void>>(`/chat/session/${id}/archive`),
+
+  /** 取消归档会话 */
+  unarchive: (id: number) => put<ApiResponse<void>>(`/chat/session/${id}/unarchive`),
+
+  /** 查询当前用户画像（只读） */
+  getUserContext: () => get<ApiResponse<Record<string, string>>>('/chat/session/user-context'),
 }

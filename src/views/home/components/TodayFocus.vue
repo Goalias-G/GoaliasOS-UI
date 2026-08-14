@@ -46,7 +46,7 @@ function isExpanded(section: string): boolean {
         class="flex items-center justify-between cursor-pointer"
         @click="toggleSection('greeting')"
       >
-        <h3 class="text-lg font-bold text-clay-text-primary flex items-center gap-2">
+        <h3 class="clay-section-title clay-section-title--compact gap-2">
           <AppIcon icon="hugeicons:task-daily-01" :size="24" class="text-clay-primary" />
           OS 今日问候
         </h3>
@@ -68,14 +68,14 @@ function isExpanded(section: string): boolean {
       <template #default>
         <div class="flex flex-col items-center justify-center h-full">
           <AppIcon icon="hugeicons:brain-02" :size="48" class="text-clay-accent-pink mb-4" />
-          <h3 class="text-lg font-bold text-clay-text-primary text-center">
+          <h3 class="clay-section-title clay-section-title--compact text-center">
             {{ aiRecommend.psychology.title }}
           </h3>
         </div>
       </template>
       <template #back>
         <div class="flex min-h-full flex-col gap-2 p-4">
-          <h1 class="text-lg font-bold text-clay-text-primary">
+          <h1 class="clay-section-title clay-section-title--compact">
             {{ aiRecommend.psychology.title }}
           </h1>
           <p
@@ -92,14 +92,14 @@ function isExpanded(section: string): boolean {
       <template #default>
         <div class="flex flex-col items-center justify-center h-full">
           <AppIcon icon="hugeicons:book-02" :size="48" class="text-clay-accent-pink mb-4" />
-          <h3 class="text-lg font-bold text-clay-text-primary text-center">
+          <h3 class="clay-section-title clay-section-title--compact text-center">
             {{ aiRecommend.knowledge.title || '每日知识' }}
           </h3>
         </div>
       </template>
       <template #back>
         <div class="flex min-h-full flex-col gap-2 p-4">
-          <h1 class="text-lg font-bold text-clay-text-primary">
+          <h1 class="clay-section-title clay-section-title--compact">
             {{ aiRecommend.knowledge.title || '每日知识' }}
           </h1>
           <p
@@ -117,7 +117,7 @@ function isExpanded(section: string): boolean {
         class="flex items-center justify-between cursor-pointer"
         @click="toggleSection('lifeAnalysis')"
       >
-        <h3 class="text-lg font-bold text-clay-text-primary flex items-center gap-2">
+        <h3 class="clay-section-title clay-section-title--compact gap-2">
           <AppIcon icon="hugeicons:health" :size="24" class="text-clay-primary" />
           OS AI 三日记录回顾
         </h3>

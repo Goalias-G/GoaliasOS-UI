@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AnimatedCircularProgressBar: typeof import('./src/components/ui/animated-circular-progressbar/AnimatedCircularProgressBar.vue')['default']
     AppIcon: typeof import('./src/components/common/AppIcon.vue')['default']
+    ArchivedSessionSelector: typeof import('./src/components/ai/ArchivedSessionSelector.vue')['default']
     AudioPlayer: typeof import('./src/components/common/AudioPlayer.vue')['default']
     BlackHoleBackground: typeof import('./src/components/ui/bg-black-hole/BlackHoleBackground.vue')['default']
     ChatArea: typeof import('./src/components/ai/ChatArea.vue')['default']
@@ -48,5 +49,6 @@ declare module 'vue' {
     SparklesText: typeof import('./src/components/ui/sparkles-text/SparklesText.vue')['default']
     Toast: typeof import('./src/components/common/Toast.vue')['default']
     ToolCallStatus: typeof import('./src/components/ai/ToolCallStatus.vue')['default']
+    UserProfileViewer: typeof import('./src/components/ai/UserProfileViewer.vue')['default']
   }
 }

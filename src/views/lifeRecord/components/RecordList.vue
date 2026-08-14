@@ -122,14 +122,16 @@ watch(activeCategoryId, () => {
   <div
     class="record-list-container h-full flex flex-col bg-clay-bg-elevated rounded-clay-lg shadow-clay-card"
   >
-    <!-- 搜索栏 -->
-    <div class="search-section p-4 border-b border-gray-200">
-      <div class="relative">
+    <!-- 搜索与新增：桌面及移动端均保持 2:1 同行比例。 -->
+    <div
+      class="record-toolbar grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-2 border-b border-gray-200 p-4"
+    >
+      <div class="relative min-w-0">
         <input
           v-model="searchText"
           type="text"
           placeholder="搜索记录标题..."
-          class="clay-input w-full pl-10"
+          class="clay-input h-11 w-full pl-10 pr-10"
         />
         <AppIcon
           icon="mdi:magnify"
@@ -140,17 +142,17 @@ watch(activeCategoryId, () => {
           v-if="searchText"
           @click="searchText = ''"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-clay-text-muted hover:text-clay-text-primary transition-colors"
+          aria-label="清除搜索"
         >
           <AppIcon icon="mdi:close" :size="20" />
         </button>
       </div>
-    </div>
-
-    <!-- 新增按钮 -->
-    <div class="p-4 border-b border-gray-200">
-      <button @click="emit('add')" class="clay-btn w-full flex items-center justify-center gap-2">
-        <AppIcon icon="mdi:plus" :size="20" />
-        <span>新增记录</span>
+      <button
+        @click="emit('add')"
+        class="clay-btn h-11 min-w-0 justify-center gap-1.5 px-3 text-sm sm:gap-2 sm:px-4"
+      >
+        <AppIcon icon="mdi:plus" :size="15" class="shrink-0" />
+        <span class="truncate">新增</span>
       </button>
     </div>
 

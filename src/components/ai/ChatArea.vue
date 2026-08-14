@@ -15,7 +15,7 @@ import { useSessionStore } from '@/stores/session'
 
 // ==================== Store ====================
 const sessionStore = useSessionStore()
-const { isStreaming, loading } = storeToRefs(sessionStore)
+const { isStreaming, loading, isViewingArchivedSession, currentSession } = storeToRefs(sessionStore)
 
 // ==================== 方法 ====================
 /**
@@ -51,7 +51,18 @@ async function handleStopGeneration() {
 
     <!-- 输入框容器（固定在底部） -->
     <div class="input-wrapper shrink-0 p-4">
+      <div
+        v-if="isViewingArchivedSession"
+        class="clay-card flex items-center gap-3 px-4 py-3 text-sm text-clay-text-secondary"
+      >
+        <AppIcon icon="mdi:archive-lock-outline" :size="20" class="text-clay-primary" />
+        <span
+          >正在只读查看已归档会话「{{ currentSession?.sessionTitle || '未命名会话' }}」，不可继续 AI
+          聊天。</span
+        >
+      </div>
       <ChatInput
+        v-else
         :is-streaming="isStreaming"
         :disabled="loading.sending"
         @send="handleSendMessage"

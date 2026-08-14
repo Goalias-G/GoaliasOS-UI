@@ -52,6 +52,7 @@ export interface ChatSession {
   sessionContent: string
   remark: string
   conversationId: string
+  archiveStatus?: number
   createTime?: string
   updateTime?: string
 }
@@ -66,7 +67,11 @@ export interface ChatSessionParams {
   sessionContent?: string
   remark?: string
   conversationId?: string
+  archiveStatus?: number
 }
+
+/** 当前用户的 AI 画像（Redis Hash，只读） */
+export type ChatUserContext = Record<string, string>
 
 /**
  * 聊天模型
