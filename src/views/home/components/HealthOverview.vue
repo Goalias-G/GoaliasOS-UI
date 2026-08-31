@@ -154,12 +154,10 @@ onMounted(() => {
     <!-- 标题 -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
       <h2 class="clay-section-title">生活记录</h2>
-      <div class="flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
-        <button
-          class="p-1.5 rounded-clay-md hover:bg-clay-bg-base transition-colors text-clay-text-secondary hover:text-clay-text-primary"
-          title="前一天"
-          @click="switchToPrevDay"
-        >
+      <div
+        class="date-actions grid grid-cols-[2rem_minmax(0,1fr)_2rem] items-center gap-1.5 sm:w-auto sm:grid-cols-[2.5rem_11.5rem_2.5rem_auto] sm:gap-3"
+      >
+        <button class="date-nav-button" title="前一天" @click="switchToPrevDay">
           <AppIcon icon="mdi:chevron-left" :size="20" />
         </button>
         <label for="health-date" class="sr-only">选择记录日期</label>
@@ -167,22 +165,23 @@ onMounted(() => {
           id="health-date"
           v-model="selectedDate"
           type="date"
-          class="clay-input h-10 min-w-0 flex-1 px-3 py-1.5 text-sm sm:min-w-40"
+          class="clay-input h-10 min-w-0 w-full px-3 py-1.5 text-sm sm:min-w-40"
           @change="loadHealthData"
         />
-        <button
-          class="p-1.5 rounded-clay-md hover:bg-clay-bg-base transition-colors text-clay-text-secondary hover:text-clay-text-primary"
-          title="后一天"
-          @click="switchToNextDay"
-        >
+        <button class="date-nav-button" title="后一天" @click="switchToNextDay">
           <AppIcon icon="mdi:chevron-right" :size="20" />
         </button>
         <button
-          class="clay-btn-secondary h-10 px-4 py-1.5 text-sm"
+          class="clay-btn-secondary col-span-3 h-10 w-full px-4 py-1.5 text-sm sm:col-auto sm:w-auto sm:min-w-[4.5rem] sm:shrink-0 sm:whitespace-nowrap"
           :disabled="saving"
           @click="saveHealthData"
         >
-          <span v-if="saving" role="status" aria-live="polite" class="flex items-center gap-1.5">
+          <span
+            v-if="saving"
+            role="status"
+            aria-live="polite"
+            class="flex items-center justify-center gap-1.5"
+          >
             <div
               class="w-3.5 h-3.5 border-2 border-clay-primary border-t-transparent rounded-full animate-spin"
               aria-hidden="true"
@@ -294,6 +293,32 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* 窄屏优先保证完整日期显示，保存操作移至日期导航下方。 */
+.date-nav-button {
+  display: inline-flex;
+  width: 2rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-clay-md);
+  color: var(--clay-text-secondary);
+  transition:
+    color var(--duration-fast),
+    background-color var(--duration-fast);
+}
+
+.date-nav-button:hover {
+  background: var(--clay-bg-base);
+  color: var(--clay-text-primary);
+}
+
+@media (min-width: 640px) {
+  .date-nav-button {
+    width: 2.5rem;
+  }
+}
+
 /* 组件样式（优先使用 Tailwind CSS） */
 .form-field {
   transition: all 0.2s;

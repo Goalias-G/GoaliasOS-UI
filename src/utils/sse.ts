@@ -39,6 +39,81 @@ export class SSEError extends Error {
 }
 
 /**
+ * 增量解析 SSE 文本流。
+ *
+ * SSE 以空行分隔事件；同一个事件内可以包含多条 data 字段，字段之间
+ * 必须以换行连接。后端输出的 Markdown 换行正是通过这种多 data 行形式
+ * 传输的，不能逐行直接拼接。
+ */
+class SSEStreamParser {
+  private buffer = ''
+  private dataLines: string[] = []
+
+  constructor(private readonly onMessage: (data: string) => void) {}
+
+  push(chunk: string): void {
+    this.buffer += chunk
+    this.consumeLines(false)
+  }
+
+  finish(): void {
+    this.consumeLines(true)
+
+    if (this.buffer) {
+      this.processLine(this.buffer)
+      this.buffer = ''
+    }
+
+    this.dispatchEvent()
+  }
+
+  private consumeLines(flush: boolean): void {
+    while (this.buffer) {
+      const lineBreakIndex = this.buffer.search(/[\r\n]/)
+
+      if (lineBreakIndex < 0) {
+        return
+      }
+
+      const lineBreak = this.buffer[lineBreakIndex]
+
+      // \r\n 可能刚好被拆到两个网络分片中，等待下一个分片后再判断。
+      if (!flush && lineBreak === '\r' && lineBreakIndex === this.buffer.length - 1) {
+        return
+      }
+
+      const line = this.buffer.slice(0, lineBreakIndex)
+      const lineBreakLength = lineBreak === '\r' && this.buffer[lineBreakIndex + 1] === '\n' ? 2 : 1
+
+      this.buffer = this.buffer.slice(lineBreakIndex + lineBreakLength)
+      this.processLine(line)
+    }
+  }
+
+  private processLine(line: string): void {
+    if (line === '') {
+      this.dispatchEvent()
+      return
+    }
+
+    if (line.startsWith('data:')) {
+      // 当前后端直接把 token 拼在 data: 后面。保留其原始前导空格，
+      // 否则 "#" + " 标题" 会错误变为 "#标题"。
+      this.dataLines.push(line.slice(5))
+    }
+  }
+
+  private dispatchEvent(): void {
+    if (this.dataLines.length === 0) {
+      return
+    }
+
+    this.onMessage(this.dataLines.join('\n'))
+    this.dataLines = []
+  }
+}
+
+/**
  * 创建 SSE 流式连接
  *
  * @param url 请求 URL
@@ -120,55 +195,21 @@ export async function createSSEConnection(
     const reader = response.body.getReader()
     const decoder = new TextDecoder('utf-8')
 
-    // 用于累积未完成的数据行
-    let buffer = ''
+    const parser = new SSEStreamParser(onMessage)
 
     try {
       while (true) {
         const { done, value } = await reader.read()
 
         if (done) {
-          // 流结束
+          // 刷新 TextDecoder 和最后一个可能没有空行结尾的 SSE 事件。
+          parser.push(decoder.decode())
+          parser.finish()
           onComplete()
           break
         }
 
-        // 解码数据块
-        const chunk = decoder.decode(value, { stream: true })
-        buffer += chunk
-
-        // 按行分割数据
-        const lines = buffer.split('\n')
-
-        // 保留最后一个不完整的行
-        buffer = lines.pop() || ''
-
-        // 处理每一行
-        for (const line of lines) {
-          // 跳过空行（SSE 协议中空行用于分隔事件）
-          if (!line.trim()) {
-            continue
-          }
-
-          // 解析 SSE 数据格式: data: {内容}
-          if (line.startsWith('data:')) {
-            try {
-              // 提取 data: 后面的内容
-              // 注意：只移除 "data:" 和紧跟的一个空格（如果有）
-              let content = line.slice(5) // 移除 "data:" 前缀（5个字符）
-
-              // 连续的空 data: 表示换行
-              onMessage(content)
-            } catch (parseError) {
-              // 解析错误
-              console.error('SSE 数据解析失败:', line, parseError)
-              throw new SSEError(`数据解析失败: ${parseError}`, 'parse')
-            }
-          } else {
-            // 记录非 data: 开头的行（可能是 event:, id:, retry: 等）
-            console.log('SSE 接收到非 data 行:', line)
-          }
-        }
+        parser.push(decoder.decode(value, { stream: true }))
       }
     } catch (readError: any) {
       // 读取流时发生错误

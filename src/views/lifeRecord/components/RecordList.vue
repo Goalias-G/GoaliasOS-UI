@@ -198,7 +198,7 @@ watch(activeCategoryId, () => {
           <!-- 日期 -->
           <div class="flex items-center gap-2 text-sm text-clay-text-secondary mb-2">
             <AppIcon icon="mdi:calendar" :size="16" />
-            <span>{{ record.recordDate }}</span>
+            <span>{{ record.recordDate?.split(' ')[0] }}</span>
           </div>
 
           <!-- 评分 -->
