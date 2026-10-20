@@ -141,8 +141,15 @@ async function handleRefreshBalance() {
   isRefreshing.value = true
   try {
     await userStore.fetchUserInfo()
+
+    // 余额刷新后同步刷新当前会话，避免继续显示消息缓存中的旧内容。
+    const sessionId = sessionStore.currentSessionId
+    if (sessionId !== null) {
+      sessionStore.clearMessageCache(sessionId)
+      await sessionStore.loadMessages(sessionId)
+    }
   } catch (error) {
-    console.error('刷新余额失败:', error)
+    console.error('刷新余额或当前会话失败:', error)
   } finally {
     isRefreshing.value = false
   }

@@ -121,7 +121,6 @@ onUnmounted(() => {
     <div
       v-if="visible"
       class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      @click.self="handleClose"
     >
       <!-- 弹窗容器 -->
       <Transition name="scale">

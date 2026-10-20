@@ -171,10 +171,6 @@ function handleClose() {
   emit('update:modelValue', false)
 }
 
-function handleOverlayClick() {
-  if (!isSubmitting.value) handleClose()
-}
-
 // ==================== 键盘操作 ====================
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') handleClose()
@@ -198,7 +194,6 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
       <div
         v-if="modelValue"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-        @click.self="handleOverlayClick"
       >
         <Transition
           enter-active-class="transition-all duration-300 ease-out"
