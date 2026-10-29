@@ -137,7 +137,6 @@ const formFields: FormField[] = [
     options: [
       { label: '对话模型', value: 'chat' },
       { label: '向量模型', value: 'vector' },
-      { label: '图片模型', value: 'image' },
     ],
   },
   {
@@ -147,8 +146,7 @@ const formFields: FormField[] = [
     required: true,
     options: [
       { label: '阿里百炼', value: 'alibailian' },
-      { label: '智谱AI', value: 'glm' },
-      { label: '图片识别', value: 'image' },
+      { label: '智谱', value: 'glm' },
     ],
   },
   {
