@@ -9,15 +9,22 @@
  */
 
 import { get, post, del, put } from '@/api'
-import type { ApiResponse, LifeRecord, LifeRecordParams, PageQuery, PageResult } from '@/types'
+import type {
+  ApiResponse,
+  LifeRecord,
+  LifeRecordParams,
+  LifeRecordQuery,
+  PageQuery,
+  PageResult,
+} from '@/types'
 
 export const lifeRecordApi = {
   /**
    * 查询生活记录列表（分页）
-   * @param params 查询参数（categoryId, favoriteFlag, title）
+   * @param params 查询参数（categoryId 可选, beginDate/endDate, title, favoriteFlag）
    * @param pageQuery 分页参数
    */
-  list: (params?: Partial<LifeRecordParams>, pageQuery?: PageQuery) =>
+  list: (params?: LifeRecordQuery, pageQuery?: PageQuery) =>
     get<ApiResponse<PageResult<LifeRecord>>>('/life/record/list', { ...params, ...pageQuery }),
 
   /**

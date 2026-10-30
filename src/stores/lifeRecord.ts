@@ -3,9 +3,9 @@
  *
  * 功能说明:
  * - 管理分类列表和记录列表状态
+ * - 时间维度筛选（快捷 pill + 自定义区间）
  * - 处理分类和记录的 CRUD 操作
- * - 管理当前选中状态
- * - 数据持久化到 localStorage
+ * - 管理当前选中状态与详情抽屉
  */
 import { defineStore } from 'pinia'
 import type {
@@ -13,56 +13,108 @@ import type {
   LifeRecord,
   LifeCategoryParams,
   LifeRecordParams,
+  LifeDatePreset,
 } from '@/types/api/life'
 import { lifeCategoryApi } from '@/api/modules/lifeCategory.api'
 import { lifeRecordApi } from '@/api/modules/lifeRecord.api'
 
+function formatDate(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+/** 根据快捷预设计算 begin/end（含当天） */
+export function resolveDateRange(
+  preset: LifeDatePreset,
+  customBegin?: string | null,
+  customEnd?: string | null,
+): { beginDate?: string; endDate?: string } {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const end = formatDate(today)
+
+  switch (preset) {
+    case 'today':
+      return { beginDate: end, endDate: end }
+    case 'week': {
+      const start = new Date(today)
+      const day = start.getDay() || 7 // 周一为一周开始
+      start.setDate(start.getDate() - day + 1)
+      return { beginDate: formatDate(start), endDate: end }
+    }
+    case 'month': {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1)
+      return { beginDate: formatDate(start), endDate: end }
+    }
+    case 'year': {
+      const start = new Date(today.getFullYear(), 0, 1)
+      return { beginDate: formatDate(start), endDate: end }
+    }
+    case 'custom':
+      return {
+        beginDate: customBegin || undefined,
+        endDate: customEnd || undefined,
+      }
+    case 'all':
+    default:
+      return {}
+  }
+}
+
 export const useLifeRecordStore = defineStore('lifeRecord', () => {
-  // ==================== 状态 ====================
-
-  // 分类列表
   const categories = ref<LifeCategory[]>([])
-
-  // 记录列表
   const records = ref<LifeRecord[]>([])
-
-  // 当前选中的分类 ID
+  /** null = 全部分类 */
   const activeCategoryId = ref<number | null>(null)
-
-  // 当前选中的记录 ID
   const activeRecordId = ref<number | null>(null)
-
-  // 当前记录详情
   const currentRecord = ref<LifeRecord | null>(null)
+  const detailOpen = ref(false)
 
-  // 分页信息
+  const searchKeyword = ref('')
+  const datePreset = ref<LifeDatePreset>('all')
+  const customBeginDate = ref<string | null>(null)
+  const customEndDate = ref<string | null>(null)
+
   const pagination = ref({
     pageNum: 1,
-    pageSize: 5,
+    pageSize: 20,
     total: 0,
     hasMore: true,
   })
 
-  // 加载状态
   const loading = ref({
     categories: false,
     records: false,
     detail: false,
   })
 
-  // ==================== 计算属性 ====================
-
-  // 当前激活的分类
   const activeCategory = computed(() =>
     categories.value.find((cat) => cat.id === activeCategoryId.value),
   )
 
-  // 当前激活的记录
   const activeRecord = computed(() => records.value.find((rec) => rec.id === activeRecordId.value))
 
-  // ==================== 分类管理方法 ====================
+  /** 按 recordDate 分组（yyyy-MM-dd），组内保持接口返回顺序 */
+  const timelineGroups = computed(() => {
+    const groups: { date: string; items: LifeRecord[] }[] = []
+    const map = new Map<string, LifeRecord[]>()
 
-  // 加载分类列表
+    for (const record of records.value) {
+      const date =
+        record.recordDate?.split(' ')[0]?.split('T')[0] ||
+        record.createTime?.split(' ')[0]?.split('T')[0] ||
+        '未知日期'
+      if (!map.has(date)) {
+        map.set(date, [])
+        groups.push({ date, items: map.get(date)! })
+      }
+      map.get(date)!.push(record)
+    }
+    return groups
+  })
+
   async function loadCategories(): Promise<void> {
     loading.value.categories = true
     try {
@@ -71,11 +123,6 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
         categories.value = response.data.list.sort(
           (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0),
         )
-
-        // 如果没有选中分类,默认选中第一个
-        if (!activeCategoryId.value && categories.value.length > 0) {
-          activeCategoryId.value = categories.value[0]!.id!
-        }
       } else {
         throw new Error(response.message || '加载分类失败')
       }
@@ -84,7 +131,6 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // 新增分类
   async function addCategory(data: LifeCategoryParams): Promise<void> {
     const response = await lifeCategoryApi.add(data)
     if (response.code === 200) {
@@ -94,7 +140,6 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // 编辑分类
   async function editCategory(data: LifeCategoryParams): Promise<void> {
     const response = await lifeCategoryApi.edit(data)
     if (response.code === 200) {
@@ -104,22 +149,18 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // 删除分类
   async function deleteCategory(id: number): Promise<void> {
     const response = await lifeCategoryApi.remove([id])
     if (response.code === 200) {
       await loadCategories()
-
-      // 如果删除的是当前分类,切换到第一个分类
-      if (activeCategoryId.value === id && categories.value.length > 0) {
-        await switchCategory(categories.value[0]!.id!)
+      if (activeCategoryId.value === id) {
+        await switchCategory(null)
       }
     } else {
       throw new Error(response.message || '删除分类失败')
     }
   }
 
-  // 更新分类排序
   async function updateCategoryOrder(
     updates: Array<{ id: number; sortOrder: number; name?: string }>,
   ): Promise<void> {
@@ -127,41 +168,66 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     await loadCategories()
   }
 
-  // 切换分类
-  async function switchCategory(id: number): Promise<void> {
+  async function switchCategory(id: number | null): Promise<void> {
     activeCategoryId.value = id
     activeRecordId.value = null
     currentRecord.value = null
+    detailOpen.value = false
 
-    // 保存到 localStorage
-    localStorage.setItem('life-record-active-category', String(id))
-
-    // 重新加载记录列表
-    await loadRecords({ reset: true })
-
-    // 如果有记录，自动选择第一条
-    if (records.value.length > 0) {
-      await loadRecordDetail(records.value[0]!.id!)
+    if (id === null) {
+      localStorage.removeItem('life-record-active-category')
+    } else {
+      localStorage.setItem('life-record-active-category', String(id))
     }
+
+    await loadRecords({ reset: true })
   }
 
-  // ==================== 记录管理方法 ====================
+  async function setDatePreset(preset: LifeDatePreset): Promise<void> {
+    datePreset.value = preset
+    if (preset !== 'custom') {
+      customBeginDate.value = null
+      customEndDate.value = null
+    }
+    await loadRecords({ reset: true })
+  }
 
-  // 加载记录列表
-  async function loadRecords(params?: { reset?: boolean; search?: string }): Promise<void> {
-    if (!activeCategoryId.value) return
+  async function setCustomDateRange(begin: string, end: string): Promise<void> {
+    datePreset.value = 'custom'
+    customBeginDate.value = begin
+    customEndDate.value = end
+    await loadRecords({ reset: true })
+  }
+
+  async function setSearchKeyword(keyword: string): Promise<void> {
+    searchKeyword.value = keyword
+    await loadRecords({ reset: true })
+  }
+
+  async function loadRecords(params?: { reset?: boolean }): Promise<void> {
+    // 滚动加载时若已在请求中则跳过；筛选/重置允许打断并重新拉第一页
+    if (!params?.reset && loading.value.records) return
 
     if (params?.reset) {
       pagination.value.pageNum = 1
       records.value = []
+      pagination.value.hasMore = true
     }
 
     loading.value.records = true
     try {
+      const range = resolveDateRange(
+        datePreset.value,
+        customBeginDate.value,
+        customEndDate.value,
+      )
+
       const response = await lifeRecordApi.list(
         {
-          categoryId: activeCategoryId.value,
-          title: params?.search,
+          categoryId: activeCategoryId.value ?? undefined,
+          title: searchKeyword.value.trim() || undefined,
+          beginDate: range.beginDate,
+          endDate: range.endDate,
         },
         {
           pageNum: pagination.value.pageNum,
@@ -189,8 +255,18 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // 加载记录详情
-  async function loadRecordDetail(id: number): Promise<void> {
+  async function loadRecordDetail(id: number, options?: { openDrawer?: boolean }): Promise<void> {
+    // 先用列表数据占位，减少空白闪烁
+    const cached = records.value.find((r) => r.id === id)
+    if (cached) {
+      currentRecord.value = { ...cached }
+      activeRecordId.value = id
+    }
+
+    if (options?.openDrawer !== false) {
+      detailOpen.value = true
+    }
+
     loading.value.detail = true
     try {
       const response = await lifeRecordApi.getInfo(id)
@@ -205,51 +281,45 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // 新增记录
+  function closeDetail(): void {
+    detailOpen.value = false
+  }
+
   async function addRecord(data: LifeRecordParams): Promise<void> {
     const response = await lifeRecordApi.add(data)
     if (response.code === 200) {
       await loadRecords({ reset: true })
-      await loadCategories() // 重新加载分类以更新 recordCount
+      await loadCategories()
     } else {
       throw new Error(response.message || '新增记录失败')
     }
   }
 
-  // 编辑记录
   async function editRecord(data: LifeRecordParams): Promise<void> {
     const response = await lifeRecordApi.edit(data)
     if (response.code === 200) {
       await loadRecords({ reset: true })
-
-      // 如果是当前记录,重新加载详情
       if (activeRecordId.value === data.id) {
-        await loadRecordDetail(data.id!)
+        await loadRecordDetail(data.id!, { openDrawer: detailOpen.value })
       }
-
-      // 如果分类发生变化，重新加载分类以更新 recordCount
-      const oldRecord = records.value.find((r) => r.id === data.id)
-      if (oldRecord && oldRecord.categoryId !== data.categoryId) {
-        await loadCategories()
-      }
+      await loadCategories()
     } else {
       throw new Error(response.message || '编辑记录失败')
     }
   }
 
-  // 删除记录
   async function deleteRecord(id: number): Promise<void> {
-    // 获取要删除的记录信息，提取 attachsId
-    const record = records.value.find((r) => r.id === id)
+    const record =
+      records.value.find((r) => r.id === id) ||
+      (currentRecord.value?.id === id ? currentRecord.value : null)
     let fileIds: number[] = []
 
     if (record?.attachsId) {
       try {
-        // 将 attachsId 字符串转换为 number 数组
         fileIds = record.attachsId
           .split(',')
-          .map((id) => parseInt(id.trim()))
-          .filter((id) => !isNaN(id))
+          .map((fid) => parseInt(fid.trim(), 10))
+          .filter((fid) => !isNaN(fid))
       } catch (error) {
         console.warn('解析 attachsId 失败:', error)
       }
@@ -262,29 +332,23 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
 
     if (response.code === 200) {
       await loadRecords({ reset: true })
-      await loadCategories() // 重新加载分类以更新 recordCount
+      await loadCategories()
 
-      // 如果删除的是当前记录,清空详情
       if (activeRecordId.value === id) {
         activeRecordId.value = null
         currentRecord.value = null
+        detailOpen.value = false
       }
     } else {
       throw new Error(response.message || '删除记录失败')
     }
   }
 
-  // 更新收藏状态
   async function toggleFavorite(id: number, favoriteFlag: number): Promise<void> {
     const response = await lifeRecordApi.updateFavorite(id, favoriteFlag)
     if (response.code === 200) {
-      // 更新列表中的记录
       const record = records.value.find((r) => r.id === id)
-      if (record) {
-        record.favoriteFlag = favoriteFlag
-      }
-
-      // 更新当前记录
+      if (record) record.favoriteFlag = favoriteFlag
       if (currentRecord.value?.id === id) {
         currentRecord.value.favoriteFlag = favoriteFlag
       }
@@ -293,17 +357,11 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // 更新评分
   async function updateRating(id: number, rating: number): Promise<void> {
     const response = await lifeRecordApi.updateRaing(id, rating)
     if (response.code === 200) {
-      // 更新列表中的记录
       const record = records.value.find((r) => r.id === id)
-      if (record) {
-        record.rating = rating
-      }
-
-      // 更新当前记录
+      if (record) record.rating = rating
       if (currentRecord.value?.id === id) {
         currentRecord.value.rating = rating
       }
@@ -312,43 +370,42 @@ export const useLifeRecordStore = defineStore('lifeRecord', () => {
     }
   }
 
-  // ==================== 初始化 ====================
-
   async function init(): Promise<void> {
-    // 从 localStorage 恢复上次选中的分类
     const savedCategoryId = localStorage.getItem('life-record-active-category')
     if (savedCategoryId) {
       activeCategoryId.value = Number(savedCategoryId)
+    } else {
+      activeCategoryId.value = null
     }
 
-    // 加载分类列表
     await loadCategories()
-
-    // 如果有选中的分类,加载记录列表
-    if (activeCategoryId.value) {
-      await loadRecords({ reset: true })
-    }
+    await loadRecords({ reset: true })
   }
 
   return {
-    // 状态
     categories,
     records,
+    timelineGroups,
     activeCategoryId,
     activeRecordId,
     currentRecord,
+    detailOpen,
+    searchKeyword,
+    datePreset,
+    customBeginDate,
+    customEndDate,
     pagination,
     loading,
-
-    // 计算属性
     activeCategory,
     activeRecord,
-
-    // 方法
     loadCategories,
     loadRecords,
     loadRecordDetail,
+    closeDetail,
     switchCategory,
+    setDatePreset,
+    setCustomDateRange,
+    setSearchKeyword,
     addCategory,
     editCategory,
     deleteCategory,

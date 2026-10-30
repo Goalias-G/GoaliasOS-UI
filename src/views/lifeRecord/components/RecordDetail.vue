@@ -49,10 +49,20 @@ const currentIndex = computed(() => {
 const hasPrevious = computed(() => currentIndex.value > 0)
 const hasNext = computed(() => currentIndex.value < records.value.length - 1)
 
+// ==================== Props ====================
+const props = withDefaults(
+  defineProps<{
+    /** 是否显示关闭按钮（抽屉模式） */
+    showClose?: boolean
+  }>(),
+  { showClose: false },
+)
+
 // ==================== Emits ====================
 const emit = defineEmits<{
   edit: []
   delete: []
+  close: []
 }>()
 
 // ==================== 收藏功能 ====================
@@ -132,9 +142,17 @@ onUnmounted(() => {
     <!-- 记录详情 -->
     <template v-else>
       <!-- 头部操作栏 -->
-      <div class="detail-header p-4 border-b border-gray-200 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <!-- 收藏按钮 -->
+      <div class="detail-header p-3 border-b border-gray-200 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5">
+          <button
+            v-if="props.showClose"
+            type="button"
+            class="p-2 rounded-full text-clay-text-secondary hover:bg-gray-100 transition-colors"
+            title="关闭"
+            @click="emit('close')"
+          >
+            <AppIcon icon="mdi:close" :size="20" />
+          </button>
           <button
             @click="toggleFavorite"
             :class="[
@@ -145,11 +163,10 @@ onUnmounted(() => {
             ]"
             :title="isFavorite ? '取消收藏' : '收藏'"
           >
-            <AppIcon :icon="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" :size="24" />
+            <AppIcon :icon="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" :size="22" />
           </button>
 
-          <!-- 导航按钮 -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center">
             <button
               @click="gotoPrevious"
               :disabled="!hasPrevious"
@@ -161,7 +178,7 @@ onUnmounted(() => {
               ]"
               title="上一条 (←)"
             >
-              <AppIcon icon="mdi:chevron-left" :size="24" />
+              <AppIcon icon="mdi:chevron-left" :size="22" />
             </button>
             <button
               @click="gotoNext"
@@ -174,27 +191,24 @@ onUnmounted(() => {
               ]"
               title="下一条 (→)"
             >
-              <AppIcon icon="mdi:chevron-right" :size="24" />
+              <AppIcon icon="mdi:chevron-right" :size="22" />
             </button>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- 编辑按钮 -->
           <button
             @click="emit('edit')"
-            class="clay-btn-secondary px-4 py-2 flex items-center gap-2"
+            class="clay-btn-secondary px-3 py-1.5 text-sm flex items-center gap-1.5"
           >
-            <AppIcon icon="mdi:pencil" :size="18" />
+            <AppIcon icon="mdi:pencil" :size="16" />
             <span>编辑</span>
           </button>
-
-          <!-- 删除按钮 -->
           <button
             @click="emit('delete')"
-            class="px-4 py-2 rounded-clay-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center gap-2"
+            class="px-3 py-1.5 text-sm rounded-clay-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center gap-1.5"
           >
-            <AppIcon icon="mdi:delete" :size="18" />
+            <AppIcon icon="mdi:delete" :size="16" />
             <span>删除</span>
           </button>
         </div>

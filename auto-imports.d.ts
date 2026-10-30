@@ -178,6 +178,7 @@ declare global {
   const renderMarkdown: typeof import('./src/utils/markdown').renderMarkdown
   const renderMarkdownInline: typeof import('./src/utils/markdown').renderMarkdownInline
   const resolveComponent: typeof import('vue').resolveComponent
+  const resolveDateRange: typeof import('./src/stores/lifeRecord').resolveDateRange
   const resolveRef: typeof import('@vueuse/core').resolveRef
   const retryExample: typeof import('./src/utils/sse.example').retryExample
   const runAllExamples: typeof import('./src/utils/markdown.example').runAllExamples
@@ -564,6 +565,7 @@ declare module 'vue' {
     readonly renderMarkdown: UnwrapRef<typeof import('./src/utils/markdown')['renderMarkdown']>
     readonly renderMarkdownInline: UnwrapRef<typeof import('./src/utils/markdown')['renderMarkdownInline']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly resolveDateRange: UnwrapRef<typeof import('./src/stores/lifeRecord')['resolveDateRange']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly sanitizeHtml: UnwrapRef<typeof import('./src/utils/markdown')['sanitizeHtml']>
     readonly session: UnwrapRef<typeof import('./src/utils/storage')['session']>

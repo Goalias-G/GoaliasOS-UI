@@ -50,3 +50,17 @@ export interface LifeRecordParams {
   favoriteFlag?: number
   remark?: string
 }
+
+/** 生活记录列表查询参数 */
+export interface LifeRecordQuery {
+  categoryId?: number
+  title?: string
+  favoriteFlag?: number
+  /** 记录日期起点 yyyy-MM-dd（含） */
+  beginDate?: string
+  /** 记录日期终点 yyyy-MM-dd（含） */
+  endDate?: string
+}
+
+/** 时间筛选快捷类型 */
+export type LifeDatePreset = 'all' | 'today' | 'week' | 'month' | 'year' | 'custom'

@@ -1,261 +1,219 @@
-/** * RecordList 组件 - 记录列表 * * 功能说明: * - 展示当前分类下的记录列表 * - 支持搜索过滤 * -
-支持无限滚动分页加载 * - 支持快捷键导航 * - 提供新增记录入口 */
 <script setup lang="ts">
+/**
+ * 时间线记录列表：按日期分组，无限滚动
+ */
 import { useLifeRecordStore } from '@/stores/lifeRecord'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn, useThrottleFn } from '@vueuse/core'
 import EmptyState from './EmptyState.vue'
 
-// ==================== Store ====================
 const store = useLifeRecordStore()
-const { records, loading, pagination, activeCategoryId } = storeToRefs(store)
+const {
+  records,
+  timelineGroups,
+  loading,
+  pagination,
+  activeRecordId,
+  searchKeyword,
+  categories,
+} = storeToRefs(store)
 
-// ==================== 状态 ====================
-const searchText = ref('')
-const selectedIndex = ref(0)
+const localSearch = ref(searchKeyword.value)
 const listRef = ref<HTMLElement | null>(null)
 
-// ==================== 计算属性 ====================
 const isEmpty = computed(() => !loading.value.records && records.value.length === 0)
-
 const hasMore = computed(() => pagination.value.hasMore)
 
-// ==================== 搜索功能 ====================
-const handleSearch = useDebounceFn(async (keyword: string) => {
-  await store.loadRecords({ reset: true, search: keyword })
-  selectedIndex.value = 0
-}, 300)
-
-watch(searchText, (newValue) => {
-  handleSearch(newValue)
+const categoryNameMap = computed(() => {
+  const map = new Map<number, string>()
+  for (const cat of categories.value) {
+    if (cat.id != null) map.set(cat.id, cat.name)
+  }
+  return map
 })
 
-// ==================== 滚动加载 ====================
+const handleSearch = useDebounceFn(async (keyword: string) => {
+  await store.setSearchKeyword(keyword)
+}, 300)
+
+watch(localSearch, (v) => handleSearch(v))
+watch(searchKeyword, (v) => {
+  if (v !== localSearch.value) localSearch.value = v
+})
+
 const handleScroll = useThrottleFn((event: Event) => {
   const target = event.target as HTMLElement
-  const scrollTop = target.scrollTop
-  const scrollHeight = target.scrollHeight
-  const clientHeight = target.clientHeight
-
-  // 滚动到底部时加载更多
-  if (scrollHeight - scrollTop - clientHeight < 100 && hasMore.value && !loading.value.records) {
+  if (
+    target.scrollHeight - target.scrollTop - target.clientHeight < 120 &&
+    hasMore.value &&
+    !loading.value.records
+  ) {
     store.loadRecords()
   }
 }, 200)
 
-// ==================== 记录选择 ====================
-function selectRecord(index: number, recordId: number) {
-  selectedIndex.value = index
+function selectRecord(recordId: number) {
   store.loadRecordDetail(recordId)
 }
 
-// ==================== 快捷键导航 ====================
-function handleKeydown(event: KeyboardEvent) {
-  if (!records.value.length) return
+function formatGroupLabel(date: string): string {
+  if (date === '未知日期') return date
+  const today = new Date()
+  const y = today.getFullYear()
+  const m = String(today.getMonth() + 1).padStart(2, '0')
+  const d = String(today.getDate()).padStart(2, '0')
+  const todayStr = `${y}-${m}-${d}`
+  if (date === todayStr) return `今天 · ${date}`
 
-  const tag = (event.target as HTMLElement).tagName
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-
-  switch (event.key) {
-    case 'ArrowUp':
-      event.preventDefault()
-      if (selectedIndex.value > 0) {
-        selectedIndex.value--
-        selectRecord(selectedIndex.value, records.value[selectedIndex.value]!.id!)
-        scrollToSelected()
-      }
-      break
-    case 'ArrowDown':
-      event.preventDefault()
-      if (selectedIndex.value < records.value.length - 1) {
-        selectedIndex.value++
-        selectRecord(selectedIndex.value, records.value[selectedIndex.value]!.id!)
-        scrollToSelected()
-      }
-      break
-    case 'n':
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        emit('add')
-      }
-      break
-    case 'Delete':
-      event.preventDefault()
-      if (records.value[selectedIndex.value]) {
-        emit('delete', records.value[selectedIndex.value]!.id!)
-      }
-      break
-  }
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`
+  if (date === yStr) return `昨天 · ${date}`
+  return date
 }
 
-function scrollToSelected() {
-  nextTick(() => {
-    const selectedElement = listRef.value?.querySelector('.record-item.selected')
-    if (selectedElement) {
-      selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    }
-  })
-}
-
-// ==================== Emits ====================
 const emit = defineEmits<{
   add: []
   delete: [id: number]
 }>()
-
-// ==================== 生命周期 ====================
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
-
-// 监听分类切换,重置选中索引
-watch(activeCategoryId, () => {
-  selectedIndex.value = 0
-})
 </script>
 
 <template>
-  <div
-    class="record-list-container h-full flex flex-col bg-clay-bg-elevated rounded-clay-lg shadow-clay-card"
-  >
-    <!-- 搜索与新增：桌面及移动端均保持 2:1 同行比例。 -->
-    <div
-      class="record-toolbar grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-2 border-b border-gray-200 p-4"
-    >
-      <div class="relative min-w-0">
+  <div class="record-list-container h-full flex flex-col min-h-0">
+    <div class="shrink-0 flex items-center gap-2 pb-3">
+      <div class="relative flex-1 min-w-0">
         <input
-          v-model="searchText"
+          v-model="localSearch"
           type="text"
-          placeholder="搜索记录标题..."
-          class="clay-input h-11 w-full pl-10 pr-10"
+          placeholder="搜索标题..."
+          class="clay-input h-9 w-full pl-9 pr-8 text-sm"
         />
         <AppIcon
           icon="mdi:magnify"
-          :size="20"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-clay-text-muted"
+          :size="16"
+          class="absolute left-2.5 top-1/2 -translate-y-1/2 text-clay-text-muted"
         />
         <button
-          v-if="searchText"
-          @click="searchText = ''"
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-clay-text-muted hover:text-clay-text-primary transition-colors"
+          v-if="localSearch"
+          type="button"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-clay-text-muted hover:text-clay-text-primary"
           aria-label="清除搜索"
+          @click="localSearch = ''"
         >
-          <AppIcon icon="mdi:close" :size="20" />
+          <AppIcon icon="mdi:close" :size="16" />
         </button>
       </div>
       <button
+        type="button"
+        class="clay-btn h-9 px-3 text-sm gap-1 shrink-0"
         @click="emit('add')"
-        class="clay-btn h-11 min-w-0 justify-center gap-1.5 px-3 text-sm sm:gap-2 sm:px-4"
       >
-        <AppIcon icon="mdi:plus" :size="15" class="shrink-0" />
-        <span class="truncate">新增</span>
+        <AppIcon icon="mdi:plus" :size="16" />
+        <span>新增</span>
       </button>
     </div>
 
-    <!-- 记录列表 -->
     <div
       ref="listRef"
-      class="record-list flex-1 overflow-y-auto p-4 space-y-3"
+      class="timeline flex-1 overflow-y-auto min-h-0 pr-1 space-y-4"
       @scroll="handleScroll"
     >
-      <!-- 加载骨架屏 -->
       <template v-if="loading.records && records.length === 0">
-        <div v-for="i in 5" :key="i" class="animate-pulse bg-gray-200 rounded-clay-md h-24" />
-      </template>
-
-      <!-- 记录列表项 -->
-      <template v-else-if="records.length > 0">
-        <div
-          v-for="(record, index) in records"
-          :key="record.id"
-          :class="[
-            'record-item p-4 rounded-clay-md cursor-pointer transition-all duration-200',
-            'bg-white hover:shadow-clay-hover',
-            {
-              'selected shadow-clay-card ring-2 ring-clay-primary': index === selectedIndex,
-              'border-2 border-yellow-400': (record.rating || 0) === 5,
-            },
-          ]"
-          @click="selectRecord(index, record.id!)"
-        >
-          <!-- 标题和日期 -->
-          <div class="flex items-start justify-between mb-2">
-            <h3 class="text-base font-semibold text-clay-text-primary flex-1 line-clamp-1">
-              {{ record.title }}
-            </h3>
-            <AppIcon
-              v-if="record.favoriteFlag === 1"
-              icon="mdi:heart"
-              :size="18"
-              class="text-red-500 ml-2 flex-shrink-0 animate-pulse"
-            />
-          </div>
-
-          <!-- 日期 -->
-          <div class="flex items-center gap-2 text-sm text-clay-text-secondary mb-2">
-            <AppIcon icon="mdi:calendar" :size="16" />
-            <span>{{ record.recordDate?.split(' ')[0] }}</span>
-          </div>
-
-          <!-- 评分 -->
-          <div v-if="record.rating && record.rating > 0" class="flex items-center gap-1">
-            <AppIcon
-              v-for="star in 5"
-              :key="star"
-              icon="mdi:star"
-              :size="16"
-              :class="star <= record.rating ? 'text-yellow-400' : 'text-gray-300'"
-            />
-          </div>
+        <div v-for="i in 6" :key="i" class="animate-pulse space-y-2">
+          <div class="h-4 w-28 bg-gray-200 rounded" />
+          <div class="h-14 bg-gray-200 rounded-clay-md" />
         </div>
       </template>
 
-      <!-- 空状态 -->
+      <template v-else-if="timelineGroups.length > 0">
+        <section v-for="group in timelineGroups" :key="group.date" class="timeline-group">
+          <div
+            class="sticky top-0 z-[1] flex items-center gap-2 py-1.5 mb-1.5 bg-clay-bg-elevated/95 backdrop-blur-sm"
+          >
+            <span class="w-2 h-2 rounded-full bg-clay-primary shrink-0" />
+            <h3 class="text-xs font-semibold text-clay-text-secondary tracking-wide">
+              {{ formatGroupLabel(group.date) }}
+            </h3>
+            <span class="text-[10px] text-clay-text-muted">{{ group.items.length }}</span>
+          </div>
+
+          <div class="space-y-1.5 pl-4">
+            <button
+              v-for="record in group.items"
+              :key="record.id"
+              type="button"
+              class="record-item w-full text-left px-3 py-2.5 rounded-clay-md transition-all text-clay-text-primary"
+              :class="{
+                'bg-clay-primary/10 ring-1 ring-clay-primary/50 shadow-sm':
+                  record.id === activeRecordId,
+                'bg-clay-bg-base hover:bg-clay-primary/5 hover:shadow-clay-hover':
+                  record.id !== activeRecordId,
+                'border border-yellow-300': (record.rating || 0) === 5,
+              }"
+              @click="selectRecord(record.id!)"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="text-sm font-medium text-clay-text-primary line-clamp-1 flex-1">
+                  {{ record.title }}
+                </h4>
+                <AppIcon
+                  v-if="record.favoriteFlag === 1"
+                  icon="mdi:heart"
+                  :size="14"
+                  class="text-red-500 shrink-0"
+                />
+              </div>
+              <div class="mt-1 flex items-center gap-2 text-[11px] text-clay-text-muted">
+                <span
+                  v-if="record.categoryId && categoryNameMap.get(record.categoryId)"
+                  class="px-1.5 py-0.5 rounded bg-clay-primary/10 text-clay-primary"
+                >
+                  {{ categoryNameMap.get(record.categoryId) }}
+                </span>
+                <span v-if="record.rating && record.rating > 0" class="inline-flex items-center gap-0.5">
+                  <AppIcon
+                    v-for="star in record.rating"
+                    :key="star"
+                    icon="mdi:star"
+                    :size="11"
+                    class="text-yellow-400"
+                  />
+                </span>
+                <span v-if="record.content" class="truncate flex-1 opacity-80">
+                  {{ record.content }}
+                </span>
+              </div>
+            </button>
+          </div>
+        </section>
+      </template>
+
       <EmptyState
         v-else-if="isEmpty"
         type="category"
-        :search-text="searchText"
+        :search-text="localSearch"
         @create="emit('add')"
       />
 
-      <!-- 加载更多指示器 -->
-      <div
-        v-if="loading.records && records.length > 0"
-        class="flex items-center justify-center py-4"
-      >
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-clay-primary" />
+      <div v-if="loading.records && records.length > 0" class="flex justify-center py-3">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-clay-primary" />
       </div>
-
-      <!-- 没有更多数据 -->
       <div
         v-if="!hasMore && records.length > 0"
-        class="text-center py-4 text-clay-text-muted text-sm"
+        class="text-center py-3 text-clay-text-muted text-xs"
       >
-        没有更多数据
+        没有更多了
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.record-list::-webkit-scrollbar {
-  width: 6px;
+.timeline::-webkit-scrollbar {
+  width: 5px;
 }
-
-.record-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.record-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+.timeline::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
   border-radius: 3px;
-}
-
-.record-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
 }
 </style>
