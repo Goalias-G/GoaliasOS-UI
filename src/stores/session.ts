@@ -506,11 +506,18 @@ export const useSessionStore = defineStore('session', () => {
   /**
    * 发送消息并建立 SSE 连接
    * 注意: 后端会自动保存消息,无需前端调用保存接口
-   * @param content 消息内容
+   * @param payload 原始文本 + 可选场景/附件 ID（本地气泡仅展示原文）
    */
-  async function sendMessage(content: string) {
-    // 保存用户输入,以便发送失败时恢复
-    const userInput = content
+  async function sendMessage(payload: string | { content: string; scene?: string | null; fileIds?: number[] }) {
+    // 兼容旧调用与 ChatInput 新载荷
+    const userInput = typeof payload === 'string' ? payload : payload.content
+    const scene = typeof payload === 'string' ? undefined : payload.scene || undefined
+    const fileIds =
+      typeof payload === 'string'
+        ? undefined
+        : payload.fileIds && payload.fileIds.length > 0
+          ? payload.fileIds
+          : undefined
 
     // 检查是否可以发送
     if (!canSend.value) {
@@ -539,7 +546,7 @@ export const useSessionStore = defineStore('session', () => {
     // 生成临时消息 ID（使用时间戳）
     const tempUserMessageId = Date.now()
 
-    // 添加用户消息到本地消息列表（临时 ID）
+    // 添加用户消息到本地消息列表（临时 ID，仅原始文本）
     const userMessage: ChatMessage = {
       id: tempUserMessageId,
       userId: userStore.userInfo.userId,
@@ -586,18 +593,25 @@ export const useSessionStore = defineStore('session', () => {
             content: msg.content,
           }))
 
-        // 添加当前用户输入作为最后一条消息
+        // 添加当前用户输入作为最后一条消息（原文，不含 fileIds 拼接）
         historyMessages.push({
           role: 'user',
           content: userInput,
         })
 
         // 构建请求参数(携带完整会话历史)
-        const requestParams: any = {
+        const requestParams: Record<string, unknown> = {
           messages: historyMessages,
           sessionId: currentSessionId.value || undefined, // 新会话时不传 sessionId
           kid: currentKnowledgeId.value || undefined,
           enableSearch: enableWebSearch.value, // 是否启用联网搜索
+        }
+
+        if (scene) {
+          requestParams.scene = scene
+        }
+        if (fileIds) {
+          requestParams.fileIds = fileIds
         }
 
         // 如果是自动选择模式，传递 autoSelectModel 参数

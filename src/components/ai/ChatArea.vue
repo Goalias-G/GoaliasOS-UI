@@ -12,6 +12,7 @@
  */
 
 import { useSessionStore } from '@/stores/session'
+import type { ChatSendPayload } from '@/constants/chatScenes'
 
 // ==================== Store ====================
 const sessionStore = useSessionStore()
@@ -20,11 +21,11 @@ const { isStreaming, loading, isViewingArchivedSession, currentSession } = store
 // ==================== 方法 ====================
 /**
  * 处理发送消息
- * @param content 消息内容
+ * @param payload 原始文本 + 可选场景/附件 ID
  */
-async function handleSendMessage(content: string) {
+async function handleSendMessage(payload: ChatSendPayload) {
   try {
-    await sessionStore.sendMessage(content)
+    await sessionStore.sendMessage(payload)
   } catch (error) {
     console.error('发送消息失败:', error)
   }

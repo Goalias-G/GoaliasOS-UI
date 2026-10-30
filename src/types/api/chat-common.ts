@@ -19,6 +19,10 @@ export interface ChatRequestParams {
   enableSearch?: boolean
   autoSelectModel?: boolean
   hasAttachment?: boolean
+  /** 快捷指令场景，对应 PromptTemplateEnum.desc */
+  scene?: string
+  /** 生活记录附件 OSS 文件 ID */
+  fileIds?: number[]
   temperature?: number
   topP?: number
 }
