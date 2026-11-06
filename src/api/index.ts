@@ -208,29 +208,5 @@ export function patch<T = any>(url: string, data?: any, config?: RequestConfig):
   return instance.patch(url, data, config)
 }
 
-/**
- * 文件上传
- * @param url 上传地址
- * @param file 文件对象
- * @param onProgress 上传进度回调（TODO）
- */
-export function upload<T = any>(
-  url: string,
-  file: File,
-  onProgress?: (percent: number) => void,
-): Promise<T> {
-  const formData = new FormData()
-  formData.append('file', file)
-
-  return instance.post(url, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-    onUploadProgress: (event) => {
-      if (event.total && onProgress) {
-        onProgress(Math.round((event.loaded * 100) / event.total))
-      }
-    },
-  })
-}
-
 // 导出 Axios 实例（用于特殊场景）
 export { instance as axios }

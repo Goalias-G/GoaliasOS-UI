@@ -41,13 +41,19 @@ export const ossApi = {
   /**
    * 上传OSS对象存储
    * @param file 文件
+   * @param onProgress 上传进度回调（百分比 0-99；数据发送完毕后服务器仍需处理，
+   *                   故此处上限为 99，100 由调用方在确认上传成功后设置）
    */
-  upload: (file: File | Blob) => {
+  upload: (file: File | Blob, onProgress?: (percent: number) => void) => {
     const formData = new FormData()
     formData.append('file', file)
     return post<ApiResponse<SysOssUploadVo>>('/system/oss/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 600000, //10分钟
+      onUploadProgress: (event) => {
+        if (!onProgress || !event.total) return
+        onProgress(Math.min(99, Math.round((event.loaded / event.total) * 100)))
+      },
     })
   },
 

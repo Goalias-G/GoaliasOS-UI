@@ -66,6 +66,7 @@ interface UploadedFileItem {
 
 const uploadedFiles = ref<UploadedFileItem[]>([])
 const isUploading = ref(false)
+const uploadProgress = ref(0)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 // ==================== 计算属性 ====================
@@ -225,9 +226,13 @@ async function uploadOneFile(file: File) {
   }
 
   isUploading.value = true
+  uploadProgress.value = 0
   try {
-    const response = await ossApi.upload(file)
+    const response = await ossApi.upload(file, (percent) => {
+      uploadProgress.value = percent
+    })
     if (response.code === 200 && response.data) {
+      uploadProgress.value = 100
       uploadedFiles.value.push({
         id: response.data.ossId,
         url: response.data.url || URL.createObjectURL(file),
@@ -341,6 +346,20 @@ onMounted(() => adjustHeight())
         />
       </div>
 
+      <!-- 上传进度 -->
+      <div v-if="isUploading" class="px-3 pb-1.5 pt-1 flex items-center gap-2">
+        <AppIcon icon="mdi:cloud-upload" :size="14" class="text-clay-primary shrink-0" />
+        <div class="flex-1 h-1.5 rounded-full bg-clay-bg-base overflow-hidden">
+          <div
+            class="h-full rounded-full bg-clay-primary transition-all duration-300"
+            :style="{ width: `${uploadProgress}%` }"
+          />
+        </div>
+        <span class="text-xs text-clay-text-muted shrink-0 tabular-nums">
+          {{ uploadProgress }}%
+        </span>
+      </div>
+
       <!-- 底部工具栏：+ / 附件 / 发送 -->
       <div class="px-2 pb-2 pt-1 flex items-center justify-between gap-2">
         <div ref="sceneMenuRef" class="relative flex items-center gap-0.5">
@@ -386,9 +405,9 @@ onMounted(() => adjustHeight())
             v-if="sceneMenuOpen"
             class="absolute bottom-full left-0 mb-2 w-72 clay-card shadow-clay-hover z-20 py-1.5 max-h-80 overflow-y-auto"
           >
-            <p class="px-3 py-1.5 text-[11px] uppercase tracking-wide text-clay-text-muted">
-              快捷指令
-            </p>
+<!--            <p class="px-3 py-1.5 text-[11px] uppercase tracking-wide text-clay-text-muted">-->
+<!--              快捷指令-->
+<!--            </p>-->
             <button
               v-for="option in CHAT_SCENE_OPTIONS"
               :key="option.scene!"

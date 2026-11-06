@@ -67,8 +67,9 @@ const errors = ref<{
 
 const isSubmitting = ref(false)
 
-// 文件上传状态
-const isUploading = ref(false)
+// 文件上传状态（并发计数：FileUpload 多文件时会同时触发多次 upload 事件）
+const uploadingCount = ref(0)
+const isUploading = computed(() => uploadingCount.value > 0)
 const uploadProgress = ref(0)
 
 // ==================== 计算属性 ====================
@@ -120,11 +121,13 @@ function validateForm(): boolean {
 
 // ==================== 文件上传处理 ====================
 async function handleFileUpload(file: File): Promise<void> {
-  isUploading.value = true
+  uploadingCount.value++
   uploadProgress.value = 0
 
   try {
-    const response = await ossApi.upload(file)
+    const response = await ossApi.upload(file, (percent) => {
+      uploadProgress.value = percent
+    })
     if (response.code === 200 && response.data) {
       const fileId = response.data.ossId.toString()
       const fileUrl = response.data.url || URL.createObjectURL(file)
@@ -146,6 +149,7 @@ async function handleFileUpload(file: File): Promise<void> {
         type: fileType,
       })
 
+      // 置为 100 表示上传完成（FileUpload 依赖该值在上传结束后清理文件列表）
       uploadProgress.value = 100
     } else {
       throw new Error(response.message || '文件上传失败')
@@ -155,8 +159,10 @@ async function handleFileUpload(file: File): Promise<void> {
     showError('文件上传失败')
     throw error
   } finally {
-    isUploading.value = false
-    uploadProgress.value = 0
+    uploadingCount.value--
+    // 注意：此处不重置 uploadProgress。
+    // FileUpload 通过「uploading 变为 false 且 progress === 100」判断上传完成并清理列表，
+    // 过早重置会导致清理逻辑失效；下次上传开始时会重置为 0。
   }
 }
 
