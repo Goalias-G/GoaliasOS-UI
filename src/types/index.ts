@@ -23,6 +23,7 @@ export * from './api/home'
 export * from './api/finance'
 export * from './api/food'
 export * from './api/scheduled-task'
+export * from './api/mcp'
 
 /** 通用的键值对类型 */
 export type AnyObject = Record<string, any>

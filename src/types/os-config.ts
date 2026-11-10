@@ -3,8 +3,30 @@
  *
  * 功能说明：
  * - 定义 OS 配置管理模块的通用类型
- * - 包括表格、分页、搜索、模态框、表单等类型
+ * - 包括表格、分页、搜索、模态框、表单、侧栏导航等类型
  */
+
+/**
+ * OS 配置侧栏二级菜单项
+ */
+export interface OsConfigNavChild {
+  path: string
+  label: string
+  icon: string
+}
+
+/**
+ * OS 配置侧栏一级菜单项（可含分组 children）
+ */
+export interface OsConfigNavItem {
+  /** 分组唯一标识（有 children 时必填） */
+  id?: string
+  /** 一级直达路径（无 children 时必填） */
+  path?: string
+  label: string
+  icon: string
+  children?: OsConfigNavChild[]
+}
 
 /**
  * 表格列配置

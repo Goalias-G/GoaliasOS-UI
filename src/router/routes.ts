@@ -94,19 +94,11 @@ export const mainRoutes: RouteRecordRaw[] = [
     },
     redirect: '/os-config/knowledge',
     children: [
-      {
-        path: 'chat-model',
-        name: 'OSConfigChatModel',
-        component: () => import('@/views/os-config/modules/ChatModelModule.vue'),
-        meta: {
-          title: '聊天模型',
-          requiresAdmin: true,
-        },
-      },
+      // 知识库
       {
         path: 'knowledge',
         name: 'OSConfigKnowledge',
-        component: () => import('@/views/os-config/modules/KnowledgeModule.vue'),
+        component: () => import('@/views/os-config/knowledge/KnowledgeModule.vue'),
         meta: {
           title: '知识库',
           requiresAdmin: false,
@@ -115,26 +107,46 @@ export const mainRoutes: RouteRecordRaw[] = [
       {
         path: 'knowledge/:kid/attachments',
         name: 'OSConfigKnowledgeAttach',
-        component: () => import('@/views/os-config/modules/KnowledgeAttachView.vue'),
+        component: () => import('@/views/os-config/knowledge/KnowledgeAttachView.vue'),
         meta: {
           title: '附件管理',
           requiresAdmin: false,
           hidden: true,
         },
       },
+      // OS AI
+      {
+        path: 'chat-model',
+        name: 'OSConfigChatModel',
+        component: () => import('@/views/os-config/ai/ChatModelModule.vue'),
+        meta: {
+          title: 'AI模型',
+          requiresAdmin: true,
+        },
+      },
       {
         path: 'prompt-template',
         name: 'OSConfigPromptTemplate',
-        component: () => import('@/views/os-config/modules/PromptTemplateModule.vue'),
+        component: () => import('@/views/os-config/ai/PromptTemplateModule.vue'),
         meta: {
           title: '提示词模板',
           requiresAdmin: true,
         },
       },
       {
+        path: 'mcp-config',
+        name: 'OSConfigMcp',
+        component: () => import('@/views/os-config/ai/McpConfigModule.vue'),
+        meta: {
+          title: 'MCP配置',
+          requiresAdmin: true,
+        },
+      },
+      // 定时任务
+      {
         path: 'scheduled-task',
         name: 'OSConfigScheduledTask',
-        component: () => import('@/views/os-config/modules/ScheduledTaskModule.vue'),
+        component: () => import('@/views/os-config/schedule/ScheduledTaskModule.vue'),
         meta: {
           title: '定时任务',
           requiresAdmin: true,

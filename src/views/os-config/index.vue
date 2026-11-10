@@ -2,14 +2,14 @@
 /**
  * OS 配置管理主页面
  *
- * 功能说明：
- * - 使用 OSConfigLayout 组件提供左右分栏布局
- * - 通过 router-view 渲染对应模块内容
+ * - 注入侧栏导航配置
+ * - 通过 router-view 渲染 knowledge / ai / schedule 领域模块
  */
+import { OS_CONFIG_NAV_ITEMS } from './config/nav'
 </script>
 
 <template>
-  <OSConfigLayout>
+  <OSConfigLayout :nav-items="OS_CONFIG_NAV_ITEMS">
     <router-view />
   </OSConfigLayout>
 </template>
