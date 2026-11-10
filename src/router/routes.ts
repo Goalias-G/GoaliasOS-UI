@@ -70,6 +70,18 @@ export const mainRoutes: RouteRecordRaw[] = [
     },
   },
 
+  // ==================== 食材菜谱 ====================
+  {
+    path: 'food',
+    name: 'Food',
+    component: () => import('@/views/food/index.vue'),
+    meta: {
+      title: '食材菜谱',
+      icon: 'hugeicons:restaurant-01',
+      module: 'food',
+    },
+  },
+
   // ==================== OS 配置管理 ====================
   {
     path: 'os-config',

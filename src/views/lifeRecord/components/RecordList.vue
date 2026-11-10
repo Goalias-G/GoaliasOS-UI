@@ -142,18 +142,25 @@ const emit = defineEmits<{
               v-for="record in group.items"
               :key="record.id"
               type="button"
-              class="record-item w-full text-left px-3 py-2.5 rounded-clay-md transition-all text-clay-text-primary"
+              class="record-item relative w-full text-left pl-3.5 pr-3 py-2.5 rounded-clay-md transition-all duration-normal ease-clay-out outline-none focus-visible:outline-none"
               :class="{
-                'bg-clay-primary/10 ring-1 ring-clay-primary/50 shadow-sm':
+                'is-active bg-clay-primary/10 text-clay-primary shadow-clay-card':
                   record.id === activeRecordId,
-                'bg-clay-bg-base hover:bg-clay-primary/5 hover:shadow-clay-hover':
+                'bg-clay-bg-base text-clay-text-primary hover:bg-clay-primary/5 hover:shadow-clay-hover':
                   record.id !== activeRecordId,
-                'border border-yellow-300': (record.rating || 0) === 5,
+                'record-item--top-rated': (record.rating || 0) === 5 && record.id !== activeRecordId,
               }"
               @click="selectRecord(record.id!)"
             >
               <div class="flex items-start justify-between gap-2">
-                <h4 class="text-sm font-medium text-clay-text-primary line-clamp-1 flex-1">
+                <h4
+                  class="text-sm line-clamp-1 flex-1"
+                  :class="
+                    record.id === activeRecordId
+                      ? 'font-semibold text-clay-primary'
+                      : 'font-medium text-clay-text-primary'
+                  "
+                >
                   {{ record.title }}
                 </h4>
                 <AppIcon
@@ -202,7 +209,7 @@ const emit = defineEmits<{
         v-if="!hasMore && records.length > 0"
         class="text-center py-3 text-clay-text-muted text-xs"
       >
-        没有更多了
+        没有更多了...
       </div>
     </div>
   </div>
@@ -215,5 +222,28 @@ const emit = defineEmits<{
 .timeline::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.18);
   border-radius: 3px;
+}
+
+/* clay 选中态：左侧色条 + 柔和浮起，避免 ring/黑框描边 */
+.record-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+  background: var(--clay-primary);
+  transition: height var(--duration-normal) var(--ease-out);
+}
+
+.record-item.is-active::before {
+  height: 64%;
+}
+
+.record-item--top-rated {
+  background-color: rgb(255 251 235 / 0.9);
+  box-shadow: inset 0 0 0 1px rgb(253 224 71 / 0.55);
 }
 </style>

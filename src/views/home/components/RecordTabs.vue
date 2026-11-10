@@ -2,18 +2,18 @@
 /**
  * RecordTabs 组件 - 记录与提升
  *
- * 功能说明：
- * - 提供三个标签页：健康填写进度、历史知识、历史心理学
- * - 管理标签页切换逻辑
- * - 懒加载标签页内容（仅在激活时加载）
- * - 健康填写进度：统计健康数据的填写状态，使用环形进度图展示
- * - 历史知识：展示历史知识记录列表，支持分页和展开/折叠
- * - 历史心理学：展示历史心理学记录列表，支持分页和展开/折叠
+ * - 生活记录：节假日万年历 + 日心情/备注/任务
+ * - 作息趋势 / 每日心理 / 每日知识
  */
 
-import type { DailyHealth, DailyKnowledge, HealthSleepChart } from '@/types'
+import type { DailyKnowledge, HealthSleepChart } from '@/types'
 import { dailyKnowledgeApi, dailyHealthApi } from '@/api/modules/home'
 import { formatDate } from '@/utils/format'
+const LifeCalendar = defineAsyncComponent({
+  loader: () => import('./LifeCalendar.vue'),
+  delay: 0,
+  timeout: 20000,
+})
 import * as echarts from 'echarts/core'
 import type { EChartsOption } from 'echarts'
 import { LineChart } from 'echarts/charts'
@@ -34,23 +34,20 @@ echarts.use([
   CanvasRenderer,
 ])
 
-// ==================== 注入父组件提供的 healthData ====================
-const healthDataRef = inject<Ref<DailyHealth | null>>('healthData')!
-
 // ==================== 响应式状态 ====================
-const activeTab = ref<'progress' | 'knowledge' | 'psychology' | 'sleepChart'>('progress')
-const loadedTabs = ref<Set<string>>(new Set(['progress']))
+const activeTab = ref<'calendar' | 'knowledge' | 'psychology' | 'sleepChart'>('calendar')
+const loadedTabs = ref<Set<string>>(new Set(['calendar']))
 
 // ==================== 标签页配置 ====================
 const tabs = [
-  { id: 'progress' as const, label: '生活记录', icon: 'hugeicons:health' },
+  { id: 'calendar' as const, label: '我的日历', icon: 'hugeicons:calendar-03' },
   { id: 'sleepChart' as const, label: '作息趋势', icon: 'hugeicons:chart-line-data-02' },
   { id: 'psychology' as const, label: '每日心理', icon: 'hugeicons:brain-02' },
   { id: 'knowledge' as const, label: '每日知识', icon: 'hugeicons:book-02' },
 ]
 
 // ==================== 方法 ====================
-function switchTab(tab: 'progress' | 'knowledge' | 'psychology' | 'sleepChart') {
+function switchTab(tab: 'calendar' | 'knowledge' | 'psychology' | 'sleepChart') {
   activeTab.value = tab
 
   if (tab === 'sleepChart') {
@@ -67,36 +64,6 @@ function switchTab(tab: 'progress' | 'knowledge' | 'psychology' | 'sleepChart') 
       loadPsychologyList()
     }
   }
-}
-
-// ==================== 健康填写进度子组件 ====================
-const healthFields = [
-  { key: 'upTime', label: '起床时间', icon: 'mdi:clock-outline' },
-  { key: 'sleepTime', label: '睡眠时间', icon: 'mdi:sleep' },
-  { key: 'food', label: '饮食分享', icon: 'mdi:food' },
-  { key: 'exercise', label: '运动记录', icon: 'mdi:dumbbell' },
-  // { key: 'remark', label: '备注信息', icon: 'mdi:text-box-outline' },
-]
-
-// 计算健康填写进度
-const filledFields = computed(() => {
-  if (!healthDataRef.value) return []
-  return healthFields.filter((field) => {
-    const value = healthDataRef.value?.[field.key as keyof DailyHealth]
-    return value !== null && value !== undefined && value !== ''
-  })
-})
-
-const completionRate = computed(() => {
-  if (!healthDataRef.value) return 0
-  return Math.round((filledFields.value.length / healthFields.length) * 100)
-})
-
-// 判断字段是否已填写
-function isFieldFilled(key: string): boolean {
-  if (!healthDataRef.value) return false
-  const value = healthDataRef.value[key as keyof DailyHealth]
-  return value !== null && value !== undefined && value !== ''
 }
 
 // ==================== 历史知识子组件 ====================
@@ -482,125 +449,39 @@ onUnmounted(() => {
   <div class="record-tabs">
     <!-- 标签页头部 -->
     <div class="clay-card p-2 mb-6" role="tablist" aria-label="记录与提升标签页">
-      <div class="flex gap-2 overflow-x-auto">
+      <div class="tab-scroll flex gap-2 overflow-x-auto">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           role="tab"
           :aria-selected="activeTab === tab.id"
           :aria-controls="`panel-${tab.id}`"
-          class="flex-1 min-w-[120px] px-4 py-3 rounded-clay-md font-medium transition-all flex items-center justify-center gap-2"
+          class="flex-1 min-w-[7.5rem] px-4 py-3 rounded-clay-md font-medium transition-all flex items-center justify-center gap-2 shrink-0"
           :class="[
             activeTab === tab.id
-              ? 'bg-clay-primary shadow-clay-button'
+              ? 'bg-clay-bg-elevated text-clay-primary shadow-clay-button'
               : 'text-clay-text-secondary hover:bg-clay-bg-base hover:text-clay-text-primary',
           ]"
           @click="switchTab(tab.id)"
         >
           <AppIcon :icon="tab.icon" :size="20" />
-          <span>{{ tab.label }}</span>
+          <span class="whitespace-nowrap">{{ tab.label }}</span>
         </button>
       </div>
     </div>
 
     <!-- 标签页内容 -->
     <div class="tab-content">
-      <!-- 健康填写进度 -->
+      <!-- 生活日历 -->
       <Transition name="fade" mode="out-in">
         <div
-          v-if="activeTab === 'progress'"
-          id="panel-progress"
+          v-if="activeTab === 'calendar'"
+          id="panel-calendar"
           role="tabpanel"
-          :aria-hidden="activeTab !== 'progress'"
-          class="clay-card p-6"
+          :aria-hidden="activeTab !== 'calendar'"
+          class="clay-card p-4 sm:p-6"
         >
-          <h3 class="clay-section-title mb-6">记录进度</h3>
-
-          <!-- 环形进度图 -->
-          <div class="flex justify-center mb-8">
-            <div class="relative w-48 h-48">
-              <svg class="w-full h-full transform -rotate-90">
-                <!-- 背景圆环 -->
-                <circle
-                  cx="96"
-                  cy="96"
-                  r="84"
-                  stroke="currentColor"
-                  stroke-width="12"
-                  fill="none"
-                  class="text-clay-bg-base"
-                />
-                <!-- 进度圆环 -->
-                <circle
-                  cx="96"
-                  cy="96"
-                  r="84"
-                  stroke="currentColor"
-                  stroke-width="12"
-                  fill="none"
-                  stroke-linecap="round"
-                  class="text-clay-primary transition-all duration-1000 ease-out"
-                  :stroke-dasharray="`${2 * Math.PI * 84}`"
-                  :stroke-dashoffset="`${2 * Math.PI * 84 * (1 - completionRate / 100)}`"
-                />
-              </svg>
-              <!-- 中心文字 -->
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <div class="text-4xl font-bold text-clay-text-primary">{{ completionRate }}%</div>
-                <div class="text-sm text-clay-text-secondary mt-1">完成度</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 字段列表 -->
-          <div class="space-y-3">
-            <div
-              v-for="field in healthFields"
-              :key="field.key"
-              class="flex items-center gap-4 p-4 rounded-clay-sm transition-colors"
-              :class="isFieldFilled(field.key) ? 'bg-clay-bg-elevated' : 'bg-clay-bg-base'"
-            >
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                :class="isFieldFilled(field.key) ? 'bg-clay-primary/10' : 'bg-clay-text-muted/10'"
-              >
-                <AppIcon
-                  :icon="isFieldFilled(field.key) ? 'mdi:check' : field.icon"
-                  :size="20"
-                  :class="isFieldFilled(field.key) ? 'text-clay-primary' : 'text-clay-text-muted'"
-                />
-              </div>
-              <div class="flex-1">
-                <div
-                  class="font-medium"
-                  :class="
-                    isFieldFilled(field.key) ? 'text-clay-text-primary' : 'text-clay-text-muted'
-                  "
-                >
-                  {{ field.label }}
-                </div>
-                <div v-if="isFieldFilled(field.key)" class="text-sm text-clay-text-secondary">
-                  {{ healthDataRef?.[field.key as keyof DailyHealth] }}
-                </div>
-                <div v-else class="text-sm text-clay-text-muted">未填写</div>
-              </div>
-              <div
-                class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors"
-                :class="
-                  isFieldFilled(field.key)
-                    ? 'border-clay-primary bg-clay-primary'
-                    : 'border-clay-text-muted'
-                "
-              >
-                <AppIcon
-                  v-if="isFieldFilled(field.key)"
-                  icon="mdi:check"
-                  :size="14"
-                  class="text-white"
-                />
-              </div>
-            </div>
-          </div>
+          <LifeCalendar />
         </div>
       </Transition>
 
@@ -838,6 +719,16 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.tab-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.tab-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* 淡入淡出动画 */
 .fade-enter-active,
 .fade-leave-active {

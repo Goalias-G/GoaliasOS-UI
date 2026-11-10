@@ -91,6 +91,7 @@ declare global {
   const exampleWatchStreamingMessage: typeof import('./src/stores/session.sse.example').exampleWatchStreamingMessage
   const exampleWithErrorHandling: typeof import('./src/stores/session.sse.example').exampleWithErrorHandling
   const extendRef: typeof import('@vueuse/core').extendRef
+  const extractIngredientName: typeof import('./src/stores/food').extractIngredientName
   const extractPlainText: typeof import('./src/utils/markdown').extractPlainText
   const formatCurrency: typeof import('./src/utils/format').formatCurrency
   const formatDate: typeof import('./src/utils/format').formatDate
@@ -289,6 +290,7 @@ declare global {
   const useFinanceStore: typeof import('./src/stores/finance').useFinanceStore
   const useFocus: typeof import('@vueuse/core').useFocus
   const useFocusWithin: typeof import('@vueuse/core').useFocusWithin
+  const useFoodStore: typeof import('./src/stores/food').useFoodStore
   const useFps: typeof import('@vueuse/core').useFps
   const useFullscreen: typeof import('@vueuse/core').useFullscreen
   const useGamepad: typeof import('@vueuse/core').useGamepad
@@ -424,6 +426,9 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { FoodTab } from './src/stores/food'
+  import('./src/stores/food')
+  // @ts-ignore
   export type { Theme } from './src/stores/theme'
   import('./src/stores/theme')
   // @ts-ignore
@@ -481,6 +486,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly escapeHtml: UnwrapRef<typeof import('./src/utils/markdown')['escapeHtml']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly extractIngredientName: UnwrapRef<typeof import('./src/stores/food')['extractIngredientName']>
     readonly extractPlainText: UnwrapRef<typeof import('./src/utils/markdown')['extractPlainText']>
     readonly formatCurrency: UnwrapRef<typeof import('./src/utils/format')['formatCurrency']>
     readonly formatDate: UnwrapRef<typeof import('./src/utils/format')['formatDate']>
@@ -671,6 +677,7 @@ declare module 'vue' {
     readonly useFinanceStore: UnwrapRef<typeof import('./src/stores/finance')['useFinanceStore']>
     readonly useFocus: UnwrapRef<typeof import('@vueuse/core')['useFocus']>
     readonly useFocusWithin: UnwrapRef<typeof import('@vueuse/core')['useFocusWithin']>
+    readonly useFoodStore: UnwrapRef<typeof import('./src/stores/food')['useFoodStore']>
     readonly useFps: UnwrapRef<typeof import('@vueuse/core')['useFps']>
     readonly useFullscreen: UnwrapRef<typeof import('@vueuse/core')['useFullscreen']>
     readonly useGamepad: UnwrapRef<typeof import('@vueuse/core')['useGamepad']>

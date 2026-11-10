@@ -130,3 +130,92 @@ export interface HealthSleepChart {
   /** 睡眠时间 */
   sleepTime?: string | null
 }
+
+/** 节假日万年历 — 查询回显 */
+export interface HolidayCalendarQuery {
+  date?: string
+  month?: string
+  year?: string
+  timezone?: string
+  holiday_type?: string
+  region?: string
+  include_nearby?: boolean
+  nearby_limit?: number
+  exclude_past?: boolean
+}
+
+/** 节假日万年历 — 汇总 */
+export interface HolidayCalendarSummary {
+  total_days?: number
+  weekend_days?: number
+  workdays?: number
+  rest_days?: number
+  holiday_events?: number
+  legal_rest_days?: number
+  legal_workdays?: number
+}
+
+/** 节假日万年历 — 单日明细（不含干支展示字段的业务使用） */
+export interface HolidayCalendarDay {
+  date: string
+  year?: number
+  month?: number
+  day?: number
+  weekday_cn?: string
+  is_weekend?: boolean
+  is_workday?: boolean
+  is_rest_day?: boolean
+  is_holiday?: boolean
+  legal_holiday_name?: string
+  /** rest | workday_adjust */
+  legal_holiday_type?: string
+  solar_festival?: string
+  lunar_festival?: string
+  solar_term?: string
+  lunar_year?: number
+  lunar_month?: number
+  lunar_day?: number
+  lunar_month_name?: string
+  lunar_day_name?: string
+}
+
+export interface HolidayCalendarEvent {
+  date: string
+  name: string
+  type: string
+  is_workday?: boolean
+}
+
+export interface HolidayCalendarVo {
+  mode?: string
+  query?: HolidayCalendarQuery
+  summary?: HolidayCalendarSummary
+  days?: HolidayCalendarDay[]
+  holidays?: HolidayCalendarEvent[]
+}
+
+/** 日历日任务状态 */
+export type CalendarTaskStatus = 'pending' | 'done' | 'cancelled'
+
+export interface CalendarDayTask {
+  id: string
+  content: string
+  status: CalendarTaskStatus
+}
+
+/** 日历日笔记 */
+export interface DailyCalendarNote {
+  id?: number
+  userId?: number
+  noteDate: string
+  moodEmoji?: string
+  /** 今日一言 */
+  note?: string
+  tasks?: CalendarDayTask[]
+  createTime?: string
+  updateTime?: string
+}
+
+export type DailyCalendarNoteParams = Omit<DailyCalendarNote, 'id' | 'userId' | 'createTime' | 'updateTime'> & {
+  id?: number
+}

@@ -114,7 +114,7 @@ export const dailyKnowledgeApi = {
  * - 翻译文本
  */
 
-import type { HomeInfoVo } from '@/types'
+import type { DailyCalendarNote, DailyCalendarNoteParams, HolidayCalendarVo, HomeInfoVo } from '@/types'
 
 export const homeApi = {
   /**
@@ -130,4 +130,25 @@ export const homeApi = {
    */
   translate: (text: string, toLanguage?: string) =>
     get<ApiResponse<string>>('/home/translate', { text, toLanguage }),
+
+  /**
+   * 节假日与万年历（date / month / year 三选一）
+   */
+  holidayCalendar: (params: { date?: string; month?: string; year?: string }) =>
+    get<ApiResponse<HolidayCalendarVo>>('/home/holiday-calendar', params),
+}
+
+/** 日历日笔记 API */
+export const calendarNoteApi = {
+  /** 按月查询笔记 */
+  listByMonth: (month: string) =>
+    get<ApiResponse<DailyCalendarNote[]>>('/life/calendar-note/month', { month }),
+
+  /** 按日查询笔记 */
+  getByDate: (date: string) =>
+    get<ApiResponse<DailyCalendarNote | null>>('/life/calendar-note/day', { date }),
+
+  /** 按日保存（upsert） */
+  save: (data: DailyCalendarNoteParams) =>
+    put<ApiResponse<DailyCalendarNote>>('/life/calendar-note', data),
 }

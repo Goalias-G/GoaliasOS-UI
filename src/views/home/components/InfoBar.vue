@@ -107,7 +107,7 @@ const currentLocation = computed(() => {
               {{ weather.weather }}
             </div>
             <div class="text-clay-text-secondary text-[10px] sm:text-xs whitespace-nowrap">
-              {{ weather.temperature }}
+              {{ weather.temperature + '°C'}}
             </div>
           </div>
         </div>

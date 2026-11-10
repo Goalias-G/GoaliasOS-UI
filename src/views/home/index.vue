@@ -2,48 +2,40 @@
 /**
  * 首页 - Goalias OS 健康生活管理系统
  *
- * 功能说明：
- * - 展示顶部信息栏（问候语、天气、日期、翻译入口）
- * - 展示今日重点（AI推荐内容）
- * - 展示每日健康快览（健康数据记录）
- * - 展示记录与提升（健康进度、历史知识、历史心理学）
- * - 展示热点资讯（六大平台热点榜）
+ * - 首屏先出骨架动效，不因 /home/info 阻塞整页空白
+ * - 生活日历在 RecordTabs 内异步加载，独立 loading
  */
 
 import type { HomeInfoVo, DailyHealth } from '@/types'
 import { homeApi } from '@/api/modules/home'
 import { showError } from '@/utils/toast'
 
-// 组件
 import InfoBar from './components/InfoBar.vue'
 import TodayFocus from './components/TodayFocus.vue'
 import HealthOverview from './components/HealthOverview.vue'
 import RecordTabs from './components/RecordTabs.vue'
 import NewsFlow from './components/NewsFlow.vue'
 
-// ==================== 响应式状态 ====================
 const homeInfo = ref<HomeInfoVo | null>(null)
 const healthData = ref<DailyHealth | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const lastFetchTime = ref<number>(0)
 
-// 提供 healthData 给子组件
 provide('healthData', healthData)
 
-// ==================== 常量 ====================
-const CACHE_DURATION = 5 * 60 * 1000 // 5分钟缓存
+const CACHE_DURATION = 5 * 60 * 1000
 
-// ==================== 计算属性 ====================
 const shouldLoadData = computed(() => {
   if (!homeInfo.value) return true
-  const now = Date.now()
-  return now - lastFetchTime.value >= CACHE_DURATION
+  return Date.now() - lastFetchTime.value >= CACHE_DURATION
 })
 
-// ==================== 方法 ====================
+/** 有缓存数据时仍可展示内容，后台刷新 */
+const showContent = computed(() => !!homeInfo.value)
+const showSkeleton = computed(() => loading.value && !homeInfo.value)
+
 async function loadHomeInfo(forceRefresh = false) {
-  // 如果缓存有效且不强制刷新，直接返回
   if (!forceRefresh && !shouldLoadData.value) {
     return
   }
@@ -58,16 +50,18 @@ async function loadHomeInfo(forceRefresh = false) {
       lastFetchTime.value = Date.now()
     } else {
       error.value = response.message || '加载失败'
-      showError('加载首页信息失败')
+      if (!homeInfo.value) showError('加载首页信息失败')
     }
   } catch (err: any) {
     console.error('加载首页信息失败:', err)
-    if (err.code === 'ECONNABORTED' || err.message === 'Network Error') {
-      error.value = '网络连接失败，请检查网络设置'
-    } else if (err.response?.status >= 500) {
-      error.value = '服务暂时不可用，请稍后重试'
-    } else {
-      error.value = '加载失败，请重试'
+    if (!homeInfo.value) {
+      if (err.code === 'ECONNABORTED' || err.message === 'Network Error') {
+        error.value = '网络连接失败，请检查网络设置'
+      } else if (err.response?.status >= 500) {
+        error.value = '服务暂时不可用，请稍后重试'
+      } else {
+        error.value = '加载失败，请重试'
+      }
     }
   } finally {
     loading.value = false
@@ -78,7 +72,6 @@ function handleRetry() {
   loadHomeInfo(true)
 }
 
-// ==================== 生命周期 ====================
 onMounted(() => {
   loadHomeInfo()
 })
@@ -86,22 +79,62 @@ onMounted(() => {
 
 <template>
   <div class="min-h-full bg-clay-bg-base relative overflow-hidden">
-    <!-- 左侧呼吸泛光 -->
     <div class="side-glow side-glow--left" aria-hidden="true"></div>
-    <!-- 右侧呼吸泛光 -->
     <div class="side-glow side-glow--right" aria-hidden="true"></div>
 
     <div class="container mx-auto px-4 md:px-6 py-6 md:py-8 relative z-10">
-      <!-- 加载状态 -->
-      <div v-if="loading && !homeInfo" class="flex items-center justify-center min-h-[60vh]">
-        <div class="text-center space-y-4">
-          <div class="relative w-20 h-20 mx-auto">
-            <div class="w-20 h-20 border-4 border-clay-primary/20 rounded-full"></div>
+      <!-- 首屏骨架：有加载动效，不整页白屏等待 -->
+      <div v-if="showSkeleton" class="home-skeleton space-y-6 md:space-y-8" aria-busy="true">
+        <div class="clay-card p-4 sm:p-5 overflow-hidden relative">
+          <div class="skeleton-shimmer absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+          <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-full bg-clay-bg-base animate-pulse"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 w-2/3 max-w-xs rounded bg-clay-bg-base animate-pulse"></div>
+              <div class="h-3 w-1/2 max-w-[12rem] rounded bg-clay-bg-base/80 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          <div class="clay-card p-6 space-y-4 relative overflow-hidden">
+            <div class="skeleton-shimmer absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+            <div class="h-5 w-28 rounded bg-clay-bg-base animate-pulse"></div>
+            <div class="h-24 rounded-clay-md bg-clay-bg-base animate-pulse"></div>
+            <div class="h-16 rounded-clay-md bg-clay-bg-base/80 animate-pulse"></div>
+          </div>
+          <div class="clay-card p-6 space-y-4 relative overflow-hidden">
+            <div class="skeleton-shimmer absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+            <div class="flex items-center justify-between gap-3">
+              <div class="h-5 w-24 rounded bg-clay-bg-base animate-pulse"></div>
+              <div class="h-10 w-40 rounded-clay-md bg-clay-bg-base animate-pulse"></div>
+            </div>
+            <div class="h-12 rounded-clay-md bg-clay-bg-base animate-pulse"></div>
+            <div class="h-12 rounded-clay-md bg-clay-bg-base/80 animate-pulse"></div>
+            <div class="h-20 rounded-clay-md bg-clay-bg-base/70 animate-pulse"></div>
+          </div>
+        </div>
+
+        <div class="clay-card p-4 sm:p-6 space-y-4 relative overflow-hidden">
+          <div class="skeleton-shimmer absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+          <div class="flex gap-2 overflow-hidden">
             <div
-              class="absolute top-0 left-0 w-20 h-20 border-4 border-clay-primary border-t-transparent rounded-full animate-spin"
+              v-for="i in 4"
+              :key="i"
+              class="h-11 min-w-[6.5rem] flex-1 rounded-clay-md bg-clay-bg-base animate-pulse"
+              :style="{ animationDelay: `${i * 80}ms` }"
             ></div>
           </div>
-          <p class="text-clay-text-secondary">正在加载...</p>
+          <div class="h-5 w-28 rounded bg-clay-bg-base animate-pulse"></div>
+          <div class="grid grid-cols-7 gap-1.5">
+            <div
+              v-for="i in 21"
+              :key="i"
+              class="h-12 sm:h-14 rounded-md bg-clay-bg-base/90 animate-pulse"
+              :style="{ animationDelay: `${(i % 7) * 50}ms` }"
+            ></div>
+          </div>
+          <p class="text-center text-sm text-clay-text-secondary pt-2">正在准备首页...</p>
         </div>
       </div>
 
@@ -118,41 +151,35 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- 正常内容 -->
+      <!-- 正常内容：RecordTabs / 日历自行异步加载 -->
       <Transition name="fade" mode="out-in">
-        <div v-if="homeInfo" class="space-y-6 md:space-y-8">
-          <!-- InfoBar: 顶部信息栏 -->
+        <div v-if="showContent" class="space-y-6 md:space-y-8">
           <Transition name="slide-down">
             <InfoBar :saying="homeInfo?.saying" :weather="homeInfo?.weather" />
           </Transition>
 
-          <!-- 第一行: TodayFocus + HealthOverview -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-            <!-- TodayFocus: 今日重点 -->
-            <Transition name="slide-up" :delay="100">
-              <section v-show="true" aria-labelledby="today-focus-title" class="flex flex-col">
+            <Transition name="slide-up">
+              <section aria-labelledby="today-focus-title" class="flex flex-col">
                 <TodayFocus :aiRecommend="homeInfo?.aiRecommend" />
               </section>
             </Transition>
 
-            <!-- HealthOverview: 每日健康快览 -->
-            <Transition name="slide-up" :delay="200">
-              <section v-show="true" aria-labelledby="health-overview-title" class="flex flex-col">
+            <Transition name="slide-up">
+              <section aria-labelledby="health-overview-title" class="flex flex-col">
                 <HealthOverview />
               </section>
             </Transition>
           </div>
 
-          <!-- 第二行: RecordTabs (全宽) -->
-          <Transition name="slide-up" :delay="300">
-            <section v-show="true" aria-labelledby="record-tabs-title">
+          <Transition name="slide-up">
+            <section aria-labelledby="record-tabs-title">
               <RecordTabs />
             </section>
           </Transition>
 
-          <!-- 第三行: NewsFlow -->
-          <Transition name="slide-up" :delay="400">
-            <section v-show="true" aria-labelledby="news-flow-title">
+          <Transition name="slide-up">
+            <section aria-labelledby="news-flow-title">
               <h2 id="news-flow-title" class="sr-only">热点资讯</h2>
               <NewsFlow :hotBoards="homeInfo?.hotBoards" />
             </section>
@@ -164,7 +191,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 侧边流光：缓慢变色的渐变带，为页面增加层次但不影响阅读。 */
 .side-glow {
   position: fixed;
   top: 8vh;
@@ -225,6 +251,27 @@ onMounted(() => {
   }
 }
 
+/* 骨架扫光 */
+.skeleton-shimmer {
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.45) 45%,
+    transparent 65%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shine 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shine {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -80% 0;
+  }
+}
+
 @media (max-width: 768px) {
   .side-glow {
     top: 14vh;
@@ -236,40 +283,9 @@ onMounted(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .side-glow {
+  .side-glow,
+  .skeleton-shimmer {
     animation: none;
-    background-position: 50% 45%;
   }
-}
-
-/* 淡入淡出动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* 向下滑入动画 */
-.slide-down-enter-active {
-  transition: all 0.5s ease;
-}
-
-.slide-down-enter-from {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-/* 向上滑入动画 */
-.slide-up-enter-active {
-  transition: all 0.5s ease;
-}
-
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
 }
 </style>
