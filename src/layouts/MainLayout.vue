@@ -7,6 +7,8 @@ import { mainRoutes, type AppRouteMeta } from '@/router/routes'
 import AppIcon from '@/components/common/AppIcon.vue'
 import AudioPlayer from '@/components/common/AudioPlayer.vue'
 import { getStorage, setStorage } from '@/utils/storage'
+import { OS_CONFIG_NAV_ITEMS } from '@/views/os-config/config/nav'
+import type { OsConfigNavItem } from '@/types'
 
 const router = useRouter()
 const route = useRoute()
@@ -15,6 +17,49 @@ const userStore = useUserStore()
 const isUserMenuOpen = ref<boolean>(false)
 const isMobileMenuOpen = ref<boolean>(false)
 const mainRef = ref<HTMLElement | null>(null)
+
+/** 是否处于 OS 配置子路由（右侧菜单切换为黄色统一子导航） */
+const isOsConfigRoute = computed(() => route.path.startsWith('/os-config'))
+
+/** OS 配置分组在移动端菜单中的展开状态 */
+const osConfigGroupExpanded = ref<Record<string, boolean>>({})
+
+function ensureOsConfigGroupState() {
+  for (const item of OS_CONFIG_NAV_ITEMS) {
+    if (!item.id || !item.children?.length) continue
+    if (osConfigGroupExpanded.value[item.id] === undefined) {
+      osConfigGroupExpanded.value[item.id] =
+        item.defaultExpanded === true ||
+        item.children.some((child) => route.path.startsWith(child.path))
+    }
+  }
+}
+
+function isOsConfigGroupExpanded(item: OsConfigNavItem): boolean {
+  return !!item.id && !!osConfigGroupExpanded.value[item.id]
+}
+
+function toggleOsConfigGroup(item: OsConfigNavItem) {
+  if (!item.id) return
+  osConfigGroupExpanded.value[item.id] = !osConfigGroupExpanded.value[item.id]
+}
+
+function isOsConfigPathActive(path: string): boolean {
+  return route.path.startsWith(path)
+}
+
+watch(
+  () => route.path,
+  (path) => {
+    ensureOsConfigGroupState()
+    for (const item of OS_CONFIG_NAV_ITEMS) {
+      if (item.id && item.children?.some((child) => path.startsWith(child.path))) {
+        osConfigGroupExpanded.value[item.id] = true
+      }
+    }
+  },
+  { immediate: true },
+)
 
 // ==================== Cursor 配置 ====================
 type CursorType = 'default' | 'sleek-line' | 'fluid'
@@ -267,20 +312,31 @@ onMounted(userStore.init)
             </div>
           </div>
 
-          <!-- 汉堡菜单按钮 (移动端) -->
+          <!-- 汉堡菜单按钮 (移动端)；OS 配置子路由使用黄色统一入口 -->
           <button
             @click="toggleMobileMenu"
             class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200"
             :class="
-              isMobileMenuOpen
-                ? 'bg-clay-primary shadow-clay-button'
-                : 'bg-clay-bg-elevated shadow-clay-card hover:shadow-clay-hover'
+              isOsConfigRoute
+                ? isMobileMenuOpen
+                  ? 'bg-clay-accent-yellow shadow-clay-button'
+                  : 'bg-clay-accent-yellow/90 shadow-clay-card hover:shadow-clay-hover'
+                : isMobileMenuOpen
+                  ? 'bg-clay-primary shadow-clay-button'
+                  : 'bg-clay-bg-elevated shadow-clay-card hover:shadow-clay-hover'
             "
+            :aria-label="isOsConfigRoute ? '打开 OS 配置菜单' : '打开导航菜单'"
           >
             <AppIcon
               :icon="isMobileMenuOpen ? 'mdi:close' : 'mdi:menu'"
               :size="24"
-              :class="isMobileMenuOpen ? 'text-white' : 'text-clay-text-primary'"
+              :class="
+                isOsConfigRoute
+                  ? 'text-clay-text-primary'
+                  : isMobileMenuOpen
+                    ? 'text-white'
+                    : 'text-clay-text-primary'
+              "
             />
           </button>
         </div>
@@ -298,10 +354,98 @@ onMounted(userStore.init)
     >
       <div
         v-if="isMobileMenuOpen"
-        class="lg:hidden absolute top-16 left-0 right-0 z-40 bg-clay-bg-elevated shadow-clay-card mx-4 rounded-clay-md overflow-hidden border-2 border-clay-primary/30"
+        class="mobile-menu-panel lg:hidden absolute top-16 left-0 right-0 z-40 bg-clay-bg-elevated mx-4 rounded-clay-md max-h-[75vh] overflow-y-auto scrollbar-hide"
       >
-        <!-- 导航项 -->
-        <nav class="py-2">
+        <!-- OS 配置子路由：黄色统一子导航 -->
+        <nav v-if="isOsConfigRoute" class="py-2">
+          <div
+            class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-clay-text-secondary flex items-center gap-2"
+          >
+            <span class="inline-block w-2 h-2 rounded-full bg-clay-accent-yellow" />
+            OS 配置
+          </div>
+
+          <template v-for="item in OS_CONFIG_NAV_ITEMS" :key="item.id || item.path || item.label">
+            <button
+              v-if="!item.children && item.path"
+              type="button"
+              class="w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 relative"
+              :class="
+                isOsConfigPathActive(item.path)
+                  ? 'bg-clay-accent-yellow/35 text-clay-text-primary shadow-inner'
+                  : 'text-clay-text-primary hover:bg-clay-accent-yellow/15'
+              "
+              @click="handleMobileNavClick(item.path)"
+            >
+              <div
+                v-if="isOsConfigPathActive(item.path)"
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-clay-accent-yellow rounded-r-full"
+              />
+              <AppIcon :icon="item.icon" :size="20" />
+              <span class="text-sm font-medium">{{ item.label }}</span>
+              <AppIcon
+                v-if="isOsConfigPathActive(item.path)"
+                icon="mdi:check-circle"
+                :size="18"
+                class="ml-auto text-clay-warning"
+              />
+            </button>
+
+            <div v-else>
+              <button
+                type="button"
+                class="w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 text-clay-text-primary hover:bg-clay-accent-yellow/15"
+                @click="toggleOsConfigGroup(item)"
+              >
+                <AppIcon :icon="item.icon" :size="20" />
+                <span class="text-sm font-medium flex-1 text-left">{{ item.label }}</span>
+                <AppIcon
+                  :icon="isOsConfigGroupExpanded(item) ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                  :size="18"
+                />
+              </button>
+              <div v-show="isOsConfigGroupExpanded(item)" class="pb-1">
+                <button
+                  v-for="child in item.children"
+                  :key="child.path"
+                  type="button"
+                  class="w-full flex items-center gap-3 pl-10 pr-4 py-2.5 transition-all duration-200 relative"
+                  :class="
+                    isOsConfigPathActive(child.path)
+                      ? 'bg-clay-accent-yellow/35 text-clay-text-primary'
+                      : 'text-clay-text-secondary hover:bg-clay-accent-yellow/15 hover:text-clay-text-primary'
+                  "
+                  @click="handleMobileNavClick(child.path)"
+                >
+                  <div
+                    v-if="isOsConfigPathActive(child.path)"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-7 bg-clay-accent-yellow rounded-r-full"
+                  />
+                  <AppIcon :icon="child.icon" :size="18" />
+                  <span class="text-sm font-medium">{{ child.label }}</span>
+                </button>
+              </div>
+            </div>
+          </template>
+
+          <div class="my-2 mx-4 h-px bg-clay-accent-yellow/40" />
+          <div class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-clay-text-muted">
+            主菜单
+          </div>
+          <button
+            v-for="item in navItems.filter((n) => n.path !== '/os-config')"
+            :key="`main-${item.name}`"
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 text-clay-text-primary hover:bg-clay-bg-base"
+            @click="handleMobileNavClick(item.path)"
+          >
+            <AppIcon :icon="item.icon" :size="20" class="text-clay-text-secondary" />
+            <span class="text-sm font-medium">{{ item.title }}</span>
+          </button>
+        </nav>
+
+        <!-- 常规顶层导航 -->
+        <nav v-else class="py-2">
           <button
             v-for="item in navItems"
             :key="item.name"
@@ -313,7 +457,6 @@ onMounted(userStore.init)
                 : 'text-clay-text-primary hover:bg-clay-bg-base active:bg-clay-primary/5'
             "
           >
-            <!-- 选中指示器 -->
             <div
               v-if="isActive(item.path)"
               class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-clay-primary rounded-r-full shadow-lg"
@@ -405,5 +548,15 @@ onMounted(userStore.init)
 
 :deep(.text-background) {
   color: var(--clay-text-inverse) !important;
+}
+
+/* 移动端菜单：淡黄色发光边，贴合按钮风格但不抢眼 */
+.mobile-menu-panel {
+  border: 1.5px solid rgba(255, 223, 149, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 223, 149, 0.22),
+    0 4px 14px rgba(238, 188, 58, 0.12),
+    0 0 22px rgba(255, 223, 149, 0.28),
+    var(--shadow-clay-card);
 }
 </style>

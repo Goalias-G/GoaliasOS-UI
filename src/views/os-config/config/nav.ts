@@ -15,6 +15,7 @@ export const OS_CONFIG_NAV_ITEMS: OsConfigNavItem[] = [
     id: 'os-ai',
     label: 'OS AI',
     icon: 'mdi:creation-outline',
+    defaultExpanded: true,
     children: [
       {
         path: '/os-config/chat-model',

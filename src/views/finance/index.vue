@@ -182,7 +182,7 @@ onUnmounted(() => {
 
       <!-- Tab 导航 -->
       <div class="clay-card p-1.5 md:p-2 mb-5" role="tablist">
-        <div class="flex gap-1.5 md:gap-2 overflow-x-auto">
+        <div class="flex gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide">
           <button
             v-for="tab in tabs"
             :key="tab.id"

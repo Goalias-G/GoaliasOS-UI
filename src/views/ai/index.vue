@@ -102,22 +102,22 @@ onMounted(() => {
 
     <!-- 主界面 -->
     <template v-else>
-      <!-- 移动端菜单按钮 -->
+      <!-- 移动端：左侧中部简约展开箭头（侧栏打开时隐藏） -->
       <button
-        v-if="isMobile"
-        class="fixed top-4 left-4 z-50 clay-btn w-12 h-12 flex items-center justify-center shadow-clay-button"
-        :class="{ 'left-[calc(85vw+1rem)]': isSidebarOpen }"
+        v-if="isMobile && !isSidebarOpen"
+        type="button"
+        class="session-edge-toggle"
+        aria-label="展开会话列表"
         @click="toggleSidebar"
-        aria-label="切换侧边栏"
       >
-        <AppIcon :icon="isSidebarOpen ? 'mdi:close' : 'mdi:menu'" :size="24" />
+        <AppIcon icon="mdi:chevron-right" :size="20" />
       </button>
 
       <!-- 侧边栏遮罩层(移动端) -->
       <Transition name="fade">
         <div
           v-if="isSidebarOpen && isMobile"
-          class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-40"
           @click="closeSidebar"
         ></div>
       </Transition>
@@ -134,26 +134,72 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* ==================== 主容器 ==================== */
 .ai-chat-view {
   font-family: var(--font-body);
 }
 
-/* ==================== 过渡动画 ==================== */
+/* 移动端左侧中部：简约向右箭头入口 */
+.session-edge-toggle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  z-index: 45;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 3rem;
+  padding: 0;
+  border: 1px solid rgba(66, 150, 237, 0.18);
+  border-left: none;
+  border-radius: 0 var(--radius-clay-sm) var(--radius-clay-sm) 0;
+  background: color-mix(in srgb, var(--clay-bg-elevated) 92%, white);
+  color: var(--clay-text-secondary);
+  box-shadow:
+    2px 0 10px rgba(66, 150, 237, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    width var(--duration-fast) var(--ease-out);
+}
+
+.session-edge-toggle:hover {
+  width: 1.625rem;
+  color: var(--clay-primary);
+  background: var(--clay-bg-elevated);
+  box-shadow:
+    3px 0 14px rgba(66, 150, 237, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.session-edge-toggle:active {
+  width: 1.25rem;
+  box-shadow: var(--shadow-clay-pressed);
+}
+
+@media (max-width: 768px) {
+  .ai-chat-view {
+    position: relative;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .session-edge-toggle {
+    transition: none;
+  }
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-/* ==================== 响应式调整 ==================== */
-@media (max-width: 768px) {
-  .ai-chat-view {
-    position: relative;
-  }
 }
 </style>

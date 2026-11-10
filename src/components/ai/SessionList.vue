@@ -9,6 +9,10 @@ import { storeToRefs } from 'pinia'
 const sessionStore = useSessionStore()
 const { sessions, currentSessionId, loading } = storeToRefs(sessionStore)
 
+const emit = defineEmits<{
+  select: [sessionId: number]
+}>()
+
 // ==================== 计算属性 ====================
 /**
  * 按创建时间倒序排列的会话列表（最新的在上）
@@ -35,6 +39,7 @@ const isEmpty = computed(() => {
 async function handleSessionClick(sessionId: number) {
   try {
     await sessionStore.switchSession(sessionId)
+    emit('select', sessionId)
   } catch (error) {
     console.error('切换会话失败:', error)
   }

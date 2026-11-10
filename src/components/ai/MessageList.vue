@@ -38,6 +38,14 @@ const showEmptyState = computed(() => {
   return messages.value.length === 0 && !streamingMessage.value && !loading.value.messages
 })
 
+/** 仅在流式已开始、但尚未产出正文/工具状态时展示「正在思考」 */
+const showThinking = computed(() => {
+  if (!isStreaming.value || !streamingMessage.value) return false
+  const hasContent = !!streamingMessage.value.content?.trim()
+  const hasToolCalls = (streamingMessage.value.toolCalls?.length ?? 0) > 0
+  return !hasContent && !hasToolCalls
+})
+
 /** 是否启用虚拟滚动（消息数量 > 100） */
 const useVirtualScroll = computed(() => {
   return messages.value.length > 100
@@ -261,16 +269,9 @@ onUnmounted(() => {
           />
         </div>
 
-        <!-- 流式传输中的加载动画 -->
-        <div v-if="isStreaming" class="flex justify-start">
-          <div
-            class="bg-clay-bg-elevated rounded-clay-md px-4 py-3 shadow-clay-card flex items-center gap-2"
-          >
-            <div class="animate-breathe">
-              <AppIcon icon="mdi:dots-horizontal" :size="24" class="text-clay-primary" />
-            </div>
-            <span class="text-sm text-clay-text-secondary">OS AI 正在思考...</span>
-          </div>
+        <!-- 等待首包时的思考指示；一旦开始生成正文或工具调用即隐藏 -->
+        <div v-if="showThinking" class="flex justify-start">
+          <ThinkingIndicator />
         </div>
       </template>
     </div>

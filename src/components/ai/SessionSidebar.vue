@@ -44,14 +44,22 @@ const promptContent = ref('')
 
 // ==================== 方法 ====================
 /**
- * 处理新建会话
+ * 处理新建会话（移动端创建后关闭抽屉）
  */
 async function handleCreateSession() {
   try {
     await sessionStore.createSession()
+    closeSidebar()
   } catch (error) {
     console.error('创建会话失败:', error)
   }
+}
+
+/**
+ * 选择会话后关闭抽屉（移动端）
+ */
+function handleSessionSelect() {
+  closeSidebar()
 }
 
 /**
@@ -137,7 +145,7 @@ function closeSidebar() {
 
     <!-- 会话列表 -->
     <div class="flex-1 overflow-hidden border-b border-clay-primary/10">
-      <SessionList />
+      <SessionList @select="handleSessionSelect" />
     </div>
 
     <!-- 侧边栏底部设置 -->

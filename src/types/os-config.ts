@@ -25,6 +25,8 @@ export interface OsConfigNavItem {
   path?: string
   label: string
   icon: string
+  /** 有 children 时是否默认展开 */
+  defaultExpanded?: boolean
   children?: OsConfigNavChild[]
 }
 

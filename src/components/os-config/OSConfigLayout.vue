@@ -2,9 +2,9 @@
 /**
  * OS 配置管理布局组件（纯展示）
  *
- * - 导航 / 分组导航由外部注入，避免与业务目录耦合
- * - 支持多级分组展开
- * - Claymorphism + 移动端汉堡菜单
+ * - 桌面端：左侧领域导航
+ * - 移动端：侧栏收起，子路由由 MainLayout 右侧统一菜单承载
+ * - 分组支持 defaultExpanded（OS AI 默认展开）
  */
 import type { OsConfigNavItem } from '@/types'
 
@@ -17,19 +17,8 @@ const props = defineProps<Props>()
 const route = useRoute()
 const router = useRouter()
 
-const isMobileMenuOpen = ref(false)
-
-/** 分组展开状态：默认展开当前路由所属分组 */
+/** 分组展开状态 */
 const expandedGroups = ref<Record<string, boolean>>({})
-
-function ensureGroupState() {
-  for (const item of props.navItems) {
-    if (!item.id || !item.children?.length) continue
-    if (expandedGroups.value[item.id] === undefined) {
-      expandedGroups.value[item.id] = item.children.some((child) => isActive(child.path))
-    }
-  }
-}
 
 function isActive(path: string): boolean {
   return route.path.startsWith(path)
@@ -44,28 +33,28 @@ function isGroupExpanded(item: OsConfigNavItem): boolean {
   return !!expandedGroups.value[item.id]
 }
 
+function ensureGroupState() {
+  for (const item of props.navItems) {
+    if (!item.id || !item.children?.length) continue
+    if (expandedGroups.value[item.id] === undefined) {
+      expandedGroups.value[item.id] =
+        item.defaultExpanded === true || item.children.some((child) => isActive(child.path))
+    }
+  }
+}
+
 function toggleGroup(item: OsConfigNavItem) {
   if (!item.id) return
   expandedGroups.value[item.id] = !expandedGroups.value[item.id]
 }
 
-function toggleMobileMenu() {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value
-}
-
-function closeMobileMenu() {
-  isMobileMenuOpen.value = false
-}
-
-function navigateAndClose(path: string) {
+function navigate(path: string) {
   router.push(path)
-  closeMobileMenu()
 }
 
 watch(
   () => [route.path, props.navItems] as const,
   () => {
-    closeMobileMenu()
     ensureGroupState()
     for (const item of props.navItems) {
       if (item.id && item.children?.some((child) => isActive(child.path))) {
@@ -75,32 +64,13 @@ watch(
   },
   { immediate: true, deep: true },
 )
-
-function handleOverlayClick() {
-  closeMobileMenu()
-}
 </script>
 
 <template>
-  <div class="os-config-layout min-h-full bg-clay-bg-base p-6">
+  <div class="os-config-layout min-h-full bg-clay-bg-base p-4 md:p-6">
     <div class="max-w-[1600px] mx-auto flex gap-8 h-full relative">
-      <button
-        class="mobile-menu-btn clay-btn fixed top-4 left-4 z-50 lg:hidden"
-        @click="toggleMobileMenu"
-        :aria-label="isMobileMenuOpen ? '关闭菜单' : '打开菜单'"
-      >
-        <AppIcon :icon="isMobileMenuOpen ? 'mdi:close' : 'mdi:menu'" :size="24" />
-      </button>
-
-      <Transition name="fade">
-        <div
-          v-if="isMobileMenuOpen"
-          class="mobile-overlay fixed inset-0 bg-black/50 z-40 lg:hidden"
-          @click="handleOverlayClick"
-        />
-      </Transition>
-
-      <aside class="sidebar w-72 shrink-0" :class="{ 'mobile-open': isMobileMenuOpen }">
+      <!-- 桌面端侧栏；移动端隐藏（子路由走右侧统一菜单） -->
+      <aside class="sidebar w-72 shrink-0 hidden lg:block">
         <nav class="clay-card p-6 space-y-3 sticky top-6">
           <h2 class="clay-section-title mb-6 ml-3">OS 配置</h2>
 
@@ -114,7 +84,7 @@ function handleOverlayClick() {
                   ? 'bg-clay-primary text-clay-text-inverse shadow-clay-hover active-nav scale-[1.10]'
                   : 'text-clay-text-secondary hover:bg-clay-bg-elevated hover:text-clay-text-primary hover:shadow-clay-card'
               "
-              @click.prevent="navigateAndClose(item.path)"
+              @click.prevent="navigate(item.path)"
             >
               <AppIcon :icon="item.icon" :size="24" />
               <span class="font-semibold text-base">{{ item.label }}</span>
@@ -154,7 +124,7 @@ function handleOverlayClick() {
                         ? 'bg-clay-primary text-clay-text-inverse shadow-clay-hover active-nav'
                         : 'text-clay-text-secondary hover:bg-clay-bg-elevated hover:text-clay-text-primary hover:shadow-clay-card'
                     "
-                    @click.prevent="navigateAndClose(child.path)"
+                    @click.prevent="navigate(child.path)"
                   >
                     <AppIcon :icon="child.icon" :size="20" />
                     <span class="font-medium text-sm">{{ child.label }}</span>
@@ -191,7 +161,6 @@ function handleOverlayClick() {
   transition: height 0.3s ease;
 }
 
-.nav-item.router-link-active::before,
 .nav-item[class*='bg-clay-primary']::before {
   height: 70%;
 }
@@ -226,17 +195,13 @@ function handleOverlayClick() {
 .nav-item.active-nav::before {
   width: 5px;
   height: 80%;
-  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 0 8px rgba(66, 150, 237, 0.45);
 }
 
 .nav-group-toggle {
   cursor: pointer;
   border: none;
   background: transparent;
-}
-
-.nav-child {
-  font-size: 0.875rem;
 }
 
 .collapse-enter-active,
@@ -250,33 +215,6 @@ function handleOverlayClick() {
 .collapse-leave-to {
   opacity: 0;
   transform: translateY(-4px);
-}
-
-.mobile-menu-btn {
-  display: none;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  justify-content: center;
-  align-items: center;
-}
-
-.mobile-menu-btn:hover {
-  transform: translateY(-2px) rotate(0deg);
-}
-
-.mobile-menu-btn:active {
-  transform: translateY(1px) rotate(0deg);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 @media (min-width: 1025px) {
@@ -295,75 +233,10 @@ function handleOverlayClick() {
   }
 }
 
-@media (max-width: 767px) {
-  .os-config-layout {
-    padding: 1rem;
-    padding-top: 5rem;
-  }
-
-  .os-config-layout > div {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    max-width: 80vw;
-    z-index: 45;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    overflow-y: auto;
-  }
-
-  .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  .sidebar nav {
-    position: static !important;
-    height: 100%;
-    border-radius: 0;
-  }
-
-  main {
-    width: 100%;
-  }
-}
-
-@media (max-width: 479px) {
-  .os-config-layout {
-    padding: 0.75rem;
-    padding-top: 4.5rem;
-  }
-
-  .mobile-menu-btn {
-    width: 44px;
-    height: 44px;
-    top: 0.75rem;
-    left: 0.75rem;
-  }
-
-  .sidebar {
-    width: 100%;
-    max-width: 100vw;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .nav-item,
   .collapse-enter-active,
-  .collapse-leave-active,
-  .fade-enter-active,
-  .fade-leave-active,
-  .sidebar {
+  .collapse-leave-active {
     transition: none !important;
   }
 }
