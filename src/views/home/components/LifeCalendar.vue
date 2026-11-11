@@ -116,6 +116,15 @@ const selectedHoliday = computed(() =>
     selectedDate.value ? holidayMap.value[selectedDate.value] : undefined,
 )
 
+/** 所选日期与今天相差的绝对天数 */
+const daysFromToday = computed(() => {
+  if (!selectedDate.value) return 0
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const selected = new Date(`${selectedDate.value}T00:00:00`)
+  return Math.abs(Math.round((selected.getTime() - today.getTime()) / 86_400_000))
+})
+
 const draftTaskCounts = computed(() => countTasks(draft.value.tasks))
 
 watch(monthParam, () => {
@@ -359,6 +368,7 @@ function cellToneClass(cell: CalendarCell) {
   }
   return 'bg-clay-bg-elevated text-clay-text-primary hover:shadow-clay-card'
 }
+
 </script>
 
 <template>
@@ -467,21 +477,21 @@ function cellToneClass(cell: CalendarCell) {
                 v-for="cell in week"
                 :key="cell.key"
                 type="button"
-                class="relative min-h-[4.25rem] sm:min-h-[5.5rem] rounded-clay-md p-1 sm:p-2 text-left transition-all border"
+                class="calendar-day-cell relative min-h-[4.25rem] sm:min-h-[5.5rem] rounded-clay-md p-1 sm:p-2 text-left transition-all"
                 :class="[
                 cellToneClass(cell),
-                selectedDate === cell.date
-                  ? 'border-clay-primary shadow-[0_0_0_2px_rgba(66,150,237,0.22)]'
-                  : cell.isToday
-                    ? 'border-clay-primary/45 shadow-[0_0_0_2px_rgba(66,150,237,0.16)]'
-                    : 'border-transparent',
+                selectedDate === cell.date ? 'calendar-day-cell--selected' : '',
               ]"
                 @click="openDay(cell)"
             >
               <div class="flex items-start justify-between gap-1">
                 <span
-                    class="text-sm font-semibold"
-                    :class="cell.isToday ? 'text-clay-primary' : 'text-clay-text-primary'"
+                    class="inline-flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center text-sm font-semibold tabular-nums"
+                    :class="
+                    cell.isToday
+                      ? 'rounded-full bg-clay-primary text-white shadow-sm'
+                      : 'text-clay-text-primary'
+                  "
                 >
                   {{ cell.day }}
                 </span>
@@ -593,6 +603,9 @@ function cellToneClass(cell: CalendarCell) {
                       "
                     >
                       {{ badge.text }}
+                    </span>
+                    <span class="ml-2 text-xs text-clay-text-muted shrink-0">
+                      距离今日{{ daysFromToday }}天
                     </span>
                   </div>
                 </div>
@@ -745,6 +758,19 @@ function cellToneClass(cell: CalendarCell) {
 /* 有「今日一言」的日期：淡紫色底 */
 .day-has-saying {
   background-color: #efe6ff;
+}
+
+/*
+ * 全局 button { border: none } 会压过 Tailwind border 工具类（unlayered > @layer），
+ * 这里用更高优先级的 scoped 选择器显式画边框。
+ */
+.calendar-day-cell {
+  border: 1.5px solid color-mix(in srgb, var(--clay-accent-yellow) 70%, white);
+}
+
+.calendar-day-cell--selected {
+  border-color: var(--clay-primary);
+  box-shadow: 0 0 0 2px rgb(66 150 237 / 0.22);
 }
 
 .month-nav-button {

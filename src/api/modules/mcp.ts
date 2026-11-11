@@ -50,15 +50,20 @@ export const mcpClientServerApi = {
     put<ApiResponse<void>>('/chat/mcp/server/changeStatus', data),
 
   /**
-   * 同步远端 tools 并落库
+   * 同步远端 tools 并落库（握手可能较慢，单独拉长超时）
    */
   syncTools: (id: number) =>
-    post<ApiResponse<McpSyncToolsResult>>(`/chat/mcp/server/${id}/syncTools`),
+    post<ApiResponse<McpSyncToolsResult>>(`/chat/mcp/server/${id}/syncTools`, undefined, {
+      timeout: 60000,
+    }),
 
   /**
    * 连通性探测（不落库，返回工具预览）
    */
-  test: (id: number) => post<ApiResponse<McpClientTool[]>>(`/chat/mcp/server/${id}/test`),
+  test: (id: number) =>
+    post<ApiResponse<McpClientTool[]>>(`/chat/mcp/server/${id}/test`, undefined, {
+      timeout: 60000,
+    }),
 
   /**
    * 批量删除 Server

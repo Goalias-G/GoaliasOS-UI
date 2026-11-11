@@ -69,6 +69,12 @@ const columns: TableColumn[] = [
     formatter: (value: string) => (value === '1' ? '启用' : '停用'),
   },
   {
+    key: 'protocolVersion',
+    label: '协议',
+    width: '120px',
+    formatter: (value: string) => value || '2025-11-25',
+  },
+  {
     key: 'lastSyncTime',
     label: '最近同步',
     width: '160px',
@@ -125,6 +131,17 @@ const formFields: FormField[] = [
     type: 'select',
     required: true,
     options: [{ label: 'HTTP Streamable', value: 'http_streamable' }],
+  },
+  {
+    key: 'protocolVersion',
+    label: '协议版本',
+    type: 'select',
+    required: true,
+    options: [
+      { label: '2025-11-25（推荐，跳过探测）', value: '2025-11-25' },
+      { label: '2026-07-28（现代协议）', value: '2026-07-28' },
+      { label: 'auto（自动探测，可能较慢）', value: 'auto' },
+    ],
   },
   {
     key: 'apiKey',
@@ -246,6 +263,7 @@ function handleAdd() {
   modalMode.value = 'add'
   formData.value = {
     transportType: 'http_streamable',
+    protocolVersion: '2025-11-25',
     status: '0',
     connectTimeoutMs: 10000,
     requestTimeoutMs: 30000,
@@ -258,6 +276,7 @@ function handleEdit(row: McpClientServer) {
   formData.value = {
     ...row,
     transportType: row.transportType || 'http_streamable',
+    protocolVersion: row.protocolVersion || '2025-11-25',
     status: row.status || '0',
   }
   modalVisible.value = true
@@ -269,6 +288,7 @@ async function handleSubmit(data: Record<string, unknown>) {
     const payload = {
       ...data,
       transportType: 'http_streamable',
+      protocolVersion: (data.protocolVersion as string) || '2025-11-25',
       connectTimeoutMs: Number(data.connectTimeoutMs || 10000),
       requestTimeoutMs: Number(data.requestTimeoutMs || 30000),
     }

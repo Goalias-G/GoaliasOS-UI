@@ -11,6 +11,9 @@ export type McpStatus = '0' | '1'
 /** MCP 传输类型 */
 export type McpTransportType = 'http_streamable'
 
+/** MCP 协议版本 */
+export type McpProtocolVersion = 'auto' | '2025-11-25' | '2026-07-28'
+
 /** MCP Client Server 实体 */
 export interface McpClientServer {
   id?: number
@@ -18,6 +21,8 @@ export interface McpClientServer {
   serverCode: string
   endpointUrl: string
   transportType?: McpTransportType | string
+  /** 默认 2025-11-25；auto 会先探测再回退 */
+  protocolVersion?: McpProtocolVersion | string
   apiKey?: string
   headersJson?: string
   status?: McpStatus | string
@@ -37,6 +42,7 @@ export interface McpClientServerParams {
   serverCode: string
   endpointUrl: string
   transportType?: McpTransportType | string
+  protocolVersion?: McpProtocolVersion | string
   apiKey?: string
   headersJson?: string
   status?: McpStatus | string

@@ -10,6 +10,7 @@
  */
 
 import { defineStore } from 'pinia'
+import { chatSessionApi } from '@/api/modules/chat-session'
 import type {
   ChatSession,
   ChatMessage,
@@ -114,7 +115,6 @@ export const useSessionStore = defineStore('session', () => {
     loading.value.sessions = true
 
     try {
-      const { chatSessionApi } = await import('@/api/modules/chat-session')
       const response = await chatSessionApi.list(undefined, pageQuery)
 
       if (response.code === 200) {
@@ -192,7 +192,6 @@ export const useSessionStore = defineStore('session', () => {
    */
   async function deleteSession(sessionId: number) {
     try {
-      const { chatSessionApi } = await import('@/api/modules/chat-session')
       const response = await chatSessionApi.remove([sessionId])
 
       if (response.code === 200) {
@@ -221,7 +220,6 @@ export const useSessionStore = defineStore('session', () => {
    */
   async function renameSession(sessionId: number, newTitle: string) {
     try {
-      const { chatSessionApi } = await import('@/api/modules/chat-session')
       const session = sessions.value.find((s) => s.id === sessionId)
 
       if (!session) {
@@ -256,7 +254,6 @@ export const useSessionStore = defineStore('session', () => {
    */
   async function archiveSession(sessionId: number) {
     try {
-      const { chatSessionApi } = await import('@/api/modules/chat-session')
       const response = await chatSessionApi.archive(sessionId)
       if (response.code !== 200) {
         throw new Error(response.message || '归档会话失败')
@@ -279,7 +276,6 @@ export const useSessionStore = defineStore('session', () => {
    */
   async function unarchiveSession(session: ChatSession) {
     try {
-      const { chatSessionApi } = await import('@/api/modules/chat-session')
       const response = await chatSessionApi.unarchive(session.id)
       if (response.code !== 200) {
         throw new Error(response.message || '取消归档失败')
@@ -318,7 +314,6 @@ export const useSessionStore = defineStore('session', () => {
    */
   async function getSessionInfo(sessionId: number) {
     try {
-      const { chatSessionApi } = await import('@/api/modules/chat-session')
       const response = await chatSessionApi.getInfo(sessionId)
 
       if (response.code === 200) {
